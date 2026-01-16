@@ -1,0 +1,54 @@
+server:
+  port: ${PORT:${BACKEND_PORT:8080}}
+  forward-headers-strategy: framework
+
+spring:
+  application:
+    name: portfolio-backend
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+
+---
+# ===== LOCAL profile (docker postgres) =====
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:portfolio_db}
+    username: ${POSTGRES_USER:portfolio_user}
+    password: ${POSTGRES_PASSWORD:portfolio_pass}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    org.hibernate.SQL: info
+
+---
+# ===== PROD profile (Neon / Render) =====
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    # Render/Neon often provide a DATABASE_URL-like string.
+    # If you use a full JDBC url, set it in environment variable JDBC_DATABASE_URL.
+    url: ${JDBC_DATABASE_URL:${SPRING_DATASOURCE_URL:}}
+    username: ${DB_USERNAME:${SPRING_DATASOURCE_USERNAME:}}
+    password: ${DB_PASSWORD:${SPRING_DATASOURCE_PASSWORD:}}
+
+  jpa:
+    hibernate:
+      ddl-auto: update

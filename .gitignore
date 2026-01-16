@@ -1,0 +1,43 @@
+############################
+# Environment & Secrets
+############################
+.env
+.env.*
+*.env
+
+############################
+# IDE / OS files
+############################
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+############################
+# Node / Frontend
+############################
+frontend/node_modules/
+frontend/dist/
+frontend/.env.development
+frontend/.env.production
+
+############################
+# Java / Spring Boot
+############################
+backend/**/build/
+backend/**/out/
+backend/**/.gradle/
+backend/**/target/
+*.log
+
+############################
+# Docker
+############################
+*.pid
+
+############################
+# Temporary / Cache
+############################
+tmp/
+.cache/
