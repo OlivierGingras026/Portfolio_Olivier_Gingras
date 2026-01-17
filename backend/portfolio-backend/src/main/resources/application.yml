@@ -6,11 +6,17 @@ spring:
   application:
     name: portfolio-backend
 
+
+  security:
+    user:
+      name: admin
+      password: admin123
+
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
 
 ---
-# ===== LOCAL profile (docker postgres) =====
+# ===== LOCAL profile (run backend OUTSIDE Docker) =====
 spring:
   config:
     activate:
@@ -23,32 +29,23 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update   # OK for local dev
     properties:
       hibernate:
         format_sql: true
-  sql:
-    init:
-      mode: never
-
-logging:
-  level:
-    org.hibernate.SQL: info
 
 ---
-# ===== PROD profile (Neon / Render) =====
+# ===== PROD profile (Docker / Render / Neon) =====
 spring:
   config:
     activate:
       on-profile: prod
 
   datasource:
-    # Render/Neon often provide a DATABASE_URL-like string.
-    # If you use a full JDBC url, set it in environment variable JDBC_DATABASE_URL.
-    url: ${JDBC_DATABASE_URL:${SPRING_DATASOURCE_URL:}}
-    username: ${DB_USERNAME:${SPRING_DATASOURCE_USERNAME:}}
-    password: ${DB_PASSWORD:${SPRING_DATASOURCE_PASSWORD:}}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate   # safer for prod
