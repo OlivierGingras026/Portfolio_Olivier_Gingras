@@ -1,9 +1,7 @@
 package com.oliviergingras.portfolio.workexperiencesubdomain.presentationLayer;
 
 import com.oliviergingras.portfolio.workexperiencesubdomain.businessLayer.WorkExperienceService;
-import com.oliviergingras.portfolio.workexperiencesubdomain.dataAccessLayer.WorkExperienceRepository;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

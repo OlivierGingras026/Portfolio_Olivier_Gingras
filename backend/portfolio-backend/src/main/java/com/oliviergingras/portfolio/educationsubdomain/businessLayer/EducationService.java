@@ -2,8 +2,6 @@ package com.oliviergingras.portfolio.educationsubdomain.businessLayer;
 
 import com.oliviergingras.portfolio.educationsubdomain.presentationLayer.EducationRequestModel;
 import com.oliviergingras.portfolio.educationsubdomain.presentationLayer.EducationResponseModel;
-import org.jspecify.annotations.Nullable;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

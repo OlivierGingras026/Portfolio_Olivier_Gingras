@@ -1,0 +1,79 @@
+.work-experience-section {
+  width: 100%;
+  padding: 80px 20px;
+  background-color: #030712;
+  border-top: 1px solid rgb(30, 41, 59);
+}
+
+.work-experience-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.work-experience-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.work-experience-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.work-experience-description {
+  font-size: 16px;
+  color: rgb(148, 163, 184);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.work-experience-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.work-experience-item {
+  padding: 24px;
+  background-color: rgb(15, 23, 42);
+  border-left: 4px solid rgb(59, 130, 246);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.work-experience-item:hover {
+  background-color: rgb(30, 41, 59);
+}
+
+.work-position {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.work-company {
+  font-size: 14px;
+  color: rgb(96, 165, 250);
+  margin-bottom: 8px;
+}
+
+.work-dates {
+  font-size: 14px;
+  color: rgb(148, 163, 184);
+  margin-bottom: 12px;
+}
+
+.work-description {
+  font-size: 14px;
+  color: rgb(203, 213, 225);
+  line-height: 1.6;
+}
+
+.loading-text {
+  text-align: center;
+  color: rgb(148, 163, 184);
+  font-size: 16px;
+}

@@ -1,0 +1,79 @@
+.education-section {
+  width: 100%;
+  padding: 80px 20px;
+  background-color: #030712;
+  border-top: 1px solid rgb(30, 41, 59);
+}
+
+.education-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.education-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.education-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.education-description {
+  font-size: 16px;
+  color: rgb(148, 163, 184);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.education-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.education-item {
+  padding: 24px;
+  background-color: rgb(15, 23, 42);
+  border-left: 4px solid rgb(168, 85, 247);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.education-item:hover {
+  background-color: rgb(30, 41, 59);
+}
+
+.education-school {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.education-degree {
+  font-size: 14px;
+  color: rgb(168, 85, 247);
+  margin-bottom: 8px;
+}
+
+.education-dates {
+  font-size: 14px;
+  color: rgb(148, 163, 184);
+  margin-bottom: 12px;
+}
+
+.education-description {
+  font-size: 14px;
+  color: rgb(203, 213, 225);
+  line-height: 1.6;
+}
+
+.loading-text {
+  text-align: center;
+  color: rgb(148, 163, 184);
+  font-size: 16px;
+}

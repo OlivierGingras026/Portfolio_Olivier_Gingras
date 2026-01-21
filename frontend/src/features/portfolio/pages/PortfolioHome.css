@@ -1,0 +1,50 @@
+.portfolio-home {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #030712;
+  color: white;
+}
+
+.portfolio-main {
+  width: 100%;
+}
+
+.portfolio-footer {
+  width: 100%;
+  padding: 80px 20px;
+  background-color: #000000;
+  border-top: 1px solid rgb(30, 41, 59);
+  margin-top: 60px;
+}
+
+.footer-container {
+  max-width: 1024px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-container h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  background: linear-gradient(to right, rgb(96, 165, 250), rgb(168, 85, 247));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-container p {
+  font-size: 16px;
+  color: rgb(148, 163, 184);
+  margin-bottom: 32px;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.footer-copyright {
+  margin-top: 48px;
+  font-size: 14px;
+  color: rgb(107, 114, 128);
+}

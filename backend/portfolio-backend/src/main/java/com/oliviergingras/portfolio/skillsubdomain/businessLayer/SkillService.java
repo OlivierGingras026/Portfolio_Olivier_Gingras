@@ -2,8 +2,6 @@ package com.oliviergingras.portfolio.skillsubdomain.businessLayer;
 
 import com.oliviergingras.portfolio.skillsubdomain.presentationLayer.SkillRequestModel;
 import com.oliviergingras.portfolio.skillsubdomain.presentationLayer.SkillResponseModel;
-import org.jspecify.annotations.Nullable;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

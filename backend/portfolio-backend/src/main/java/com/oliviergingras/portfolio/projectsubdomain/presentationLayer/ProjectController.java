@@ -1,9 +1,7 @@
 package com.oliviergingras.portfolio.projectsubdomain.presentationLayer;
 
 import com.oliviergingras.portfolio.projectsubdomain.businessLayer.ProjectService;
-import com.oliviergingras.portfolio.projectsubdomain.dataAccessLayer.ProjectRepository;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
