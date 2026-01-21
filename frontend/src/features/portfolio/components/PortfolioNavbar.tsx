@@ -1,9 +1,13 @@
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogIn, LogOut } from 'lucide-react';
 import './Portfolio.css';
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../../authentication/store/authStore';
 
 export const PortfolioNavbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
+    const { isAuthenticated, logout, adminUser } = useAuthStore();
 
     const scrollToSection = (id: string) => {
         const element = document.getElementById(id);
@@ -45,6 +49,31 @@ export const PortfolioNavbar = () => {
                     ))}
                 </div>
 
+                {/* Login/Logout Button */}
+                {isAuthenticated ? (
+                    <div className="navbar-auth">
+                        <span className="navbar-user-name">{adminUser?.fullName}</span>
+                        <button
+                            onClick={() => {
+                                logout();
+                                navigate('/');
+                            }}
+                            className="navbar-logout"
+                        >
+                            <LogOut size={18} />
+                            Logout
+                        </button>
+                    </div>
+                ) : (
+                    <button
+                        onClick={() => navigate('/admin/login')}
+                        className="navbar-login"
+                    >
+                        <LogIn size={18} />
+                        Login
+                    </button>
+                )}
+
                 {/* Mobile Menu Button */}
                 <button
                     onClick={() => setIsOpen(!isOpen)}
@@ -66,6 +95,35 @@ export const PortfolioNavbar = () => {
                             {item.label}
                         </button>
                     ))}
+                    {isAuthenticated ? (
+                        <>
+                            <div className="navbar-mobile-user">
+                                <span>{adminUser?.fullName}</span>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    logout();
+                                    setIsOpen(false);
+                                    navigate('/');
+                                }}
+                                className="navbar-mobile-logout"
+                            >
+                                <LogOut size={18} />
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                navigate('/admin/login');
+                                setIsOpen(false);
+                            }}
+                            className="navbar-mobile-login"
+                        >
+                            <LogIn size={18} />
+                            Login
+                        </button>
+                    )}
                 </div>
             )}
         </nav>

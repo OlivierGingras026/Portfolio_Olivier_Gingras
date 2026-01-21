@@ -2,6 +2,7 @@ import { useState, useEffect, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuthStore from '../../authentication/store/authStore';
+import './AdminDashboard.css';
 
 // APIs
 import { projectsAPI } from '../../projects/api/projectsAPI';
@@ -22,6 +23,8 @@ export const AdminDashboard = () => {
   const { logout } = useAuthStore();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'projects' | 'work' | 'education' | 'skills' | 'hobbies'>('projects');
+  const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   
   // Data States
   const [projects, setProjects] = useState<Project[]>([]);
@@ -78,39 +81,93 @@ export const AdminDashboard = () => {
     { id: 'hobbies', label: 'Hobbies' },
   ] as const;
 
+  // CRUD Handlers
+  const handleDeleteProject = async (id: string) => {
+    if (window.confirm('Delete this project?')) {
+      try {
+        await projectsAPI.deleteProject(id);
+        setProjects(projects.filter(p => p.projectId !== id));
+      } catch (err) {
+        console.error('Failed to delete project', err);
+      }
+    }
+  };
+
+  const handleDeleteSkill = async (id: string) => {
+    if (window.confirm('Delete this skill?')) {
+      try {
+        await skillsAPI.deleteSkill(id);
+        setSkills(skills.filter(s => s.skillId !== id));
+      } catch (err) {
+        console.error('Failed to delete skill', err);
+      }
+    }
+  };
+
+  const handleDeleteWorkExperience = async (id: string) => {
+    if (window.confirm('Delete this work experience?')) {
+      try {
+        await workExperienceAPI.deleteWorkExperience(id);
+        setWork(work.filter(w => w.workExperienceId !== id));
+      } catch (err) {
+        console.error('Failed to delete work experience', err);
+      }
+    }
+  };
+
+  const handleDeleteEducation = async (id: string) => {
+    if (window.confirm('Delete this education?')) {
+      try {
+        await educationAPI.deleteEducation(id);
+        setEducation(education.filter(e => e.educationId !== id));
+      } catch (err) {
+        console.error('Failed to delete education', err);
+      }
+    }
+  };
+
+  const handleDeleteHobby = async (id: string) => {
+    if (window.confirm('Delete this hobby?')) {
+      try {
+        await hobbiesAPI.deleteHobby(id);
+        setHobbies(hobbies.filter(h => h.hobbyId !== id));
+      } catch (err) {
+        console.error('Failed to delete hobby', err);
+      }
+    }
+  };
+
+  const handleSave = async (data: Record<string, unknown>) => {
+    // Placeholder for now - implement based on activeTab
+    console.log('Saving:', data);
+    setShowModal(false);
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans">
+    <div className="admin-container">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-slate-900 border-r border-slate-800 flex flex-col z-20">
-        <div className="p-6 border-b border-slate-800">
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-            Admin Portal
-          </h1>
+      <aside className="admin-sidebar">
+        <div className="sidebar-header">
+          <h1 className="sidebar-title">Admin Portal</h1>
         </div>
         
-        <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+        <nav className="sidebar-nav">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between ${
-                activeTab === tab.id
-                  ? 'bg-blue-600/10 text-blue-400 border border-blue-600/20'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
-              }`}
+              className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
             >
-              <span className="font-medium">{tab.label}</span>
-              {activeTab === tab.id && (
-                <motion.div layoutId="active-indicator" className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-              )}
+              <span>{tab.label}</span>
+              {activeTab === tab.id && <div className="nav-indicator"></div>}
             </button>
           ))}
         </nav>
 
-        <div className="p-4 border-t border-slate-800">
+        <div className="sidebar-footer">
           <button
             onClick={handleLogout}
-            className="w-full px-4 py-2 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm font-medium"
+            className="logout-btn"
           >
             Sign Out
           </button>
@@ -118,22 +175,28 @@ export const AdminDashboard = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-64 p-8 min-h-screen">
-        <header className="flex justify-between items-center mb-8">
+      <main className="admin-main">
+        <header className="admin-header">
             <div>
-                 <h2 className="text-2xl font-bold text-white mb-1">
+                 <div className="admin-header-title">
                     {tabs.find(t => t.id === activeTab)?.label}
-                </h2>
-                <p className="text-slate-500 text-sm">Manage your content here.</p>
+                </div>
+                <div className="admin-header-subtitle">Manage your content here.</div>
             </div>
-            <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg shadow-blue-500/20 transition-all text-sm font-medium">
+            <button 
+              onClick={() => {
+                setEditingId(null);
+                setShowModal(true);
+              }}
+              className="add-new-btn"
+            >
                 + Add New
             </button>
         </header>
 
         {loading ? (
-             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+             <div className="loading">
+                <div className="spinner"></div>
              </div>
         ) : (
             <AnimatePresence mode="wait">
@@ -144,83 +207,218 @@ export const AdminDashboard = () => {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
                 >
-                    {activeTab === 'projects' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="content-container">
+                        {activeTab === 'projects' && (
+                            <>
                             {projects.map(item => (
-                                <Card key={item.projectId} title={item.title} subtitle={item.url}>
-                                    <p className="line-clamp-3 text-sm text-slate-400">{item.description}</p>
-                                </Card>
+                                <AdminCard 
+                                  key={item.projectId} 
+                                  title={item.title} 
+                                  subtitle={item.url}
+                                  onEdit={() => {
+                                    setEditingId(item.projectId);
+                                    setShowModal(true);
+                                  }}
+                                  onDelete={() => handleDeleteProject(item.projectId)}
+                                >
+                                    <p className="card-description">{item.description}</p>
+                                </AdminCard>
                             ))}
-                        </div>
-                    )}
-                    {activeTab === 'skills' && (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            </>
+                        )}
+                        {activeTab === 'skills' && (
+                            <>
                             {skills.map(item => (
-                                <Card key={item.skillId} title={item.title}>
-                                    <p className="text-xs text-slate-500">{item.description}</p>
-                                </Card>
+                                <AdminCard 
+                                  key={item.skillId} 
+                                  title={item.title}
+                                  onEdit={() => {
+                                    setEditingId(item.skillId);
+                                    setShowModal(true);
+                                  }}
+                                  onDelete={() => handleDeleteSkill(item.skillId)}
+                                >
+                                    <p className="card-description">{item.description}</p>
+                                </AdminCard>
                             ))}
-                        </div>
-                    )}
-                    {activeTab === 'work' && (
-                        <div className="space-y-4">
+                            </>
+                        )}
+                        {activeTab === 'work' && (
+                            <>
                             {work.map(item => (
-                                <div key={item.workExperienceId} className="bg-slate-900 border border-slate-800 p-6 rounded-xl hover:border-slate-700 transition-colors">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div>
-                                            <h3 className="text-lg font-bold text-white">{item.position}</h3>
-                                            <div className="text-blue-400 text-sm">{item.company}</div>
+                                <div key={item.workExperienceId} className="card" style={{ gridColumn: '1 / -1' }}>
+                                    <div className="card-header">
+                                        <div style={{ flex: 1 }}>
+                                            <div className="card-title">{item.position}</div>
+                                            <div style={{ color: '#60a5fa', fontSize: '0.875rem' }}>{item.company}</div>
                                         </div>
-                                        <div className="bg-slate-800 px-3 py-1 rounded text-xs text-slate-400">
-                                            {item.startDate} - {item.isCurrent ? "Present" : item.endDate}
+                                        <div className="card-actions">
+                                            <button 
+                                              className="card-action-btn edit"
+                                              onClick={() => {
+                                                setEditingId(item.workExperienceId);
+                                                setShowModal(true);
+                                              }}
+                                            >
+                                              ✏️
+                                            </button>
+                                            <button 
+                                              className="card-action-btn delete"
+                                              onClick={() => handleDeleteWorkExperience(item.workExperienceId)}
+                                            >
+                                              🗑️
+                                            </button>
                                         </div>
                                     </div>
-                                    <p className="text-slate-400 text-sm">{item.description}</p>
+                                    <span className="card-meta">
+                                        {item.startDate} - {item.isCurrent ? "Present" : item.endDate}
+                                    </span>
+                                    <p className="card-description" style={{ marginTop: '0.5rem' }}>{item.description}</p>
                                 </div>
                             ))}
-                        </div>
-                    )}
-                    {activeTab === 'education' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            </>
+                        )}
+                        {activeTab === 'education' && (
+                            <>
                             {education.map(item => (
-                                <Card key={item.educationId} title={item.school} subtitle={item.degree}>
-                                    <p className="text-xs text-slate-500 mb-2">{item.startDate} - {item.isCurrentlyStudying ? 'Present' : item.endDate}</p>
-                                    <p className="text-sm text-slate-400">{item.description}</p>
-                                </Card>
-                            ))}
-                        </div>
-                    )}
-                    {activeTab === 'hobbies' && (
-                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {hobbies.map(item => (
-                                <Card key={item.hobbyId} title={item.title}>
-                                    <div className="aspect-square bg-slate-800 rounded-lg mb-3 overflow-hidden">
-                                        {item.imageUrl && <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />}
+                                <AdminCard 
+                                  key={item.educationId} 
+                                  title={item.school} 
+                                  subtitle={item.degree}
+                                  onEdit={() => {
+                                    setEditingId(item.educationId);
+                                    setShowModal(true);
+                                  }}
+                                  onDelete={() => handleDeleteEducation(item.educationId)}
+                                >
+                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.5rem' }}>
+                                      {item.startDate} - {item.isCurrentlyStudying ? 'Present' : item.endDate}
                                     </div>
-                                    <p className="text-xs text-slate-500">{item.description}</p>
-                                </Card>
+                                    <p className="card-description">{item.description}</p>
+                                </AdminCard>
                             ))}
-                       </div>
-                    )}
+                            </>
+                        )}
+                        {activeTab === 'hobbies' && (
+                            <>
+                            {hobbies.map(item => (
+                                <AdminCard 
+                                  key={item.hobbyId} 
+                                  title={item.title}
+                                  onEdit={() => {
+                                    setEditingId(item.hobbyId);
+                                    setShowModal(true);
+                                  }}
+                                  onDelete={() => handleDeleteHobby(item.hobbyId)}
+                                >
+                                    <div className="card-image">
+                                        {item.imageUrl && <img src={item.imageUrl} alt={item.title} />}
+                                    </div>
+                                    <p className="card-description">{item.description}</p>
+                                </AdminCard>
+                            ))}
+                            </>
+                        )}
+                    </div>
                 </motion.div>
             </AnimatePresence>
         )}
       </main>
+
+      {showModal && (
+        <ModalForm
+          activeTab={activeTab}
+          editingId={editingId}
+          onClose={() => {
+            setShowModal(false);
+            setEditingId(null);
+          }}
+          onSave={handleSave}
+        />
+      )}
     </div>
   );
 };
 
-const Card = ({ title, subtitle, children }: { title: string, subtitle?: string, children: ReactNode }) => (
-    <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl hover:border-slate-700 transition-colors group">
-        <div className="flex justify-between items-start mb-3">
-             <div className="flex-1">
-                <h3 className="font-semibold text-white group-hover:text-blue-400 transition-colors">{title}</h3>
-                {subtitle && <div className="text-xs text-slate-500 font-mono mt-1">{subtitle}</div>}
+const AdminCard = ({ 
+  title, 
+  subtitle, 
+  children,
+  onEdit,
+  onDelete
+}: { 
+  title: string, 
+  subtitle?: string, 
+  children: ReactNode,
+  onEdit: () => void,
+  onDelete: () => void
+}) => (
+    <div className="card">
+        <div className="card-header">
+             <div>
+                <div className="card-title">{title}</div>
+                {subtitle && <div className="card-subtitle">{subtitle}</div>}
              </div>
-             <button className="text-slate-600 hover:text-white transition-colors">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-             </button>
+             <div className="card-actions">
+                <button className="card-action-btn edit" onClick={onEdit}>✏️</button>
+                <button className="card-action-btn delete" onClick={onDelete}>🗑️</button>
+             </div>
         </div>
-        <div>{children}</div>
+        <div className="card-body">{children}</div>
     </div>
 );
+
+const ModalForm = ({ 
+  activeTab, 
+  editingId, 
+  onClose, 
+  onSave 
+}: {
+  activeTab: string,
+  editingId: string | null,
+  onClose: () => void,
+  onSave: (data: Record<string, unknown>) => void
+}) => {
+  const [formData, setFormData] = useState<Record<string, unknown>>({});
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <span>{editingId ? 'Edit' : 'Add New'} {activeTab}</span>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        
+        <div className="form-group">
+          <label className="form-label">Title</label>
+          <input 
+            type="text"
+            className="form-input"
+            placeholder="Enter title"
+            value={(formData.title as string) || ''}
+            onChange={(e) => setFormData({...formData, title: e.target.value})}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Description</label>
+          <textarea
+            className="form-textarea"
+            placeholder="Enter description"
+            value={(formData.description as string) || ''}
+            onChange={(e) => setFormData({...formData, description: e.target.value})}
+          />
+        </div>
+
+        <div className="form-actions">
+          <button className="form-btn form-btn-primary" onClick={() => onSave(formData)}>
+            Save
+          </button>
+          <button className="form-btn form-btn-secondary" onClick={onClose}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
