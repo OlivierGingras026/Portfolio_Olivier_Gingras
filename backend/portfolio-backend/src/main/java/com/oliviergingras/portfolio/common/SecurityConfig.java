@@ -40,11 +40,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         // Public endpoints - MUST BE FIRST
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/v1/contact/send").permitAll()
+                        .requestMatchers("/api/v1/reachme").permitAll()
                         .requestMatchers("/api/admin/auth/login").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // All other admin endpoints require authentication
                         .requestMatchers("/api/admin/**").authenticated()
+                        .requestMatchers("/api/v1/contact").authenticated()
+                        .requestMatchers("/api/v1/contact/**").authenticated()
 
                         // Everything else requires authentication
                         .anyRequest().authenticated()

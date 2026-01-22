@@ -45,12 +45,14 @@ export const WorkExperienceSection = () => {
               viewport={{ once: true }}
               className="work-experience-item"
             >
-              <h3 className="work-position">{work.position}</h3>
-              <h4 className="work-company">{work.company}</h4>
-              <div className="work-dates">
-                {work.startDate} — {work.isCurrent ? 'Present' : work.endDate}
+              <div className="work-experience-content">
+                <h3 className="work-position">{work.position}</h3>
+                <h4 className="work-company">{work.company}</h4>
+                <div className="work-dates">
+                  {work.startDate} — {work.isCurrent ? 'Present' : work.endDate}
+                </div>
+                <p className="work-description">{work.description}</p>
               </div>
-              <p className="work-description">{work.description}</p>
             </motion.div>
           ))}
         </div>

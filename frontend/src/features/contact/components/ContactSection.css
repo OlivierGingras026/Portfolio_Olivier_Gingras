@@ -1,8 +1,6 @@
 .contact-section {
   width: 100%;
   padding: 100px 20px;
-  background-color: #030712;
-  border-top: 1px solid rgb(30, 41, 59);
 }
 
 .contact-container {
@@ -33,7 +31,7 @@
 }
 
 .contact-title-highlight {
-  background: linear-gradient(to right, rgb(251, 146, 60), rgb(168, 85, 247), rgb(59, 130, 246));
+  background: linear-gradient(to right, rgb(59, 130, 246), rgb(99, 102, 241), rgb(139, 92, 246));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -72,15 +70,15 @@
   gap: 20px;
   padding: 24px;
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.4) 100%);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 12px;
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .contact-card:hover {
-  border-color: rgba(59, 130, 246, 0.5);
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.6) 100%);
+  border-color: rgba(59, 130, 246, 0.6);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
   box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
 }
 
@@ -91,8 +89,8 @@
   width: 48px;
   height: 48px;
   border-radius: 8px;
-  background: linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
-  color: rgb(251, 146, 60);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+  color: rgb(59, 130, 246);
   flex-shrink: 0;
 }
 
@@ -213,7 +211,7 @@
 
 .contact-submit {
   padding: 14px 24px;
-  background: linear-gradient(to right, rgb(251, 146, 60), rgb(168, 85, 247));
+  background: linear-gradient(to right, rgb(59, 130, 246), rgb(99, 102, 241), rgb(139, 92, 246));
   color: white;
   border: none;
   border-radius: 8px;
@@ -230,7 +228,7 @@
 
 .contact-submit:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(251, 146, 60, 0.25);
+  box-shadow: 0 12px 24px rgba(59, 130, 246, 0.25);
 }
 
 .contact-submit:disabled {
@@ -297,6 +295,16 @@
 .contact-copyright {
   font-size: 14px;
   color: rgb(107, 114, 128);
+}
+
+.form-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgb(239, 68, 68);
+  color: rgb(239, 68, 68);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
 }
 
 /* Responsive */

@@ -18,6 +18,7 @@ import { skillsAPI } from '../../skills/api/skillsAPI';
 import { workExperienceAPI } from '../../workExperience/api/workExperienceAPI';
 import { educationAPI } from '../../education/api/educationAPI';
 import { hobbiesAPI } from '../../hobbies/api/hobbiesAPI';
+import { contactAPI, reachMeAPI, type ContactMessage, type ReachMeProfile } from '../../contact/api/contactAPI';
 import { authAPI } from '../../authentication/api/authAPI';
 
 // Types
@@ -40,7 +41,7 @@ import { DeleteEducationModal } from '../../education/components/DeleteEducation
 export const AdminDashboard = () => {
   const { logout } = useAuthStore();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'projects' | 'work' | 'education' | 'skills' | 'hobbies'>('projects');
+  const [activeTab, setActiveTab] = useState<'projects' | 'work' | 'education' | 'skills' | 'hobbies' | 'contact' | 'reachme'>('projects');
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'add' | 'edit' | 'delete'>('add');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -54,23 +55,32 @@ export const AdminDashboard = () => {
   const [work, setWork] = useState<WorkExperience[]>([]);
   const [education, setEducation] = useState<Education[]>([]);
   const [hobbies, setHobbies] = useState<Hobby[]>([]);
+  const [messages, setMessages] = useState<ContactMessage[]>([]);
+  const [profileData, setProfileData] = useState<ReachMeProfile | null>(null);
+  const [reachmeEditForm, setReachmeEditForm] = useState({ email: '', basedIn: '', availabilityStatus: '' });
+  const [isEditingReachme, setIsEditingReachme] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchAllData = useCallback(async () => {
     setLoading(true);
     try {
-      const [p, s, w, e, h] = await Promise.all([
+      const [p, s, w, e, h, msgs, prof] = await Promise.all([
         projectsAPI.getAllProjects(),
         skillsAPI.getAllSkills(),
         workExperienceAPI.getAllWorkExperiences(),
         educationAPI.getAllEducation(),
-        hobbiesAPI.getAllHobbies()
+        hobbiesAPI.getAllHobbies(),
+        contactAPI.getAllMessages(),
+        reachMeAPI.getProfile()
       ]);
       setProjects(p);
       setSkills(s);
       setWork(w);
       setEducation(e);
       setHobbies(h);
+      setMessages(msgs);
+      setProfileData(prof);
+      setReachmeEditForm({ email: prof.email, basedIn: prof.basedIn, availabilityStatus: prof.availabilityStatus });
     } catch (err) {
       console.error("Failed to load data", err);
       try {
@@ -142,6 +152,8 @@ export const AdminDashboard = () => {
     { id: 'education', label: 'Education' },
     { id: 'skills', label: 'Skills' },
     { id: 'hobbies', label: 'Hobbies' },
+    { id: 'contact', label: 'Messages' },
+    { id: 'reachme', label: 'Profile' },
   ] as const;
 
   // CRUD Handlers
@@ -178,6 +190,38 @@ export const AdminDashboard = () => {
     setDeletingTitle(title);
     setModalType('delete');
     setShowModal(true);
+  };
+
+  const handleDeleteMessage = async (id: string) => {
+    try {
+      await contactAPI.deleteMessage(id);
+      setMessages(messages.filter(m => m.messageId !== id));
+    } catch (err) {
+      console.error("Failed to delete message", err);
+    }
+  };
+
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      await contactAPI.markAsRead(id);
+      setMessages(messages.map(m => m.messageId === id ? { ...m, isRead: true } : m));
+    } catch (err) {
+      console.error("Failed to mark message as read", err);
+    }
+  };
+
+  const handleSaveReachme = async () => {
+    try {
+      await reachMeAPI.updateProfile({
+        email: reachmeEditForm.email,
+        basedIn: reachmeEditForm.basedIn,
+        availabilityStatus: reachmeEditForm.availabilityStatus
+      });
+      setIsEditingReachme(false);
+      fetchAllData();
+    } catch (err) {
+      console.error("Failed to update profile", err);
+    }
   };
 
   return (
@@ -220,12 +264,14 @@ export const AdminDashboard = () => {
                 </div>
                 <div className="admin-header-subtitle">Manage your content here.</div>
             </div>
-            <button 
-              onClick={() => handleOpenModal()}
-              className="add-new-btn"
-            >
-                + Add New
-            </button>
+            {activeTab !== 'contact' && activeTab !== 'reachme' && (
+                <button 
+                  onClick={() => handleOpenModal()}
+                  className="add-new-btn"
+                >
+                    + Add New
+                </button>
+            )}
         </header>
 
         {loading ? (
@@ -284,14 +330,16 @@ export const AdminDashboard = () => {
                                             <button 
                                               className="card-action-btn edit"
                                               onClick={() => handleOpenModal(item.workExperienceId)}
+                                              title="Edit"
                                             >
-                                              ✏️
+                                              Edit
                                             </button>
                                             <button 
                                               className="card-action-btn delete"
                                               onClick={() => handleDeleteWorkExperience(item.workExperienceId, item.position)}
+                                              title="Delete"
                                             >
-                                              🗑️
+                                              Delete
                                             </button>
                                         </div>
                                     </div>
@@ -337,6 +385,131 @@ export const AdminDashboard = () => {
                                 </AdminCard>
                             ))}
                             </>
+                        )}
+                        {activeTab === 'contact' && (
+                            <>
+                            {messages.length === 0 ? (
+                                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+                                    No messages yet
+                                </div>
+                            ) : (
+                                messages.map(item => (
+                                    <div key={item.messageId} className="card" style={{ gridColumn: '1 / -1' }}>
+                                        <div className="card-header">
+                                            <div style={{ flex: 1 }}>
+                                                <div className="card-title">{item.name}</div>
+                                                <span className="card-meta">{item.email}</span>
+                                            </div>
+                                            {!item.isRead && <span style={{ color: '#22c55e', fontSize: '0.75rem' }}>NEW</span>}
+                                        </div>
+                                        <p className="card-description" style={{ marginTop: '1rem', marginBottom: '1rem' }}>{item.message}</p>
+                                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '1rem' }}>
+                                            {new Date(item.createdAt).toLocaleString()}
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            {!item.isRead && (
+                                                <button 
+                                                    onClick={() => handleMarkAsRead(item.messageId)}
+                                                    className="btn-secondary"
+                                                    style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                                                >
+                                                    Mark as Read
+                                                </button>
+                                            )}
+                                            <button 
+                                                onClick={() => handleDeleteMessage(item.messageId)}
+                                                className="btn-secondary"
+                                                style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#ef4444' }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                            </>
+                        )}
+                        {activeTab === 'reachme' && profileData && (
+                            <div className="card" style={{ gridColumn: '1 / -1' }}>
+                                {!isEditingReachme ? (
+                                    <>
+                                        <div className="card-header">
+                                            <h3 className="card-title">Your Contact Information</h3>
+                                            <button 
+                                                onClick={() => setIsEditingReachme(true)}
+                                                className="btn-secondary"
+                                                style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                                            >
+                                                Edit
+                                            </button>
+                                        </div>
+                                        <div style={{ marginTop: '1rem' }}>
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Email</label>
+                                                <p style={{ color: '#fff' }}>{profileData.email}</p>
+                                            </div>
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Location</label>
+                                                <p style={{ color: '#fff' }}>{profileData.basedIn}</p>
+                                            </div>
+                                            <div>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Availability</label>
+                                                <p style={{ color: '#fff' }}>{profileData.availabilityStatus}</p>
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="card-header">
+                                            <h3 className="card-title">Edit Profile</h3>
+                                        </div>
+                                        <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                            <div>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Email</label>
+                                                <input 
+                                                    type="email"
+                                                    value={reachmeEditForm.email}
+                                                    onChange={(e) => setReachmeEditForm({ ...reachmeEditForm, email: e.target.value })}
+                                                    style={{ width: '100%', padding: '0.5rem', backgroundColor: '#1e293b', color: '#fff', border: '1px solid #334155', borderRadius: '0.375rem' }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Location</label>
+                                                <input 
+                                                    type="text"
+                                                    value={reachmeEditForm.basedIn}
+                                                    onChange={(e) => setReachmeEditForm({ ...reachmeEditForm, basedIn: e.target.value })}
+                                                    style={{ width: '100%', padding: '0.5rem', backgroundColor: '#1e293b', color: '#fff', border: '1px solid #334155', borderRadius: '0.375rem' }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Availability Status</label>
+                                                <textarea 
+                                                    value={reachmeEditForm.availabilityStatus}
+                                                    onChange={(e) => setReachmeEditForm({ ...reachmeEditForm, availabilityStatus: e.target.value })}
+                                                    style={{ width: '100%', padding: '0.5rem', backgroundColor: '#1e293b', color: '#fff', border: '1px solid #334155', borderRadius: '0.375rem', minHeight: '100px' }}
+                                                />
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button 
+                                                    onClick={handleSaveReachme}
+                                                    className="btn-secondary"
+                                                    style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', backgroundColor: '#22c55e', color: '#000' }}
+                                                >
+                                                    Save
+                                                </button>
+                                                <button 
+                                                    onClick={() => setIsEditingReachme(false)}
+                                                    className="btn-secondary"
+                                                    style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         )}
                     </div>
                 </motion.div>
@@ -487,8 +660,8 @@ const AdminCard = ({
                 {subtitle && <div className="card-subtitle">{subtitle}</div>}
              </div>
              <div className="card-actions">
-                <button className="card-action-btn edit" onClick={onEdit}>✏️</button>
-                <button className="card-action-btn delete" onClick={onDelete}>🗑️</button>
+                <button className="card-action-btn edit" onClick={onEdit} title="Edit">Edit</button>
+                <button className="card-action-btn delete" onClick={onDelete} title="Delete">Delete</button>
              </div>
         </div>
         <div className="card-body">{children}</div>

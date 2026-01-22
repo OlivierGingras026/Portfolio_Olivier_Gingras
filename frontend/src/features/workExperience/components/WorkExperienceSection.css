@@ -16,46 +16,66 @@
 .work-experience-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  position: relative;
+  padding-left: 60px;
+}
+
+.work-experience-list::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, rgb(34, 197, 94) 0%, rgba(34, 197, 94, 0) 100%);
 }
 
 .work-experience-item {
-  padding: 28px 32px;
-  background: linear-gradient(90deg, rgba(34, 197, 94, 0.08) 0%, rgba(15, 23, 42, 0.9) 100%);
-  border: 1px solid rgb(34, 197, 94);
-  border-left: 4px solid rgb(34, 197, 94);
-  border-radius: 12px;
   position: relative;
-  overflow: hidden;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
 .work-experience-item::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(34, 197, 94), transparent);
-  opacity: 0;
+  left: -60px;
+  top: 28px;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgb(34, 197, 94);
+  border-radius: 50%;
+  background: rgb(15, 23, 42);
+  transition: all 0.3s ease;
 }
 
 .work-experience-item:hover {
-  background: linear-gradient(90deg, rgba(34, 197, 94, 0.15) 0%, rgba(30, 41, 59, 0.8) 100%);
-  border-color: rgb(74, 222, 128);
-  border-left-color: rgb(74, 222, 128);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(30, 41, 59, 0.8) 100%);
+  border-color: rgba(34, 197, 94, 0.6);
   transform: translateX(8px);
-  box-shadow: 0 12px 28px rgba(34, 197, 94, 0.12);
 }
 
 .work-experience-item:hover::before {
-  opacity: 1;
+  width: 32px;
+  height: 32px;
+  left: -64px;
+  top: 24px;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+}
+
+.work-experience-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .work-position {
   font-size: 18px;
   font-weight: 700;
-  margin-bottom: 6px;
   color: #fff;
 }
 
@@ -63,17 +83,16 @@
   font-size: 14px;
   font-weight: 600;
   color: rgb(34, 197, 94);
-  margin-bottom: 8px;
 }
 
 .work-dates {
   font-size: 13px;
   color: rgb(148, 163, 184);
-  margin-bottom: 12px;
 }
 
 .work-description {
   font-size: 14px;
   color: rgb(148, 163, 184);
   line-height: 1.6;
+  margin-top: 8px;
 }

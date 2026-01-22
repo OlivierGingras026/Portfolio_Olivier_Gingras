@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Mail, MapPin, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { contactAPI, reachMeAPI, type ReachMeProfile } from '../api/contactAPI';
 import './ContactSection.css';
 
 export const ContactSection = () => {
@@ -9,8 +10,22 @@ export const ContactSection = () => {
     email: '',
     message: ''
   });
+  const [profileData, setProfileData] = useState<ReachMeProfile | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profile = await reachMeAPI.getProfile();
+        setProfileData(profile);
+      } catch (err) {
+        console.error('Failed to fetch profile:', err);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -23,17 +38,19 @@ export const ContactSection = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await contactAPI.sendMessage(formData);
       setIsSubmitted(true);
       setFormData({ name: '', email: '', message: '' });
       
       // Reset after 3 seconds
       setTimeout(() => setIsSubmitted(false), 3000);
-    } catch (error) {
-      console.error('Failed to send message:', error);
+    } catch (err) {
+      console.error('Failed to send message:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to send message. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +94,7 @@ export const ContactSection = () => {
               </div>
               <div className="contact-card-content">
                 <p className="contact-card-label">Email me at</p>
-                <p className="contact-card-value">hello@alexdev.com</p>
+                <p className="contact-card-value">{profileData?.email || 'Loading...'}</p>
               </div>
               <svg className="contact-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M7 17L17 7M17 7H7M17 7V17" />
@@ -94,7 +111,7 @@ export const ContactSection = () => {
               </div>
               <div className="contact-card-content">
                 <p className="contact-card-label">Based in</p>
-                <p className="contact-card-value">San Francisco, CA</p>
+                <p className="contact-card-value">{profileData?.basedIn || 'Loading...'}</p>
               </div>
             </motion.div>
 
@@ -108,7 +125,7 @@ export const ContactSection = () => {
               </div>
               <div className="contact-card-content">
                 <p className="contact-card-label">Available for work</p>
-                <p className="contact-card-value">Currently accepting new projects. Typical response time: &lt; 24 hours.</p>
+                <p className="contact-card-value">{profileData?.availabilityStatus || 'Loading...'}</p>
               </div>
             </motion.div>
           </motion.div>
@@ -137,6 +154,12 @@ export const ContactSection = () => {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="contact-form">
+                {error && (
+                  <div className="form-error">
+                    {error}
+                  </div>
+                )}
+                
                 <div className="form-row">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
