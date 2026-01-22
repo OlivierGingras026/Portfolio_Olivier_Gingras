@@ -30,7 +30,7 @@ export const WorkExperienceSection = () => {
         <motion.h2 
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.5 }}
           className="work-experience-title"
         >
           Work Experience
@@ -40,9 +40,9 @@ export const WorkExperienceSection = () => {
           {experiences.map((work) => (
             <motion.div
               key={work.workExperienceId}
-              initial={{ opacity: 0 }}
+              initial={false}
               whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.3 }}
               className="work-experience-item"
             >
               <div className="work-experience-content">

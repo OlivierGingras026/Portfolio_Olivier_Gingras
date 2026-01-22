@@ -38,7 +38,7 @@ export const SkillsSection = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.5 }}
           className="skills-header"
         >
           <h2 className="skills-title">Skills & Technologies</h2>
@@ -62,10 +62,9 @@ export const SkillsSection = () => {
               {frontendSkills.map((skill) => (
                 <motion.div
                   key={skill.skillId}
-                  initial={{ opacity: 0 }}
+                  initial={false}
                   whileInView={{ opacity: 1 }}
-                  transition={{ duration: 0.4 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, amount: 0.3 }}
                   className="skill-item"
                 >
                   <div className="skill-header">
@@ -74,9 +73,9 @@ export const SkillsSection = () => {
                   <div className="skill-bar">
                     <motion.div 
                       className="skill-progress"
-                      initial={{ width: 0 }}
+                      initial={false}
                       whileInView={{ width: '100%' }}
-                      viewport={{ once: true }}
+                      viewport={{ once: true, amount: 0.3 }}
                     />
                   </div>
                 </motion.div>
@@ -111,9 +110,9 @@ export const SkillsSection = () => {
                   <div className="skill-bar">
                     <motion.div 
                       className="skill-progress"
-                      initial={{ width: 0 }}
+                      initial={false}
                       whileInView={{ width: '100%' }}
-                      viewport={{ once: true }}
+                      viewport={{ once: true, amount: 0.3 }}
                     />
                   </div>
                 </motion.div>

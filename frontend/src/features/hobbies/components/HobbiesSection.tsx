@@ -30,7 +30,7 @@ export const HobbiesSection = () => {
         <motion.h2 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.5 }}
           className="hobbies-title"
         >
           Interests & Hobbies
@@ -40,9 +40,9 @@ export const HobbiesSection = () => {
           {hobbies.map((hobby) => (
             <motion.div
               key={hobby.hobbyId}
-              initial={{ opacity: 0 }}
+              initial={false}
               whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.3 }}
               className="hobby-card"
             >
               <h3 className="hobby-name">{hobby.title}</h3>

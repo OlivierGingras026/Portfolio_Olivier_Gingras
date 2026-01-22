@@ -63,7 +63,7 @@ export const ContactSection = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.5 }}
           className="contact-header"
         >
           <p className="contact-label">CONTACT</p>
@@ -165,7 +165,6 @@ export const ContactSection = () => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.1 }}
                     className="form-group"
                   >
                     <label htmlFor="name">Name</label>
@@ -184,7 +183,6 @@ export const ContactSection = () => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.2 }}
                     className="form-group"
                   >
                     <label htmlFor="email">Email</label>
@@ -204,7 +202,6 @@ export const ContactSection = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.3 }}
                   className="form-group"
                 >
                   <label htmlFor="message">Message</label>
@@ -223,7 +220,6 @@ export const ContactSection = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.4 }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"

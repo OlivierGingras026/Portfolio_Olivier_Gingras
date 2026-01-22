@@ -11,10 +11,7 @@
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 32px;
-  background: linear-gradient(135deg, #8338ec 0%, #3a86ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #a855f7;
 }
 
 .education-list {
@@ -36,59 +33,59 @@
 }
 
 .education-item {
-  padding: 32px;
-  margin-left: 60px;
-  background-color: rgb(15, 23, 42);
-  border: 1px solid rgba(168, 85, 247, 0.2);
-  border-radius: 12px;
   position: relative;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
 .education-item::before {
   content: '';
   position: absolute;
-  left: -48px;
-  top: 40px;
+  left: -60px;
+  top: 28px;
   width: 24px;
   height: 24px;
-  background-color: #030712;
   border: 3px solid rgb(168, 85, 247);
   border-radius: 50%;
+  background: rgb(15, 23, 42);
+  transition: all 0.3s ease;
 }
 
 .education-item:hover {
-  background-color: rgba(168, 85, 247, 0.05);
-  border-color: rgb(168, 85, 247);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(30, 41, 59, 0.8) 100%);
+  border-color: rgba(168, 85, 247, 0.6);
   transform: translateX(8px);
-  box-shadow: 0 12px 32px rgba(168, 85, 247, 0.12);
 }
 
 .education-item:hover::before {
   width: 32px;
   height: 32px;
-  left: -52px;
-  top: 36px;
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  left: -64px;
+  top: 24px;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
 }
 
 .education-school {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
-  margin-bottom: 8px;
   color: #fff;
 }
 
 .education-degree {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: rgb(168, 85, 247);
-  margin-bottom: 12px;
+  margin-top: 4px;
 }
 
 .education-description {
   font-size: 14px;
   color: rgb(148, 163, 184);
   line-height: 1.6;
+  margin-top: 8px;
 }
 
 @media (max-width: 768px) {

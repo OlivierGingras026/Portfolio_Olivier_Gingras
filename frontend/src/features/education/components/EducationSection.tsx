@@ -30,7 +30,7 @@ export const EducationSection = () => {
                 <motion.h2
                     initial={{ opacity: 0, y: -20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, amount: 0.5 }}
                     className="education-title"
                 >
                     Education
@@ -40,9 +40,9 @@ export const EducationSection = () => {
                     {educationList.map((edu) => (
                         <motion.div
                             key={edu.educationId}
-                            initial={{ opacity: 0 }}
+                            initial={false}
                             whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: true, amount: 0.3 }}
                             className="education-item"
                         >
                             <h3 className="education-school">{edu.school}</h3>

@@ -34,7 +34,7 @@ export const ProjectsSection = () => {
         <motion.div
            initial={{ opacity: 0, y: 20 }}
            whileInView={{ opacity: 1, y: 0 }}
-           viewport={{ once: true }}
+           viewport={{ once: true, amount: 0.5 }}
            className="projects-header"
         >
           <h2 className="projects-title">Featured Projects</h2>
@@ -47,9 +47,9 @@ export const ProjectsSection = () => {
           {projects.map((project, index) => (
             <motion.div
               key={project.projectId}
-              initial={{ opacity: 0 }}
+              initial={false}
               whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.3 }}
               className={`project-item ${index % 2 === 0 ? 'left' : 'right'}`}
             >
               <div className="project-image-wrapper">
@@ -83,10 +83,9 @@ export const ProjectsSection = () => {
 
               <div className="project-info">
                 <motion.div
-                  initial={{ opacity: 0 }}
+                  initial={false}
                   whileInView={{ opacity: 1 }}
-                  transition={{ duration: 0.4 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, amount: 0.3 }}
                   className="project-label"
                 >
                   Featured Project
