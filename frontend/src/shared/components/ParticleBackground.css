@@ -1,0 +1,4 @@
+.particle-background {
+  display: block;
+  filter: blur(0.5px);
+}

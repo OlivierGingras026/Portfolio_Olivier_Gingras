@@ -16,7 +16,8 @@ public interface ProjectRequestMapper {
             @Mapping(source = "requestModel.title", target = "title"),
             @Mapping(source = "requestModel.description", target = "description"),
             @Mapping(source = "requestModel.url", target = "url"),
-            @Mapping(source = "requestModel.imageUrl", target = "imageUrl")
+            @Mapping(source = "requestModel.imageUrl", target = "imageUrl"),
+            @Mapping(source = "requestModel.technologies", target = "technologies")
     })
     Project toEntity(ProjectRequestModel requestModel, ProjectIdentifier projectIdentifier);
 }

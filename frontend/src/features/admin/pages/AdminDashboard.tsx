@@ -1,8 +1,16 @@
-import { useState, useEffect, type ReactNode } from 'react';
+import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuthStore from '../../authentication/store/authStore';
 import './AdminDashboard.css';
+
+// Modal Components - Add
+import { AddProjectModal } from '../../projects/components/AddProjectModal';
+import { AddSkillModal } from '../../skills/components/AddSkillModal';
+import { AddWorkExperienceModal } from '../../workExperience/components/AddWorkExperienceModal';
+import { AddEducationModal } from '../../education/components/AddEducationModal';
+import { AddHobbyModal } from '../../hobbies/components/AddHobbyModal';
+
 
 // APIs
 import { projectsAPI } from '../../projects/api/projectsAPI';
@@ -18,13 +26,27 @@ import type { Skill } from '../../skills/types';
 import type { WorkExperience } from '../../workExperience/types';
 import type { Education } from '../../education/types';
 import type { Hobby } from '../../hobbies/types';
+import { EditProjectModal } from '../../projects/components/EditProjectModal';
+import { DeleteProjectModal } from '../../projects/components/DeleteProjectModal';
+import { EditSkillModal } from '../../skills/components/EditSkillModal';
+import { DeleteSkillModal } from '../../skills/components/DeleteSkillModal';
+import { EditWorkExperienceModal } from '../../workExperience/components/EditWorkExperienceModal';
+import { DeleteWorkExperienceModal } from '../../workExperience/components/DeleteWorkExperienceModal';
+import { EditEducationModal } from '../../education/components/EditEducationModal';
+import { EditHobbyModal } from '../../hobbies/components/EditHobbyModal';
+import { DeleteHobbyModal } from '../../hobbies/components/DeleteHobbyModal';
+import { DeleteEducationModal } from '../../education/components/DeleteEducationModal';
 
 export const AdminDashboard = () => {
   const { logout } = useAuthStore();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'projects' | 'work' | 'education' | 'skills' | 'hobbies'>('projects');
   const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState<'add' | 'edit' | 'delete'>('add');
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingData, setEditingData] = useState<Record<string, unknown> | undefined>(undefined);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deletingTitle, setDeletingTitle] = useState<string>('');
   
   // Data States
   const [projects, setProjects] = useState<Project[]>([]);
@@ -34,43 +56,84 @@ export const AdminDashboard = () => {
   const [hobbies, setHobbies] = useState<Hobby[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchAllData = async () => {
-      setLoading(true);
+  const fetchAllData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [p, s, w, e, h] = await Promise.all([
+        projectsAPI.getAllProjects(),
+        skillsAPI.getAllSkills(),
+        workExperienceAPI.getAllWorkExperiences(),
+        educationAPI.getAllEducation(),
+        hobbiesAPI.getAllHobbies()
+      ]);
+      setProjects(p);
+      setSkills(s);
+      setWork(w);
+      setEducation(e);
+      setHobbies(h);
+    } catch (err) {
+      console.error("Failed to load data", err);
       try {
-        const [p, s, w, e, h] = await Promise.all([
-          projectsAPI.getAllProjects(),
-          skillsAPI.getAllSkills(),
-          workExperienceAPI.getAllWorkExperiences(),
-          educationAPI.getAllEducation(),
-          hobbiesAPI.getAllHobbies()
-        ]);
-        setProjects(p);
-        setSkills(s);
-        setWork(w);
-        setEducation(e);
-        setHobbies(h);
-      } catch (err) {
-        console.error("Failed to load data", err);
-        // If unauthorized, we can double check or logout
-        try {
-            const isValid = await authAPI.verifyToken();
-            if(!isValid) throw new Error("Invalid token");
-        } catch {
-             logout();
-             navigate('/admin/login');
-        }
-      } finally {
-        setLoading(false);
+        const isValid = await authAPI.verifyToken();
+        if (!isValid) throw new Error("Invalid token");
+      } catch {
+        logout();
+        navigate('/admin/login');
       }
-    };
-
-    fetchAllData();
+    }
+    setLoading(false);
   }, [logout, navigate]);
+
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   const handleLogout = async () => {
     await logout();
-    navigate('/admin/login');
+    navigate('/');
+  };
+
+  const handleOpenModal = (id?: string) => {
+    if (id) {
+      setEditingId(id);
+      setModalType('edit');
+      // Fetch the specific item data for editing
+      if (activeTab === 'projects') {
+        const item = projects.find(p => p.projectId === id);
+        setEditingData(item as unknown as Record<string, unknown>);
+      } else if (activeTab === 'skills') {
+        const item = skills.find(s => s.skillId === id);
+        setEditingData(item as unknown as Record<string, unknown>);
+      } else if (activeTab === 'work') {
+        const item = work.find(w => w.workExperienceId === id);
+        setEditingData(item as unknown as Record<string, unknown>);
+      } else if (activeTab === 'education') {
+        const item = education.find(e => e.educationId === id);
+        setEditingData(item as unknown as Record<string, unknown>);
+      } else if (activeTab === 'hobbies') {
+        const item = hobbies.find(h => h.hobbyId === id);
+        setEditingData(item as unknown as Record<string, unknown>);
+      }
+    } else {
+      setEditingId(null);
+      setEditingData(undefined);
+      setModalType('add');
+    }
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setEditingId(null);
+    setEditingData(undefined);
+    setDeletingId(null);
+    setDeletingTitle('');
+    setModalType('add');
+  };
+
+  const handleModalSuccess = () => {
+    fetchAllData();
+    handleCloseModal();
   };
 
   const tabs = [
@@ -82,65 +145,39 @@ export const AdminDashboard = () => {
   ] as const;
 
   // CRUD Handlers
-  const handleDeleteProject = async (id: string) => {
-    if (window.confirm('Delete this project?')) {
-      try {
-        await projectsAPI.deleteProject(id);
-        setProjects(projects.filter(p => p.projectId !== id));
-      } catch (err) {
-        console.error('Failed to delete project', err);
-      }
-    }
+  const handleDeleteProject = async (id: string, title: string) => {
+    setDeletingId(id);
+    setDeletingTitle(title);
+    setModalType('delete');
+    setShowModal(true);
   };
 
-  const handleDeleteSkill = async (id: string) => {
-    if (window.confirm('Delete this skill?')) {
-      try {
-        await skillsAPI.deleteSkill(id);
-        setSkills(skills.filter(s => s.skillId !== id));
-      } catch (err) {
-        console.error('Failed to delete skill', err);
-      }
-    }
+  const handleDeleteSkill = async (id: string, title: string) => {
+    setDeletingId(id);
+    setDeletingTitle(title);
+    setModalType('delete');
+    setShowModal(true);
   };
 
-  const handleDeleteWorkExperience = async (id: string) => {
-    if (window.confirm('Delete this work experience?')) {
-      try {
-        await workExperienceAPI.deleteWorkExperience(id);
-        setWork(work.filter(w => w.workExperienceId !== id));
-      } catch (err) {
-        console.error('Failed to delete work experience', err);
-      }
-    }
+  const handleDeleteWorkExperience = async (id: string, title: string) => {
+    setDeletingId(id);
+    setDeletingTitle(title);
+    setModalType('delete');
+    setShowModal(true);
   };
 
-  const handleDeleteEducation = async (id: string) => {
-    if (window.confirm('Delete this education?')) {
-      try {
-        await educationAPI.deleteEducation(id);
-        setEducation(education.filter(e => e.educationId !== id));
-      } catch (err) {
-        console.error('Failed to delete education', err);
-      }
-    }
+  const handleDeleteEducation = async (id: string, title: string) => {
+    setDeletingId(id);
+    setDeletingTitle(title);
+    setModalType('delete');
+    setShowModal(true);
   };
 
-  const handleDeleteHobby = async (id: string) => {
-    if (window.confirm('Delete this hobby?')) {
-      try {
-        await hobbiesAPI.deleteHobby(id);
-        setHobbies(hobbies.filter(h => h.hobbyId !== id));
-      } catch (err) {
-        console.error('Failed to delete hobby', err);
-      }
-    }
-  };
-
-  const handleSave = async (data: Record<string, unknown>) => {
-    // Placeholder for now - implement based on activeTab
-    console.log('Saving:', data);
-    setShowModal(false);
+  const handleDeleteHobby = async (id: string, title: string) => {
+    setDeletingId(id);
+    setDeletingTitle(title);
+    setModalType('delete');
+    setShowModal(true);
   };
 
   return (
@@ -184,10 +221,7 @@ export const AdminDashboard = () => {
                 <div className="admin-header-subtitle">Manage your content here.</div>
             </div>
             <button 
-              onClick={() => {
-                setEditingId(null);
-                setShowModal(true);
-              }}
+              onClick={() => handleOpenModal()}
               className="add-new-btn"
             >
                 + Add New
@@ -215,11 +249,8 @@ export const AdminDashboard = () => {
                                   key={item.projectId} 
                                   title={item.title} 
                                   subtitle={item.url}
-                                  onEdit={() => {
-                                    setEditingId(item.projectId);
-                                    setShowModal(true);
-                                  }}
-                                  onDelete={() => handleDeleteProject(item.projectId)}
+                                  onEdit={() => handleOpenModal(item.projectId)}
+                                  onDelete={() => handleDeleteProject(item.projectId, item.title)}
                                 >
                                     <p className="card-description">{item.description}</p>
                                 </AdminCard>
@@ -232,11 +263,8 @@ export const AdminDashboard = () => {
                                 <AdminCard 
                                   key={item.skillId} 
                                   title={item.title}
-                                  onEdit={() => {
-                                    setEditingId(item.skillId);
-                                    setShowModal(true);
-                                  }}
-                                  onDelete={() => handleDeleteSkill(item.skillId)}
+                                  onEdit={() => handleOpenModal(item.skillId)}
+                                  onDelete={() => handleDeleteSkill(item.skillId, item.title)}
                                 >
                                     <p className="card-description">{item.description}</p>
                                 </AdminCard>
@@ -255,16 +283,13 @@ export const AdminDashboard = () => {
                                         <div className="card-actions">
                                             <button 
                                               className="card-action-btn edit"
-                                              onClick={() => {
-                                                setEditingId(item.workExperienceId);
-                                                setShowModal(true);
-                                              }}
+                                              onClick={() => handleOpenModal(item.workExperienceId)}
                                             >
                                               ✏️
                                             </button>
                                             <button 
                                               className="card-action-btn delete"
-                                              onClick={() => handleDeleteWorkExperience(item.workExperienceId)}
+                                              onClick={() => handleDeleteWorkExperience(item.workExperienceId, item.position)}
                                             >
                                               🗑️
                                             </button>
@@ -285,11 +310,8 @@ export const AdminDashboard = () => {
                                   key={item.educationId} 
                                   title={item.school} 
                                   subtitle={item.degree}
-                                  onEdit={() => {
-                                    setEditingId(item.educationId);
-                                    setShowModal(true);
-                                  }}
-                                  onDelete={() => handleDeleteEducation(item.educationId)}
+                                  onEdit={() => handleOpenModal(item.educationId)}
+                                  onDelete={() => handleDeleteEducation(item.educationId, item.school)}
                                 >
                                     <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.5rem' }}>
                                       {item.startDate} - {item.isCurrentlyStudying ? 'Present' : item.endDate}
@@ -305,11 +327,8 @@ export const AdminDashboard = () => {
                                 <AdminCard 
                                   key={item.hobbyId} 
                                   title={item.title}
-                                  onEdit={() => {
-                                    setEditingId(item.hobbyId);
-                                    setShowModal(true);
-                                  }}
-                                  onDelete={() => handleDeleteHobby(item.hobbyId)}
+                                  onEdit={() => handleOpenModal(item.hobbyId)}
+                                  onDelete={() => handleDeleteHobby(item.hobbyId, item.title)}
                                 >
                                     <div className="card-image">
                                         {item.imageUrl && <img src={item.imageUrl} alt={item.title} />}
@@ -325,15 +344,123 @@ export const AdminDashboard = () => {
         )}
       </main>
 
-      {showModal && (
-        <ModalForm
-          activeTab={activeTab}
+      {/* Projects Modals */}
+      {showModal && activeTab === 'projects' && modalType === 'add' && (
+        <AddProjectModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+        />
+      )}
+      {showModal && activeTab === 'projects' && modalType === 'edit' && (
+        <EditProjectModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
           editingId={editingId}
-          onClose={() => {
-            setShowModal(false);
-            setEditingId(null);
-          }}
-          onSave={handleSave}
+          existingData={editingData}
+        />
+      )}
+      {showModal && activeTab === 'projects' && modalType === 'delete' && (
+        <DeleteProjectModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+          deletingId={deletingId}
+          deletingTitle={deletingTitle}
+        />
+      )}
+
+      {/* Skills Modals */}
+      {showModal && activeTab === 'skills' && modalType === 'add' && (
+        <AddSkillModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+        />
+      )}
+      {showModal && activeTab === 'skills' && modalType === 'edit' && (
+        <EditSkillModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+          editingId={editingId}
+          existingData={editingData}
+        />
+      )}
+      {showModal && activeTab === 'skills' && modalType === 'delete' && (
+        <DeleteSkillModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+          deletingId={deletingId}
+          deletingTitle={deletingTitle}
+        />
+      )}
+
+      {/* Work Experience Modals */}
+      {showModal && activeTab === 'work' && modalType === 'add' && (
+        <AddWorkExperienceModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+        />
+      )}
+      {showModal && activeTab === 'work' && modalType === 'edit' && (
+        <EditWorkExperienceModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+          editingId={editingId}
+          existingData={editingData}
+        />
+      )}
+      {showModal && activeTab === 'work' && modalType === 'delete' && (
+        <DeleteWorkExperienceModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+          deletingId={deletingId}
+          deletingTitle={deletingTitle}
+        />
+      )}
+
+      {/* Education Modals */}
+      {showModal && activeTab === 'education' && modalType === 'add' && (
+        <AddEducationModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+        />
+      )}
+      {showModal && activeTab === 'education' && modalType === 'edit' && (
+        <EditEducationModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+          editingId={editingId}
+          existingData={editingData}
+        />
+      )}
+      {showModal && activeTab === 'education' && modalType === 'delete' && (
+        <DeleteEducationModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+          deletingId={deletingId}
+          deletingTitle={deletingTitle}
+        />
+      )}
+
+      {/* Hobbies Modals */}
+      {showModal && activeTab === 'hobbies' && modalType === 'add' && (
+        <AddHobbyModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+        />
+      )}
+      {showModal && activeTab === 'hobbies' && modalType === 'edit' && (
+        <EditHobbyModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+          editingId={editingId}
+          existingData={editingData}
+        />
+      )}
+      {showModal && activeTab === 'hobbies' && modalType === 'delete' && (
+        <DeleteHobbyModal 
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+          deletingId={deletingId}
+          deletingTitle={deletingTitle}
         />
       )}
     </div>
@@ -367,58 +494,3 @@ const AdminCard = ({
         <div className="card-body">{children}</div>
     </div>
 );
-
-const ModalForm = ({ 
-  activeTab, 
-  editingId, 
-  onClose, 
-  onSave 
-}: {
-  activeTab: string,
-  editingId: string | null,
-  onClose: () => void,
-  onSave: (data: Record<string, unknown>) => void
-}) => {
-  const [formData, setFormData] = useState<Record<string, unknown>>({});
-
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <span>{editingId ? 'Edit' : 'Add New'} {activeTab}</span>
-          <button className="modal-close" onClick={onClose}>×</button>
-        </div>
-        
-        <div className="form-group">
-          <label className="form-label">Title</label>
-          <input 
-            type="text"
-            className="form-input"
-            placeholder="Enter title"
-            value={(formData.title as string) || ''}
-            onChange={(e) => setFormData({...formData, title: e.target.value})}
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">Description</label>
-          <textarea
-            className="form-textarea"
-            placeholder="Enter description"
-            value={(formData.description as string) || ''}
-            onChange={(e) => setFormData({...formData, description: e.target.value})}
-          />
-        </div>
-
-        <div className="form-actions">
-          <button className="form-btn form-btn-primary" onClick={() => onSave(formData)}>
-            Save
-          </button>
-          <button className="form-btn form-btn-secondary" onClick={onClose}>
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};

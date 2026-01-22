@@ -1,79 +1,79 @@
 .work-experience-section {
   width: 100%;
-  padding: 80px 20px;
-  background-color: #030712;
-  border-top: 1px solid rgb(30, 41, 59);
 }
 
 .work-experience-container {
-  max-width: 1280px;
-  margin: 0 auto;
-}
-
-.work-experience-header {
-  text-align: center;
-  margin-bottom: 60px;
+  width: 100%;
 }
 
 .work-experience-title {
-  font-size: 36px;
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 16px;
-}
-
-.work-experience-description {
-  font-size: 16px;
-  color: rgb(148, 163, 184);
-  max-width: 640px;
-  margin: 0 auto;
+  margin-bottom: 32px;
+  color: #22c55e;
 }
 
 .work-experience-list {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  max-width: 800px;
-  margin: 0 auto;
+  gap: 20px;
 }
 
 .work-experience-item {
-  padding: 24px;
-  background-color: rgb(15, 23, 42);
-  border-left: 4px solid rgb(59, 130, 246);
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  padding: 28px 32px;
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.08) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 1px solid rgb(34, 197, 94);
+  border-left: 4px solid rgb(34, 197, 94);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.work-experience-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(34, 197, 94), transparent);
+  opacity: 0;
 }
 
 .work-experience-item:hover {
-  background-color: rgb(30, 41, 59);
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.15) 0%, rgba(30, 41, 59, 0.8) 100%);
+  border-color: rgb(74, 222, 128);
+  border-left-color: rgb(74, 222, 128);
+  transform: translateX(8px);
+  box-shadow: 0 12px 28px rgba(34, 197, 94, 0.12);
+}
+
+.work-experience-item:hover::before {
+  opacity: 1;
 }
 
 .work-position {
   font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 8px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #fff;
 }
 
 .work-company {
   font-size: 14px;
-  color: rgb(96, 165, 250);
+  font-weight: 600;
+  color: rgb(34, 197, 94);
   margin-bottom: 8px;
 }
 
 .work-dates {
-  font-size: 14px;
+  font-size: 13px;
   color: rgb(148, 163, 184);
   margin-bottom: 12px;
 }
 
 .work-description {
   font-size: 14px;
-  color: rgb(203, 213, 225);
-  line-height: 1.6;
-}
-
-.loading-text {
-  text-align: center;
   color: rgb(148, 163, 184);
-  font-size: 16px;
+  line-height: 1.6;
 }

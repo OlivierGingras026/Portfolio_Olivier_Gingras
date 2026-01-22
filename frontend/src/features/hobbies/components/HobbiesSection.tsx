@@ -37,12 +37,11 @@ export const HobbiesSection = () => {
         </motion.h2>
 
         <div className="hobbies-grid">
-          {hobbies.map((hobby, index) => (
+          {hobbies.map((hobby) => (
             <motion.div
               key={hobby.hobbyId}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               className="hobby-card"
             >

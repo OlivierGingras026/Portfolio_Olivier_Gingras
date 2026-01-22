@@ -15,7 +15,6 @@ public class HobbyRequestModel {
     @Size(max = 2000)
     private String description;
 
-    @NotBlank
-    @Size(max = 500)
+    @Size(max = 5000000) // Allow up to 5MB base64 encoded images
     private String imageUrl;
 }

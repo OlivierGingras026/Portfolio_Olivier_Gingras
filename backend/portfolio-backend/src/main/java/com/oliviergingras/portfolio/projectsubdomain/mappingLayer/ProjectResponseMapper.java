@@ -16,7 +16,8 @@ public interface ProjectResponseMapper {
             @Mapping(source = "project.title", target = "title"),
             @Mapping(source = "project.description", target = "description"),
             @Mapping(source = "project.url", target = "url"),
-            @Mapping(source = "project.imageUrl", target = "imageUrl")
+            @Mapping(source = "project.imageUrl", target = "imageUrl"),
+            @Mapping(source = "project.technologies", target = "technologies")
     })
     ProjectResponseModel toResponseModel(Project project);
 

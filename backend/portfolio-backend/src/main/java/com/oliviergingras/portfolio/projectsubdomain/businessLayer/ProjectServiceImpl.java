@@ -54,6 +54,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setDescription(request.getDescription());
         project.setUrl(request.getUrl());
         project.setImageUrl(request.getImageUrl());
+        project.setTechnologies(request.getTechnologies());
 
         Project saved = projectRepository.save(project);
         return projectResponseMapper.toResponseModel(saved);
@@ -68,6 +69,7 @@ public class ProjectServiceImpl implements ProjectService {
         existing.setDescription(request.getDescription());
         existing.setUrl(request.getUrl());
         existing.setImageUrl(request.getImageUrl());
+        existing.setTechnologies(request.getTechnologies());
 
         Project updated = projectRepository.save(existing);
         return projectResponseMapper.toResponseModel(updated);

@@ -10,58 +10,87 @@
   margin: 0 auto;
 }
 
-.hobbies-header {
-  text-align: center;
-  margin-bottom: 60px;
-}
-
 .hobbies-title {
   font-size: 36px;
   font-weight: 700;
-  margin-bottom: 16px;
-}
-
-.hobbies-description {
-  font-size: 16px;
-  color: rgb(148, 163, 184);
-  max-width: 640px;
-  margin: 0 auto;
+  margin-bottom: 60px;
+  text-align: center;
 }
 
 .hobbies-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
 }
 
 .hobby-card {
-  padding: 28px;
-  background-color: rgb(15, 23, 42);
-  border: 1px solid rgb(30, 41, 59);
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  padding: 36px 28px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.4) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 16px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.hobby-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(34, 197, 94), transparent);
+  opacity: 0;
+}
+
+.hobby-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .hobby-card:hover {
-  background-color: rgb(30, 41, 59);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(15, 23, 42, 0.9) 100%);
   border-color: rgb(34, 197, 94);
-  transform: translateY(-4px);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(34, 197, 94, 0.15);
+}
+
+.hobby-card:hover::before {
+  opacity: 1;
+}
+
+.hobby-card:hover::after {
+  opacity: 1;
 }
 
 .hobby-name {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  position: relative;
+  z-index: 1;
 }
 
 .hobby-description {
   font-size: 14px;
   color: rgb(148, 163, 184);
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
 }
 
-.loading-text {
-  text-align: center;
-  color: rgb(148, 163, 184);
-  font-size: 16px;
+@media (max-width: 768px) {
+  .hobbies-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
 }

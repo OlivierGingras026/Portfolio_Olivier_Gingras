@@ -37,12 +37,11 @@ export const EducationSection = () => {
                 </motion.h2>
 
                 <div className="education-list">
-                    {educationList.map((edu, index) => (
+                    {educationList.map((edu) => (
                         <motion.div
                             key={edu.educationId}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
                             viewport={{ once: true }}
                             className="education-item"
                         >
