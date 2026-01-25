@@ -42,6 +42,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/v1/contact/send").permitAll()
                         .requestMatchers("/api/v1/reachme").permitAll()
+                        .requestMatchers("/api/v1/cv").permitAll()
+                        .requestMatchers("/api/v1/cv/download/**").permitAll()
+                        .requestMatchers("/api/v1/testimonials/submit").anonymous()
+                        .requestMatchers("/api/v1/testimonials/approved").permitAll()
                         .requestMatchers("/api/admin/auth/login").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
@@ -49,6 +53,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").authenticated()
                         .requestMatchers("/api/v1/contact").authenticated()
                         .requestMatchers("/api/v1/contact/**").authenticated()
+                        .requestMatchers("/api/v1/cv/upload").authenticated()
+                        .requestMatchers("/api/v1/cv/**").authenticated()
+                        .requestMatchers("/api/v1/testimonials").authenticated()
+                        .requestMatchers("/api/v1/testimonials/pending").authenticated()
+                        .requestMatchers("/api/v1/testimonials/**").authenticated()
 
                         // Everything else requires authentication
                         .anyRequest().authenticated()

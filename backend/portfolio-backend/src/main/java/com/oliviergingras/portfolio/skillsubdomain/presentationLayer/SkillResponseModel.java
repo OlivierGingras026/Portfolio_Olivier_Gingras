@@ -17,5 +17,6 @@ public class SkillResponseModel {
 
     private String description;
 
+    private String type;
 
 }

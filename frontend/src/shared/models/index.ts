@@ -13,6 +13,7 @@ export interface UpdateProjectRequest extends CreateProjectRequest {
 export interface CreateSkillRequest {
   title: string;
   description: string;
+  type: 'frontend' | 'backend' | 'other';
 }
 
 export interface UpdateSkillRequest extends CreateSkillRequest {
@@ -68,6 +69,7 @@ export interface SkillResponse {
   skillId: string;
   title: string;
   description: string;
+  type: string;
 }
 
 export interface WorkExperienceResponse {

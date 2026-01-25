@@ -24,13 +24,10 @@ export const SkillsSection = () => {
 
   if (loading) return <div className="loading-text">Loading...</div>;
 
-  // Group skills by category (Frontend/Backend based on title keywords)
-  const frontendSkills = skills.filter(s => 
-    s.title.toLowerCase().match(/react|typescript|javascript|next|vue|tailwind|css|html|frontend/i)
-  );
-  const backendSkills = skills.filter(s => 
-    s.title.toLowerCase().match(/node|python|java|spring|postgresql|mongodb|backend|database|docker/i)
-  );
+  // Group skills by type
+  const frontendSkills = skills.filter(s => s.type === 'frontend');
+  const backendSkills = skills.filter(s => s.type === 'backend');
+  const otherSkills = skills.filter(s => s.type === 'other');
 
   return (
     <section id="skills" className="skills-section">
@@ -50,7 +47,6 @@ export const SkillsSection = () => {
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
-
             viewport={{ once: true }}
             className="skills-column"
           >
@@ -85,9 +81,8 @@ export const SkillsSection = () => {
 
           {/* Backend Column */}
           <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="skills-column"
           >
@@ -97,6 +92,42 @@ export const SkillsSection = () => {
             </div>
             <div className="skills-list">
               {backendSkills.map((skill) => (
+                <motion.div
+                  key={skill.skillId}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  className="skill-item"
+                >
+                  <div className="skill-header">
+                    <span className="skill-name">{skill.title}</span>
+                  </div>
+                  <div className="skill-bar">
+                    <motion.div 
+                      className="skill-progress"
+                      initial={false}
+                      whileInView={{ width: '100%' }}
+                      viewport={{ once: true, amount: 0.3 }}
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Other Column */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="skills-column"
+          >
+            <div className="column-header">
+              <div className="category-dot other"></div>
+              <h3 className="column-title">Other</h3>
+            </div>
+            <div className="skills-list">
+              {otherSkills.map((skill) => (
                 <motion.div
                   key={skill.skillId}
                   initial={{ opacity: 0 }}

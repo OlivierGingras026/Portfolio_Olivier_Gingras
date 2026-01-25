@@ -1,0 +1,54 @@
+import axiosInstance from "../../../shared/api/axiosInstance";
+
+export interface Testimonial {
+  testimonialId: string;
+  name: string;
+  title: string;
+  company?: string;
+  rating: number;
+  message: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  createdAt: string;
+}
+
+export interface TestimonialRequest {
+  name: string;
+  title: string;
+  company?: string;
+  rating: number;
+  message: string;
+}
+
+export const testimonialAPI = {
+  submitTestimonial: async (data: TestimonialRequest): Promise<Testimonial> => {
+    const response = await axiosInstance.post('/api/v1/testimonials/submit', data);
+    return response.data;
+  },
+
+  getApprovedTestimonials: async (): Promise<Testimonial[]> => {
+    const response = await axiosInstance.get('/api/v1/testimonials/approved');
+    return response.data;
+  },
+
+  getAllTestimonials: async (): Promise<Testimonial[]> => {
+    const response = await axiosInstance.get('/api/v1/testimonials');
+    return response.data;
+  },
+
+  getPendingTestimonials: async (): Promise<Testimonial[]> => {
+    const response = await axiosInstance.get('/api/v1/testimonials/pending');
+    return response.data;
+  },
+
+  approveTestimonial: async (testimonialId: string): Promise<void> => {
+    await axiosInstance.put(`/api/v1/testimonials/${testimonialId}/approve`);
+  },
+
+  rejectTestimonial: async (testimonialId: string): Promise<void> => {
+    await axiosInstance.put(`/api/v1/testimonials/${testimonialId}/reject`);
+  },
+
+  deleteTestimonial: async (testimonialId: string): Promise<void> => {
+    await axiosInstance.delete(`/api/v1/testimonials/${testimonialId}`);
+  }
+};

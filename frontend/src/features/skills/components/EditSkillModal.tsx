@@ -13,12 +13,13 @@ interface EditSkillModalProps {
 export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: EditSkillModalProps) => {
   const [formData, setFormData] = useState<CreateSkillRequest>({
     title: (existingData?.title as string) || '',
-    description: (existingData?.description as string) || ''
+    description: (existingData?.description as string) || '',
+    type: (existingData?.type as 'frontend' | 'backend' | 'other') || 'other'
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (field: keyof CreateSkillRequest, value: string) => {
+  const handleChange = (field: keyof CreateSkillRequest, value: string | ('frontend' | 'backend' | 'other')) => {
     setFormData({ ...formData, [field]: value });
     if (errors[field]) {
       setErrors({ ...errors, [field]: '' });
@@ -29,6 +30,7 @@ export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: 
     const newErrors: Record<string, string> = {};
     if (!formData.title.trim()) newErrors.title = 'Title is required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
+    if (!formData.type) newErrors.type = 'Type is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -69,6 +71,21 @@ export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: 
               disabled={loading}
             />
             {errors.title && <span className="form-error">{errors.title}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Type *</label>
+            <select 
+              className="form-input"
+              value={formData.type}
+              onChange={(e) => handleChange('type', e.target.value as 'frontend' | 'backend' | 'other')}
+              disabled={loading}
+            >
+              <option value="frontend">Frontend</option>
+              <option value="backend">Backend</option>
+              <option value="other">Other</option>
+            </select>
+            {errors.type && <span className="form-error">{errors.type}</span>}
           </div>
 
           <div className="form-group">

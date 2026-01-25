@@ -52,6 +52,17 @@ public class SkillServiceImpl implements SkillService {
         skill.setSkillIdentifier(new SkillIdentifier());
         skill.setTitle(request.getTitle());
         skill.setDescription(request.getDescription());
+        
+        // Set type with null check and conversion
+        if (request.getType() != null && !request.getType().isEmpty()) {
+            try {
+                skill.setType(Skill.SkillType.valueOf(request.getType().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                skill.setType(Skill.SkillType.OTHER);
+            }
+        } else {
+            skill.setType(Skill.SkillType.OTHER);
+        }
 
         Skill saved = skillRepository.save(skill);
         return skillResponseMapper.toResponseModel(saved);
@@ -64,6 +75,17 @@ public class SkillServiceImpl implements SkillService {
 
         existing.setTitle(request.getTitle());
         existing.setDescription(request.getDescription());
+        
+        // Update type with null check and conversion
+        if (request.getType() != null && !request.getType().isEmpty()) {
+            try {
+                existing.setType(Skill.SkillType.valueOf(request.getType().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                existing.setType(Skill.SkillType.OTHER);
+            }
+        } else {
+            existing.setType(Skill.SkillType.OTHER);
+        }
 
         Skill updated = skillRepository.save(existing);
         return skillResponseMapper.toResponseModel(updated);

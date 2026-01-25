@@ -26,5 +26,14 @@ public class Skill {
     @Column(nullable = false, length = 2000)
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SkillType type = SkillType.OTHER;
+
+    public enum SkillType {
+        FRONTEND,
+        BACKEND,
+        OTHER
+    }
 
 }

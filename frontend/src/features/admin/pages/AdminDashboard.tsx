@@ -19,6 +19,8 @@ import { workExperienceAPI } from '../../workExperience/api/workExperienceAPI';
 import { educationAPI } from '../../education/api/educationAPI';
 import { hobbiesAPI } from '../../hobbies/api/hobbiesAPI';
 import { contactAPI, reachMeAPI, type ContactMessage, type ReachMeProfile } from '../../contact/api/contactAPI';
+import { cvAPI, type CVFile } from '../../cv/api/cvAPI';
+import { testimonialAPI, type Testimonial } from '../../testimonials/api/testimonialAPI';
 import { authAPI } from '../../authentication/api/authAPI';
 
 // Types
@@ -41,7 +43,7 @@ import { DeleteEducationModal } from '../../education/components/DeleteEducation
 export const AdminDashboard = () => {
   const { logout } = useAuthStore();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'projects' | 'work' | 'education' | 'skills' | 'hobbies' | 'contact' | 'reachme'>('projects');
+  const [activeTab, setActiveTab] = useState<'projects' | 'work' | 'education' | 'skills' | 'hobbies' | 'contact' | 'reachme' | 'cv' | 'testimonials'>('projects');
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'add' | 'edit' | 'delete'>('add');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -59,6 +61,10 @@ export const AdminDashboard = () => {
   const [profileData, setProfileData] = useState<ReachMeProfile | null>(null);
   const [reachmeEditForm, setReachmeEditForm] = useState({ email: '', basedIn: '', availabilityStatus: '' });
   const [isEditingReachme, setIsEditingReachme] = useState(false);
+  const [cvFile, setCvFile] = useState<CVFile | null>(null);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [pendingTestimonials, setPendingTestimonials] = useState<Testimonial[]>([]);
+  const [cvFileInput, setCvFileInput] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchAllData = useCallback(async () => {
@@ -81,6 +87,27 @@ export const AdminDashboard = () => {
       setMessages(msgs);
       setProfileData(prof);
       setReachmeEditForm({ email: prof.email, basedIn: prof.basedIn, availabilityStatus: prof.availabilityStatus });
+      
+      // Fetch CV separately to handle missing CV gracefully
+      try {
+        const cv = await cvAPI.getActiveCV();
+        setCvFile(cv);
+      } catch {
+        setCvFile(null);
+      }
+      
+      // Fetch testimonials
+      try {
+        const [pending, all] = await Promise.all([
+          testimonialAPI.getPendingTestimonials(),
+          testimonialAPI.getAllTestimonials()
+        ]);
+        setTestimonials(all);
+        setPendingTestimonials(pending);
+      } catch {
+        setTestimonials([]);
+        setPendingTestimonials([]);
+      }
     } catch (err) {
       console.error("Failed to load data", err);
       try {
@@ -154,6 +181,8 @@ export const AdminDashboard = () => {
     { id: 'hobbies', label: 'Hobbies' },
     { id: 'contact', label: 'Messages' },
     { id: 'reachme', label: 'Profile' },
+    { id: 'cv', label: 'CV' },
+    { id: 'testimonials', label: 'Testimonials' },
   ] as const;
 
   // CRUD Handlers
@@ -224,6 +253,55 @@ export const AdminDashboard = () => {
     }
   };
 
+  const handleUploadCV = async () => {
+    if (!cvFileInput) return;
+    try {
+      await cvAPI.uploadCV(cvFileInput);
+      setCvFileInput(null);
+      fetchAllData();
+    } catch (err) {
+      console.error("Failed to upload CV", err);
+    }
+  };
+
+  const handleDeactivateCV = async () => {
+    if (!cvFile) return;
+    try {
+      await cvAPI.deactivateCV(cvFile.cvId);
+      setCvFile(null);
+      fetchAllData();
+    } catch (err) {
+      console.error("Failed to deactivate CV", err);
+    }
+  };
+
+  const handleApproveTestimonial = async (id: string) => {
+    try {
+      await testimonialAPI.approveTestimonial(id);
+      fetchAllData();
+    } catch (err) {
+      console.error("Failed to approve testimonial", err);
+    }
+  };
+
+  const handleRejectTestimonial = async (id: string) => {
+    try {
+      await testimonialAPI.rejectTestimonial(id);
+      fetchAllData();
+    } catch (err) {
+      console.error("Failed to reject testimonial", err);
+    }
+  };
+
+  const handleDeleteTestimonial = async (id: string) => {
+    try {
+      await testimonialAPI.deleteTestimonial(id);
+      fetchAllData();
+    } catch (err) {
+      console.error("Failed to delete testimonial", err);
+    }
+  };
+
   return (
     <div className="admin-container">
       {/* Sidebar */}
@@ -264,7 +342,7 @@ export const AdminDashboard = () => {
                 </div>
                 <div className="admin-header-subtitle">Manage your content here.</div>
             </div>
-            {activeTab !== 'contact' && activeTab !== 'reachme' && (
+            {activeTab !== 'contact' && activeTab !== 'reachme' && activeTab !== 'cv' && activeTab !== 'testimonials' && (
                 <button 
                   onClick={() => handleOpenModal()}
                   className="add-new-btn"
@@ -510,6 +588,150 @@ export const AdminDashboard = () => {
                                     </>
                                 )}
                             </div>
+                        )}
+                        {activeTab === 'cv' && (
+                            <div className="card" style={{ gridColumn: '1 / -1' }}>
+                                <div className="card-header">
+                                    <h3 className="card-title">CV Management</h3>
+                                </div>
+                                <div style={{ marginTop: '1rem' }}>
+                                    {cvFile ? (
+                                        <>
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Active CV</label>
+                                                <p style={{ color: '#fff', fontSize: '0.95rem' }}>{cvFile.fileName}</p>
+                                            </div>
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>File Size</label>
+                                                <p style={{ color: '#fff', fontSize: '0.95rem' }}>{(cvFile.fileSize / 1024).toFixed(2)} KB</p>
+                                            </div>
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Uploaded</label>
+                                                <p style={{ color: '#fff', fontSize: '0.95rem' }}>{new Date(cvFile.uploadedAt).toLocaleString()}</p>
+                                            </div>
+                                            <button 
+                                                onClick={handleDeactivateCV}
+                                                className="btn-secondary"
+                                                style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#ef4444' }}
+                                            >
+                                                Deactivate CV
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <p style={{ color: '#94a3b8' }}>No active CV uploaded yet.</p>
+                                    )}
+                                </div>
+                                <div style={{ marginTop: '2rem', borderTop: '1px solid #334155', paddingTop: '1.5rem' }}>
+                                    <h4 style={{ color: '#fff', marginBottom: '1rem' }}>Upload New CV</h4>
+                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                        <input 
+                                            type="file"
+                                            accept=".pdf,.doc,.docx"
+                                            onChange={(e) => setCvFileInput(e.target.files?.[0] || null)}
+                                            style={{ flex: 1 }}
+                                        />
+                                        <button 
+                                            onClick={handleUploadCV}
+                                            disabled={!cvFileInput}
+                                            className="btn-secondary"
+                                            style={{ 
+                                                padding: '0.5rem 1rem', 
+                                                fontSize: '0.875rem',
+                                                backgroundColor: cvFileInput ? '#22c55e' : '#64748b',
+                                                color: cvFileInput ? '#000' : '#94a3b8',
+                                                cursor: cvFileInput ? 'pointer' : 'not-allowed'
+                                            }}
+                                        >
+                                            Upload
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {activeTab === 'testimonials' && (
+                            <>
+                                {pendingTestimonials.length > 0 && (
+                                    <div style={{ gridColumn: '1 / -1' }}>
+                                        <h3 style={{ color: '#fff', marginBottom: '1rem', fontSize: '1rem' }}>Pending Testimonials</h3>
+                                        {pendingTestimonials.map(testimonial => (
+                                            <div key={testimonial.testimonialId} className="card" style={{ gridColumn: '1 / -1', marginBottom: '1rem' }}>
+                                                <div className="card-header">
+                                                    <div style={{ flex: 1 }}>
+                                                        <div className="card-title">{testimonial.name}</div>
+                                                        <span className="card-meta">{testimonial.title} {testimonial.company && `at ${testimonial.company}`}</span>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                        {[...Array(testimonial.rating)].map((_, i) => (
+                                                            <span key={i} style={{ color: '#f59e0b' }}>★</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <p className="card-description" style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>{testimonial.message}</p>
+                                                <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '1rem' }}>
+                                                    {new Date(testimonial.createdAt).toLocaleString()}
+                                                </div>
+                                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                    <button 
+                                                        onClick={() => handleApproveTestimonial(testimonial.testimonialId)}
+                                                        className="btn-secondary"
+                                                        style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', backgroundColor: '#22c55e', color: '#000' }}
+                                                    >
+                                                        Approve
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleRejectTestimonial(testimonial.testimonialId)}
+                                                        className="btn-secondary"
+                                                        style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#ef4444' }}
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {testimonials.length === 0 ? (
+                                    <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+                                        No testimonials yet
+                                    </div>
+                                ) : (
+                                    <>
+                                        {pendingTestimonials.length > 0 && <div style={{ gridColumn: '1 / -1', margin: '1.5rem 0', borderTop: '1px solid #334155' }} />}
+                                        <div style={{ gridColumn: '1 / -1' }}>
+                                            {pendingTestimonials.length > 0 && <h3 style={{ color: '#fff', marginBottom: '1rem', fontSize: '1rem', marginTop: '1.5rem' }}>All Testimonials</h3>}
+                                            {testimonials.map(testimonial => (
+                                                <div key={testimonial.testimonialId} className="card" style={{ gridColumn: '1 / -1', marginBottom: '1rem' }}>
+                                                    <div className="card-header">
+                                                        <div style={{ flex: 1 }}>
+                                                            <div className="card-title">{testimonial.name}</div>
+                                                            <span className="card-meta">{testimonial.title} {testimonial.company && `at ${testimonial.company}`}</span>
+                                                            <span style={{ marginLeft: '1rem', fontSize: '0.75rem', color: testimonial.status === 'APPROVED' ? '#22c55e' : testimonial.status === 'REJECTED' ? '#ef4444' : '#f59e0b' }}>
+                                                                {testimonial.status}
+                                                            </span>
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                            {[...Array(testimonial.rating)].map((_, i) => (
+                                                                <span key={i} style={{ color: '#f59e0b' }}>★</span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <p className="card-description" style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>{testimonial.message}</p>
+                                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '1rem' }}>
+                                                        {new Date(testimonial.createdAt).toLocaleString()}
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => handleDeleteTestimonial(testimonial.testimonialId)}
+                                                        className="btn-secondary"
+                                                        style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#ef4444' }}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </>
                         )}
                     </div>
                 </motion.div>

@@ -5,6 +5,8 @@ import { WorkExperienceSection } from '../../workExperience/components/WorkExper
 import { EducationSection } from '../../education/components/EducationSection';
 import { HobbiesSection } from '../../hobbies/components/HobbiesSection';
 import { ContactSection } from '../../contact/components/ContactSection';
+import { CVSection } from '../../cv/components/CVSection';
+import { TestimonialsSection } from '../../testimonials/components/TestimonialsSection';
 import { PortfolioNavbar } from '../components/PortfolioNavbar';
 import { HeroSection } from '../components/HeroSection';
 import { ParticleBackground } from '../../../shared/components/ParticleBackground';
@@ -16,9 +18,15 @@ export const PortfolioHome = () => {
             <PortfolioNavbar />
             
             <main style={{ position: 'relative', zIndex: 1 }}>
-                <HeroSection />
-                <SkillsSection />
-                <ProjectsSection />
+                <div id="home">
+                    <HeroSection />
+                </div>
+                <div id="skills">
+                    <SkillsSection />
+                </div>
+                <div id="projects">
+                    <ProjectsSection />
+                </div>
                 
                 {/* Experience and Education Side by Side */}
                 <div style={{
@@ -29,12 +37,26 @@ export const PortfolioHome = () => {
                     margin: '0 auto',
                     padding: '60px 40px'
                 }}>
-                    <WorkExperienceSection />
-                    <EducationSection />
+                    <div id="experience">
+                        <WorkExperienceSection />
+                    </div>
+                    <div id="education">
+                        <EducationSection />
+                    </div>
                 </div>
                 
-                <HobbiesSection />
-                <ContactSection />
+                <div id="hobbies">
+                    <HobbiesSection />
+                </div>
+                <div id="testimonials">
+                    <TestimonialsSection />
+                </div>
+                <div id="cv">
+                    <CVSection />
+                </div>
+                <div id="contact">
+                    <ContactSection />
+                </div>
             </main>
         </div>
     );

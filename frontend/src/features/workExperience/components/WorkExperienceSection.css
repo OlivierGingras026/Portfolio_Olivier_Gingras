@@ -10,7 +10,11 @@
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 32px;
-  color: #22c55e;
+  color: #3b82f6;
+}
+
+.work-experience-title-white {
+  color: #ffffff !important;
 }
 
 .work-experience-list {
@@ -28,14 +32,14 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(180deg, rgb(34, 197, 94) 0%, rgba(34, 197, 94, 0) 100%);
+  background: linear-gradient(180deg, rgb(59, 130, 246) 0%, rgba(59, 130, 246, 0) 100%);
 }
 
 .work-experience-item {
   position: relative;
   padding: 24px 28px;
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 12px;
   transition: all 0.3s ease;
 }
@@ -47,15 +51,15 @@
   top: 28px;
   width: 24px;
   height: 24px;
-  border: 3px solid rgb(34, 197, 94);
+  border: 3px solid rgb(59, 130, 246);
   border-radius: 50%;
   background: rgb(15, 23, 42);
   transition: all 0.3s ease;
 }
 
 .work-experience-item:hover {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(30, 41, 59, 0.8) 100%);
-  border-color: rgba(34, 197, 94, 0.6);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(30, 41, 59, 0.8) 100%);
+  border-color: rgba(59, 130, 246, 0.6);
   transform: translateX(8px);
 }
 
@@ -64,7 +68,7 @@
   height: 32px;
   left: -64px;
   top: 24px;
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
 }
 
 .work-experience-content {
@@ -82,7 +86,7 @@
 .work-company {
   font-size: 14px;
   font-weight: 600;
-  color: rgb(34, 197, 94);
+  color: rgb(59, 130, 246);
 }
 
 .work-dates {

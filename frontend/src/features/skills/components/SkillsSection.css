@@ -59,6 +59,10 @@
   background: linear-gradient(135deg, #8338EC, #3A86FF);
 }
 
+.category-dot.other {
+  background: linear-gradient(135deg, #06FFA5, #00D4FF);
+}
+
 .column-title {
   font-size: 24px;
   font-weight: 600;

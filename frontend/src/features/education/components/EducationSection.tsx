@@ -31,7 +31,7 @@ export const EducationSection = () => {
                     initial={{ opacity: 0, y: -20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.5 }}
-                    className="education-title"
+                    className="education-title education-title-white"
                 >
                     Education
                 </motion.h2>

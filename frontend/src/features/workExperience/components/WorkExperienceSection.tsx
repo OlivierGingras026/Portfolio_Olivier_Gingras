@@ -31,7 +31,7 @@ export const WorkExperienceSection = () => {
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          className="work-experience-title"
+          className="work-experience-title work-experience-title-white"
         >
           Work Experience
         </motion.h2>
