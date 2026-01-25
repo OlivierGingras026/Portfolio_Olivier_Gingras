@@ -1,5 +1,5 @@
 services:
-  # Backend Service
+  # Backend Service (serves both API and Frontend)
   - type: web
     name: portfolio-backend
     runtime: docker
@@ -24,12 +24,3 @@ services:
         sync: false
       - key: JWT_EXPIRATION_MS
         value: '86400000'
-
-  # Frontend Service
-  - type: static
-    name: portfolio-frontend
-    staticPublishPath: ./frontend/dist
-    buildCommand: cd frontend && npm install && npm run build
-    routes:
-      - path: /
-        destination: /index.html
