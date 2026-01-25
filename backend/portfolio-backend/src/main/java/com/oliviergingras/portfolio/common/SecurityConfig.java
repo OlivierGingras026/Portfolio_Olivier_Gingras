@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
                         // Public endpoints - MUST BE FIRST
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/v1/contact/send").permitAll()
                         .requestMatchers("/api/v1/reachme").permitAll()
