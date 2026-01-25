@@ -53,3 +53,4 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate   # safer for prod
+    open-in-view: false

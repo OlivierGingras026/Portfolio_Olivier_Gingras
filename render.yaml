@@ -1,0 +1,35 @@
+services:
+  # Backend Service
+  - type: web
+    name: portfolio-backend
+    runtime: docker
+    dockerfilePath: ./backend/portfolio-backend/Dockerfile
+    region: oregon
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        scope: run
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        scope: run
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        scope: run
+        sync: false
+      - key: JWT_SECRET
+        scope: run
+        sync: false
+      - key: JWT_EXPIRATION_MS
+        value: '86400000'
+
+  # Frontend Service
+  - type: static
+    name: portfolio-frontend
+    staticPublishPath: ./frontend/dist
+    buildCommand: cd frontend && npm install && npm run build
+    routes:
+      - path: /
+        destination: /index.html
