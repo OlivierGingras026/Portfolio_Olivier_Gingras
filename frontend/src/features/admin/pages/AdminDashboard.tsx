@@ -72,6 +72,7 @@ export const AdminDashboard = () => {
   const fetchAllData = useCallback(async () => {
     setLoading(true);
     try {
+      console.log('[fetchAllData] Starting data fetch');
       const [p, s, w, e, h, msgs, prof] = await Promise.all([
         projectsAPI.getAllProjects(),
         skillsAPI.getAllSkills(),
@@ -81,6 +82,7 @@ export const AdminDashboard = () => {
         contactAPI.getAllMessages(),
         reachMeAPI.getProfile()
       ]);
+      console.log('[fetchAllData] Fetched data:', { projects: p.length, skills: s.length, work: w.length, education: e.length, hobbies: h.length, messages: msgs.length });
       setProjects(p);
       setSkills(s);
       setWork(w);
@@ -110,6 +112,7 @@ export const AdminDashboard = () => {
         setTestimonials([]);
         setPendingTestimonials([]);
       }
+      console.log('[fetchAllData] Data update complete');
     } catch (err) {
       console.error("Failed to load data", err);
       try {
@@ -170,8 +173,10 @@ export const AdminDashboard = () => {
     setModalType('add');
   };
 
-  const handleModalSuccess = () => {
-    fetchAllData();
+  const handleModalSuccess = async () => {
+    console.log('[AdminDashboard] Modal success - starting data refresh');
+    await fetchAllData();
+    console.log('[AdminDashboard] Data refresh complete - closing modal');
     handleCloseModal();
   };
 

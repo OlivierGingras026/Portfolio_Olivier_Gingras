@@ -5,7 +5,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface EditCVModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
 }
 
 export const EditCVModal = ({ onClose, onSuccess }: EditCVModalProps) => {
@@ -23,7 +23,7 @@ export const EditCVModal = ({ onClose, onSuccess }: EditCVModalProps) => {
     setLoading(true);
     try {
       await cvAPI.uploadCV(selectedFile);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (error) {
       console.error('Failed to update CV:', error);

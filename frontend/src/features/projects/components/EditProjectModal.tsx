@@ -5,7 +5,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface EditProjectModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
   editingId: string | null;
   existingData?: Record<string, unknown>;
 }
@@ -75,7 +75,7 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
     setLoading(true);
     try {
       await projectsAPI.updateProject(editingId, formData);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to update project:', err);

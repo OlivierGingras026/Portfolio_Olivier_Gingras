@@ -5,7 +5,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface EditWorkExperienceModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
   editingId: string | null;
   existingData?: Record<string, unknown>;
 }
@@ -49,7 +49,7 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
         endDate: formData.isCurrent ? undefined : formData.endDate
       };
       await workExperienceAPI.updateWorkExperience(editingId, dataToSend);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to update work experience:', err);

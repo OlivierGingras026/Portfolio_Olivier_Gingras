@@ -5,6 +5,9 @@ const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL || '',
   headers: {
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
   },
   withCredentials: false,
 });
@@ -12,6 +15,12 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    // Add cache-busting query parameter for GET requests
+    if (config.method === 'get' || config.method === 'GET') {
+      const separator = config.url?.includes('?') ? '&' : '?';
+      config.url = `${config.url}${separator}t=${Date.now()}`;
+    }
+    
     // Don't add token for login endpoint
     if (config.url && !config.url.includes('/auth/login')) {
       const token = localStorage.getItem('authToken');

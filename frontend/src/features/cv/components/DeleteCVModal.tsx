@@ -5,7 +5,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface DeleteCVModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
   fileName: string;
 }
 
@@ -18,7 +18,7 @@ export const DeleteCVModal = ({ onClose, onSuccess, fileName }: DeleteCVModalPro
       // Get the active CV to delete it
       const activeCV = await cvAPI.getActiveCV();
       await cvAPI.deleteCV(activeCV.cvId);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (error) {
       console.error('Failed to delete CV:', error);

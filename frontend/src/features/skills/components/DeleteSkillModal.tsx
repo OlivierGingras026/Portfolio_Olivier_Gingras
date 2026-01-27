@@ -4,7 +4,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface DeleteSkillModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
   deletingId: string | null;
   deletingTitle: string;
 }
@@ -19,7 +19,7 @@ export const DeleteSkillModal = ({ onClose, onSuccess, deletingId, deletingTitle
     setLoading(true);
     try {
       await skillsAPI.deleteSkill(deletingId);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to delete skill:', err);

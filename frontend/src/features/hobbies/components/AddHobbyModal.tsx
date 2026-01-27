@@ -5,7 +5,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface AddHobbyModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
 }
 
 export const AddHobbyModal = ({ onClose, onSuccess }: AddHobbyModalProps) => {
@@ -52,7 +52,7 @@ export const AddHobbyModal = ({ onClose, onSuccess }: AddHobbyModalProps) => {
     setLoading(true);
     try {
       await hobbiesAPI.createHobby(formData);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to create hobby:', err);

@@ -4,7 +4,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface DeleteProjectModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
   deletingId: string | null;
   deletingTitle: string;
 }
@@ -18,7 +18,7 @@ export const DeleteProjectModal = ({ onClose, onSuccess, deletingId, deletingTit
     setLoading(true);
     try {
       await projectsAPI.deleteProject(deletingId);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to delete project:', err);

@@ -9,17 +9,22 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const navigate = useNavigate();
-  const { isAuthenticated, token, initializeFromStorage } = useAuthStore();
+  const { isAuthenticated, initializeFromStorage } = useAuthStore();
 
   useEffect(() => {
+    // Initialize auth state from storage
     initializeFromStorage();
+  }, [initializeFromStorage]);
 
-    if (!token) {
+  useEffect(() => {
+    // Check authentication after state updates from storage
+    if (!isAuthenticated) {
       navigate('/admin/login', { replace: true });
     }
-  }, [token, navigate, initializeFromStorage]);
+  }, [isAuthenticated, navigate]);
 
-  if (!isAuthenticated || !token) {
+  // Show nothing while not authenticated
+  if (!isAuthenticated) {
     return null;
   }
 

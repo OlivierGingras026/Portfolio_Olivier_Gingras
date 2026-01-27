@@ -5,7 +5,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface EditEducationModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
   editingId: string | null;
   existingData?: Record<string, unknown>;
 }
@@ -49,7 +49,7 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
         endDate: formData.isCurrentlyStudying ? undefined : formData.endDate
       };
       await educationAPI.updateEducation(editingId, dataToSend);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to update education:', err);

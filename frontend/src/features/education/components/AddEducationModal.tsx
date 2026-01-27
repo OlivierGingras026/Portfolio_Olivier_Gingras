@@ -5,7 +5,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface AddEducationModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
 }
 
 export const AddEducationModal = ({ onClose, onSuccess }: AddEducationModalProps) => {
@@ -48,7 +48,7 @@ export const AddEducationModal = ({ onClose, onSuccess }: AddEducationModalProps
         endDate: formData.isCurrentlyStudying ? undefined : formData.endDate
       };
       await educationAPI.createEducation(dataToSend);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to create education:', err);

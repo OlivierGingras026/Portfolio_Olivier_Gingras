@@ -5,7 +5,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface AddWorkExperienceModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
 }
 
 export const AddWorkExperienceModal = ({ onClose, onSuccess }: AddWorkExperienceModalProps) => {
@@ -48,7 +48,7 @@ export const AddWorkExperienceModal = ({ onClose, onSuccess }: AddWorkExperience
         endDate: formData.isCurrent ? undefined : formData.endDate
       };
       await workExperienceAPI.createWorkExperience(dataToSend);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to create work experience:', err);

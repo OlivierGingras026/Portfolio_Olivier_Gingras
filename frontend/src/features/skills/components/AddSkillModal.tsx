@@ -5,7 +5,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface AddSkillModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
 }
 
 export const AddSkillModal = ({ onClose, onSuccess }: AddSkillModalProps) => {
@@ -39,7 +39,7 @@ export const AddSkillModal = ({ onClose, onSuccess }: AddSkillModalProps) => {
     setLoading(true);
     try {
       await skillsAPI.createSkill(formData);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to create skill:', err);

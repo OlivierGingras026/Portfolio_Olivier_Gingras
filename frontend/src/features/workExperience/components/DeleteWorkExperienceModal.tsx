@@ -4,7 +4,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface DeleteWorkExperienceModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
   deletingId: string | null;
   deletingTitle: string;
 }
@@ -19,7 +19,7 @@ export const DeleteWorkExperienceModal = ({ onClose, onSuccess, deletingId, dele
     setLoading(true);
     try {
       await workExperienceAPI.deleteWorkExperience(deletingId);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to delete work experience:', err);

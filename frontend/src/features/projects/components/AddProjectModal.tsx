@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { projectsAPI } from '../api/projectsAPI';
+import { showToast } from '../../../shared/components/Toast';
 import type { CreateProjectRequest } from '../../../shared/models';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface AddProjectModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
 }
 
 export const AddProjectModal = ({ onClose, onSuccess }: AddProjectModalProps) => {
@@ -73,11 +74,14 @@ export const AddProjectModal = ({ onClose, onSuccess }: AddProjectModalProps) =>
     setLoading(true);
     try {
       await projectsAPI.createProject(formData);
-      onSuccess();
+      showToast('Project created successfully!', 'success');
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to create project:', err);
-      setErrors({ submit: 'Failed to create project' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to create project';
+      showToast(errorMsg, 'error');
+      setErrors({ submit: errorMsg });
     } finally {
       setLoading(false);
     }

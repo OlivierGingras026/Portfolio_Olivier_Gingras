@@ -5,7 +5,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface EditSkillModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
   editingId: string | null;
   existingData?: Record<string, unknown>;
 }
@@ -41,7 +41,7 @@ export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: 
     setLoading(true);
     try {
       await skillsAPI.updateSkill(editingId, formData);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to update skill:', err);

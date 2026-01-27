@@ -4,7 +4,7 @@ import '../../../features/admin/pages/AdminDashboard.css';
 
 interface DeleteEducationModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void> | void;
   deletingId: string | null;
   deletingTitle: string;
 }
@@ -19,7 +19,7 @@ export const DeleteEducationModal = ({ onClose, onSuccess, deletingId, deletingT
     setLoading(true);
     try {
       await educationAPI.deleteEducation(deletingId);
-      onSuccess();
+      await Promise.resolve(onSuccess());
       onClose();
     } catch (err) {
       console.error('Failed to delete education:', err);
