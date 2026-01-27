@@ -1,71 +1,108 @@
 .skills-section {
   width: 100%;
-  padding: 80px 20px;
+  padding: 20px 20px;
+  background-color: transparent;
 }
 
 .skills-container {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .skills-header {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
+}
+
+.skills-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: block;
 }
 
 .skills-title {
-  font-size: 36px;
+  font-size: 48px;
   font-weight: 700;
   margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
 }
 
-.skills-description {
-  font-size: 16px;
-  color: rgb(148, 163, 184);
-  max-width: 640px;
-  margin: 0 auto;
+.skills-gradient {
+  background: linear-gradient(135deg, #06b6d4, #3b82f6, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.skills-columns {
+.skills-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
   gap: 60px;
+  margin-bottom: 80px;
 }
 
 .skills-column {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: 16px;
+  padding: 40px;
+  transition: all 0.3s ease;
+}
+
+.skills-column:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.skills-column-other {
+  grid-column: 1 / -1;
+  max-width: 50%;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .column-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
 .category-dot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .category-dot.frontend {
-  background: linear-gradient(135deg, #FFBE0B, #FB5607);
+  background: linear-gradient(135deg, #fbbf24, #f97316);
 }
 
 .category-dot.backend {
-  background: linear-gradient(135deg, #8338EC, #3A86FF);
+  background: linear-gradient(135deg, #a855f7, #3b82f6);
 }
 
 .category-dot.other {
-  background: linear-gradient(135deg, #06FFA5, #00D4FF);
+  background: linear-gradient(135deg, #10b981, #06b6d4);
 }
 
 .column-title {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 600;
+  color: #ffffff;
 }
 
 .skills-list {
@@ -89,34 +126,92 @@
 .skill-name {
   font-size: 15px;
   font-weight: 500;
+  color: #e5e7eb;
 }
 
-.skill-level {
+.skill-percentage {
   font-size: 14px;
-  color: rgb(96, 165, 250);
+  color: #60a5fa;
   font-weight: 600;
-  display: none;
 }
 
 .skill-bar {
   width: 100%;
   height: 8px;
-  background-color: rgba(30, 41, 59, 0.8);
+  background-color: rgba(30, 41, 59, 0.6);
   border-radius: 4px;
   overflow: hidden;
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.15);
 }
 
 .skill-progress {
   height: 100%;
-  background: linear-gradient(90deg, rgb(59, 130, 246), rgb(168, 85, 247));
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
   border-radius: 4px;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
 }
 
+/* Technology Ecosystem */
+.tech-ecosystem {
+  margin-top: 80px;
+  text-align: center;
+}
+
+.ecosystem-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 40px;
+  color: #ffffff;
+}
+
+.ecosystem-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+
+.ecosystem-tag {
+  display: inline-block;
+  padding: 10px 20px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 24px;
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.ecosystem-tag:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: #60a5fa;
+  transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
-  .skills-columns {
+  .skills-grid {
     grid-template-columns: 1fr;
     gap: 40px;
+  }
+
+  .skills-column-other {
+    grid-column: 1;
+    max-width: 100%;
+  }
+
+  .skills-title {
+    font-size: 36px;
+  }
+
+  .ecosystem-tags {
+    gap: 12px;
+  }
+
+  .ecosystem-tag {
+    padding: 8px 16px;
+    font-size: 13px;
   }
 }

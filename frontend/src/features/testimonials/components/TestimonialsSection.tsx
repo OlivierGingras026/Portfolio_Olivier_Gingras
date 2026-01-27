@@ -1,30 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { testimonialAPI, type Testimonial } from '../api/testimonialAPI';
+import { usePortfolioData } from '../../../shared/context/usePortfolioData';
+import type { Testimonial } from '../api/testimonialAPI';
 import { TestimonialSubmitForm } from './TestimonialSubmitForm';
 import './TestimonialsSection.css';
 
 export const TestimonialsSection = () => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const { data, refetch } = usePortfolioData();
+  const testimonials = (data?.testimonials || []) as Testimonial[];
+  
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [showSubmitForm, setShowSubmitForm] = useState(false);
   const [autoPlayActive, setAutoPlayActive] = useState(true);
-
-  useEffect(() => {
-    const fetchTestimonials = async () => {
-      try {
-        const data = await testimonialAPI.getApprovedTestimonials();
-        setTestimonials(data);
-      } catch (error) {
-        console.error('Failed to fetch testimonials:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTestimonials();
-  }, []);
 
   useEffect(() => {
     if (testimonials.length === 0 || !autoPlayActive) return;
@@ -46,7 +34,7 @@ export const TestimonialsSection = () => {
     setTimeout(() => setAutoPlayActive(true), 10000);
   };
 
-  if (loading || testimonials.length === 0) return null;
+  if (testimonials.length === 0) return null;
 
   const current = testimonials[currentIndex];
 
@@ -134,15 +122,7 @@ export const TestimonialsSection = () => {
           }}
           onSuccess={() => {
             // Refresh testimonials after submission
-            const fetchTestimonials = async () => {
-              try {
-                const data = await testimonialAPI.getApprovedTestimonials();
-                setTestimonials(data);
-              } catch (error) {
-                console.error('Failed to fetch testimonials:', error);
-              }
-            };
-            fetchTestimonials();
+            refetch();
           }}
         />
       )}

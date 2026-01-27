@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import './ParticleBackground.css';
 
 interface Particle {
@@ -19,7 +19,7 @@ export const ParticleBackground = () => {
   const particlesRef = useRef<Particle[]>([]);
 
   // Computer science commands and symbols for galaxy effect
-  const codeElements = [
+  const codeElements = useMemo(() => [
     'function',
     'const',
     'async',
@@ -69,10 +69,10 @@ export const ParticleBackground = () => {
     'public',
     'private',
     'protected',
-  ];
+  ], []);
 
   // Galaxy colors - vibrant purples, blues, pinks, cyans
-  const galaxyColors = [
+  const galaxyColors = useMemo(() => [
     '#FF006E', // Hot Pink
     '#8338EC', // Purple
     '#3A86FF', // Blue
@@ -85,7 +85,7 @@ export const ParticleBackground = () => {
     '#7B68EE', // Medium Slate Blue
     '#FF69B4', // Hot Pink
     '#00CED1', // Dark Turquoise
-  ];
+  ], []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -180,7 +180,7 @@ export const ParticleBackground = () => {
     animate();
 
     return () => window.removeEventListener('resize', resizeCanvas);
-  }, []);
+  }, [codeElements, galaxyColors]);
 
   return (
     <canvas

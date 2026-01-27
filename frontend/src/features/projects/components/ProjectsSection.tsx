@@ -1,32 +1,11 @@
-import { useEffect, useState } from 'react';
 import type { Project } from '../types';
-import { projectsAPI } from '../api/projectsAPI';
+import { usePortfolioData } from '../../../shared/context/usePortfolioData';
 import { motion } from 'framer-motion';
 import './ProjectsSection.css';
 
 export const ProjectsSection = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const data = await projectsAPI.getAllProjects();
-        setProjects(data);
-      } catch (error) {
-        console.error('Failed to fetch projects', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-
-  if (loading) {
-    return <div className="loading-text">Loading projects...</div>;
-  }
-
+  const { data } = usePortfolioData();
+  const projects = (data?.projects || []) as Project[];
 
   return (
     <section id="projects" className="projects-section">

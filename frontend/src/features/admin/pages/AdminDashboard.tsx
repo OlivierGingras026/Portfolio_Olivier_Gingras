@@ -39,6 +39,8 @@ import { EditEducationModal } from '../../education/components/EditEducationModa
 import { EditHobbyModal } from '../../hobbies/components/EditHobbyModal';
 import { DeleteHobbyModal } from '../../hobbies/components/DeleteHobbyModal';
 import { DeleteEducationModal } from '../../education/components/DeleteEducationModal';
+import { EditCVModal } from '../../cv/components/EditCVModal';
+import { DeleteCVModal } from '../../cv/components/DeleteCVModal';
 
 export const AdminDashboard = () => {
   const { logout } = useAuthStore();
@@ -609,13 +611,37 @@ export const AdminDashboard = () => {
                                                 <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Uploaded</label>
                                                 <p style={{ color: '#fff', fontSize: '0.95rem' }}>{new Date(cvFile.uploadedAt).toLocaleString()}</p>
                                             </div>
-                                            <button 
-                                                onClick={handleDeactivateCV}
-                                                className="btn-secondary"
-                                                style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#ef4444' }}
-                                            >
-                                                Deactivate CV
-                                            </button>
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button 
+                                                    onClick={() => {
+                                                        setModalType('edit');
+                                                        setEditingId(cvFile.cvId);
+                                                        setShowModal(true);
+                                                    }}
+                                                    className="btn-secondary"
+                                                    style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#60a5fa' }}
+                                                >
+                                                    Edit CV
+                                                </button>
+                                                <button 
+                                                    onClick={() => {
+                                                        setModalType('delete');
+                                                        setEditingId(cvFile.cvId);
+                                                        setShowModal(true);
+                                                    }}
+                                                    className="btn-secondary"
+                                                    style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#ef4444' }}
+                                                >
+                                                    Delete CV
+                                                </button>
+                                                <button 
+                                                    onClick={handleDeactivateCV}
+                                                    className="btn-secondary"
+                                                    style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#f97316' }}
+                                                >
+                                                    Deactivate
+                                                </button>
+                                            </div>
                                         </>
                                     ) : (
                                         <p style={{ color: '#94a3b8' }}>No active CV uploaded yet.</p>
@@ -856,6 +882,19 @@ export const AdminDashboard = () => {
           onSuccess={handleModalSuccess}
           deletingId={deletingId}
           deletingTitle={deletingTitle}
+        />
+      )}
+      {showModal && activeTab === 'cv' && modalType === 'edit' && (
+        <EditCVModal
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+        />
+      )}
+      {showModal && activeTab === 'cv' && modalType === 'delete' && (
+        <DeleteCVModal
+          onClose={handleCloseModal}
+          onSuccess={handleModalSuccess}
+          fileName={cvFile?.fileName || ''}
         />
       )}
     </div>

@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Download, Eye } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cvAPI, type CVFile } from '../api/cvAPI';
-import { CVPreviewModal } from './CVPreviewModal';
 import './CVSection.css';
 
 export const CVSection = () => {
   const [cvFile, setCvFile] = useState<CVFile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showPreview, setShowPreview] = useState(false);
-  const [previewData, setPreviewData] = useState<string>('');
 
   useEffect(() => {
     const fetchCV = async () => {
@@ -31,24 +28,6 @@ export const CVSection = () => {
         await cvAPI.downloadCV(cvFile.cvId);
       } catch (error) {
         console.error('Failed to download CV:', error);
-      }
-    }
-  };
-
-  const handlePreview = async () => {
-    if (cvFile) {
-      try {
-        const response = await fetch(`/api/v1/cv/download/${cvFile.cvId}`);
-        const blob = await response.blob();
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64Data = (reader.result as string).split(',')[1];
-          setPreviewData(base64Data);
-          setShowPreview(true);
-        };
-        reader.readAsDataURL(blob);
-      } catch (error) {
-        console.error('Failed to preview CV:', error);
       }
     }
   };
@@ -85,16 +64,6 @@ export const CVSection = () => {
           </div>
           <div className="cv-actions">
             <motion.button
-              onClick={handlePreview}
-              className="cv-preview-btn"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              title="Preview CV"
-            >
-              <Eye size={20} />
-              Preview
-            </motion.button>
-            <motion.button
               onClick={handleDownload}
               className="cv-download-btn"
               whileHover={{ scale: 1.05 }}
@@ -106,17 +75,6 @@ export const CVSection = () => {
             </motion.button>
           </div>
         </motion.div>
-
-        {showPreview && (
-          <CVPreviewModal
-            fileName={cvFile.fileName}
-            fileData={previewData}
-            onClose={() => {
-              setShowPreview(false);
-              setPreviewData('');
-            }}
-          />
-        )}
       </div>
     </section>
   );

@@ -1,28 +1,11 @@
-import { useEffect, useState } from 'react';
 import type { Education } from '../types';
-import { educationAPI } from '../api/educationAPI';
+import { usePortfolioData } from '../../../shared/context/usePortfolioData';
 import { motion } from 'framer-motion';
 import './EducationSection.css';
 
 export const EducationSection = () => {
-    const [educationList, setEducationList] = useState<Education[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchEducation = async () => {
-            try {
-                const data = await educationAPI.getAllEducation();
-                setEducationList(data);
-            } catch (error) {
-                console.error("Failed to fetch education", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchEducation();
-    }, []);
-
-    if (loading) return null;
+    const { data } = usePortfolioData();
+    const educationList = (data?.educationList || []) as Education[];
 
     return (
         <section id="education" className="education-section">

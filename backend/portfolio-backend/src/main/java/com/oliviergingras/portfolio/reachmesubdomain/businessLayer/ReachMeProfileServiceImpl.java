@@ -2,7 +2,6 @@ package com.oliviergingras.portfolio.reachmesubdomain.businessLayer;
 
 import com.oliviergingras.portfolio.reachmesubdomain.dataAccessLayer.ReachMeProfile;
 import com.oliviergingras.portfolio.reachmesubdomain.dataAccessLayer.ReachMeProfileRepository;
-import com.oliviergingras.portfolio.reachmesubdomain.mapperLayer.ReachMeProfileRequestMapper;
 import com.oliviergingras.portfolio.reachmesubdomain.mapperLayer.ReachMeProfileResponseMapper;
 import com.oliviergingras.portfolio.reachmesubdomain.presentationLayer.ReachMeProfileRequestModel;
 import com.oliviergingras.portfolio.reachmesubdomain.presentationLayer.ReachMeProfileResponseModel;
@@ -12,16 +11,13 @@ import org.springframework.stereotype.Service;
 public class ReachMeProfileServiceImpl implements ReachMeProfileService {
     
     private final ReachMeProfileRepository reachMeProfileRepository;
-    private final ReachMeProfileRequestMapper requestMapper;
     private final ReachMeProfileResponseMapper responseMapper;
     
     public ReachMeProfileServiceImpl(
         ReachMeProfileRepository reachMeProfileRepository,
-        ReachMeProfileRequestMapper requestMapper,
         ReachMeProfileResponseMapper responseMapper
     ) {
         this.reachMeProfileRepository = reachMeProfileRepository;
-        this.requestMapper = requestMapper;
         this.responseMapper = responseMapper;
     }
     

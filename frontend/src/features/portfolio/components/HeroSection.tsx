@@ -1,4 +1,4 @@
-import { ArrowRight, Github, Linkedin, Mail } from 'lucide-react';
+import { ArrowRight, Github, Linkedin } from 'lucide-react';
 import './Portfolio.css';
 
 export const HeroSection = () => {
@@ -50,29 +50,25 @@ export const HeroSection = () => {
                     </button>
                 </div>
 
-                {/* Social Links */}
-                <div className="hero-social">
+                {/* Social Links Under Buttons */}
+                <div className="hero-social-links">
                     <a
-                        href="https://github.com"
+                        href="https://www.linkedin.com/in/olivier-gingras-a0032b380"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="social-link"
+                        className="hero-social-link"
                     >
-                        <Github size={24} />
+                        <Linkedin size={20} />
+                        LinkedIn
                     </a>
                     <a
-                        href="https://linkedin.com"
+                        href="https://github.com/OlivierGingras026"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="social-link"
+                        className="hero-social-link"
                     >
-                        <Linkedin size={24} />
-                    </a>
-                    <a
-                        href="mailto:contact@oliviergingras.com"
-                        className="social-link"
-                    >
-                        <Mail size={24} />
+                        <Github size={20} />
+                        GitHub
                     </a>
                 </div>
 

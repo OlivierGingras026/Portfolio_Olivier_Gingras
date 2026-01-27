@@ -1,28 +1,12 @@
-import { useEffect, useState } from 'react';
 import type { WorkExperience } from '../types';
-import { workExperienceAPI } from '../api/workExperienceAPI';
+import { usePortfolioData } from '../../../shared/context/usePortfolioData';
 import { motion } from 'framer-motion';
 import './WorkExperienceSection.css';
 
 export const WorkExperienceSection = () => {
-  const [experiences, setExperiences] = useState<WorkExperience[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchWork = async () => {
-      try {
-        const data = await workExperienceAPI.getAllWorkExperiences();
-        setExperiences(data.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()));
-      } catch (error) {
-        console.error('Failed to fetch work experience', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWork();
-  }, []);
-
-  if (loading) return null;
+  const { data } = usePortfolioData();
+  const experiences = ((data?.workExperiences || []) as WorkExperience[])
+    .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
 
   return (
     <section id="experience" className="work-experience-section">

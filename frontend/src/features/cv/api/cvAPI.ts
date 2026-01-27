@@ -40,5 +40,9 @@ export const cvAPI = {
 
   deactivateCV: async (cvId: string): Promise<void> => {
     await axiosInstance.delete(`/api/v1/cv/${cvId}`);
+  },
+
+  deleteCV: async (cvId: string): Promise<void> => {
+    await axiosInstance.delete(`/api/v1/cv/${cvId}`);
   }
 };

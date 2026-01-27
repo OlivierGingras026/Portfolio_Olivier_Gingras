@@ -8,7 +8,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -44,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/contact/send").permitAll()
                         .requestMatchers("/api/v1/reachme").permitAll()
                         .requestMatchers("/api/v1/cv").permitAll()
-                        .requestMatchers("/api/v1/cv/download/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/cv/download/**").permitAll()
                         .requestMatchers("/api/v1/testimonials/submit").anonymous()
                         .requestMatchers("/api/v1/testimonials/approved").permitAll()
                         .requestMatchers("/api/admin/auth/login").permitAll()
@@ -55,7 +54,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/contact").authenticated()
                         .requestMatchers("/api/v1/contact/**").authenticated()
                         .requestMatchers("/api/v1/cv/upload").authenticated()
-                        .requestMatchers("/api/v1/cv/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/cv/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/cv/**").authenticated()
                         .requestMatchers("/api/v1/testimonials").authenticated()
                         .requestMatchers("/api/v1/testimonials/pending").authenticated()
                         .requestMatchers("/api/v1/testimonials/**").authenticated()

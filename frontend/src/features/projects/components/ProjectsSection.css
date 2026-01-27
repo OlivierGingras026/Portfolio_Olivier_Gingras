@@ -181,6 +181,28 @@
   padding: 16px 20px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  max-height: 12em;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.project-description::-webkit-scrollbar {
+  width: 6px;
+}
+
+.project-description::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.project-description::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3b82f6, #60a5fa);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.project-description::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #60a5fa, #93c5fd);
 }
 
 .technologies-list {

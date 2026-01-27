@@ -1,28 +1,11 @@
-import { useEffect, useState } from 'react';
 import type { Hobby } from '../types';
-import { hobbiesAPI } from '../api/hobbiesAPI';
+import { usePortfolioData } from '../../../shared/context/usePortfolioData';
 import { motion } from 'framer-motion';
 import './HobbiesSection.css';
 
 export const HobbiesSection = () => {
-  const [hobbies, setHobbies] = useState<Hobby[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchHobbies = async () => {
-      try {
-        const data = await hobbiesAPI.getAllHobbies();
-        setHobbies(data);
-      } catch (error) {
-        console.error('Failed to fetch hobbies', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchHobbies();
-  }, []);
-
-  if (loading) return null;
+  const { data } = usePortfolioData();
+  const hobbies = (data?.hobbies || []) as Hobby[];
 
   return (
     <section id="hobbies" className="hobbies-section">
