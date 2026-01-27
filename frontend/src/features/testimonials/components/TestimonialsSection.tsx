@@ -59,9 +59,10 @@ export const TestimonialsSection = () => {
           <AnimatePresence mode="wait">
             <motion.div
               key={current.testimonialId}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
               className="testimonial-card"
             >
               <div className="testimonial-stars">
