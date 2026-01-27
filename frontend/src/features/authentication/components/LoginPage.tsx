@@ -294,7 +294,7 @@ export function LoginPage() {
               marginTop: '24px',
             }}
           >
-            Default credentials: admin@portfolio.com / Admin@123
+            © 2026 Portfolio Olivier Gingras. All rights reserved.
           </motion.p>
         </div>
 

@@ -62,8 +62,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void logout(String adminId) {
-        // In a stateless JWT architecture, logout is primarily client-side
-        // This method can be extended to maintain a blacklist if needed
     }
 
     @Override
