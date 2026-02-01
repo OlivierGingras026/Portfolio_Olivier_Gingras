@@ -5,9 +5,11 @@ export interface AdminLoginRequest {
 
 export interface AdminLoginResponse {
   token: string;
+  refreshToken: string;
   adminId: string;
   email: string;
   fullName: string;
+  expiresIn: number;
 }
 
 export interface AdminUser {

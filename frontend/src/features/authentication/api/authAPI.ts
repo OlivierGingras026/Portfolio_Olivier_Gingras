@@ -12,6 +12,23 @@ export const authAPI = {
     }
   },
 
+  refreshToken: async (refreshToken: string): Promise<AdminLoginResponse> => {
+    try {
+      const response = await axiosInstance.post(
+        '/api/admin/auth/refresh',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${refreshToken}`
+          }
+        }
+      );
+      return response.data;
+    } catch (err) {
+      throw handleAPIError(err);
+    }
+  },
+
   logout: async (): Promise<void> => {
     try {
       await axiosInstance.post('/api/admin/auth/logout');

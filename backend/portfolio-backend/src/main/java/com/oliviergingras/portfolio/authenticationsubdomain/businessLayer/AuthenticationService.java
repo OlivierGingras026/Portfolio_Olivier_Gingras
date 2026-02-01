@@ -7,6 +7,8 @@ public interface AuthenticationService {
 
     AdminLoginResponse login(AdminLoginRequest request);
 
+    AdminLoginResponse refreshToken(String refreshToken);
+
     void logout(String adminId);
 
     boolean verifyToken(String token);

@@ -13,10 +13,14 @@ public class AdminLoginResponse {
 
     private String token;
 
+    private String refreshToken;
+
     private String adminId;
 
     private String email;
 
     private String fullName;
+
+    private long expiresIn;
 
 }

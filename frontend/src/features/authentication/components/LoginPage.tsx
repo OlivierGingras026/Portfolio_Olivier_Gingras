@@ -29,8 +29,8 @@ const FloatingShape = ({ delay, size }: { delay: number; size: string }) => {
 export function LoginPage() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
-  const [email, setEmail] = useState('admin@portfolio.com');
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -47,7 +47,9 @@ export function LoginPage() {
           email: response.email,
           fullName: response.fullName,
         },
-        response.token
+        response.token,
+        response.refreshToken,
+        response.expiresIn
       );
       navigate('/admin/dashboard', { replace: true });
     } catch (err) {

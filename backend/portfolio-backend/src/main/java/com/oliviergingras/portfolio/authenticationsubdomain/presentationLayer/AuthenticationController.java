@@ -42,4 +42,14 @@ public class AuthenticationController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AdminLoginResponse> refreshToken(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String refreshToken = authHeader.substring(7);
+            AdminLoginResponse response = authenticationService.refreshToken(refreshToken);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 }
