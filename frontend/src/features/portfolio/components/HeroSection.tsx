@@ -1,7 +1,9 @@
 import { ArrowRight, Github, Linkedin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './Portfolio.css';
 
 export const HeroSection = () => {
+    const { t } = useTranslation();
     const scrollToContact = () => {
         const element = document.getElementById('contact');
         element?.scrollIntoView({ behavior: 'smooth' });
@@ -18,17 +20,17 @@ export const HeroSection = () => {
             <div className="hero-content">
                 {/* Greeting */}
                 <div className="hero-greeting">
-                    <span>Welcome to my portfolio</span>
+                    <span>{t('hero.welcome')}</span>
                 </div>
 
                 {/* Main Heading */}
                 <h1 className="hero-title">
-                    Hi, I'm <span className="hero-gradient">Olivier Gingras</span>
+                    Hi, I'm <span className="hero-gradient">{t('hero.name')}</span>
                 </h1>
 
                 {/* Subtitle */}
                 <p className="hero-subtitle">
-                    Full-stack developer passionate about building innovative web applications with clean code and modern technologies
+                    {t('hero.subtitle')}
                 </p>
 
                 {/* CTA Buttons */}
@@ -37,7 +39,7 @@ export const HeroSection = () => {
                         onClick={scrollToContact}
                         className="btn btn-primary"
                     >
-                        Get In Touch <ArrowRight size={20} />
+                        {t('hero.cta')} <ArrowRight size={20} />
                     </button>
                     <button
                         onClick={() => {
@@ -46,7 +48,7 @@ export const HeroSection = () => {
                         }}
                         className="btn btn-secondary"
                     >
-                        View My Work
+                        {t('hero.viewWork')}
                     </button>
                 </div>
 

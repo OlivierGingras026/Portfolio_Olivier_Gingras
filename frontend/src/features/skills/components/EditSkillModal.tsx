@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { skillsAPI } from '../api/skillsAPI';
 import type { CreateSkillRequest } from '../../../shared/models';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -11,9 +12,12 @@ interface EditSkillModalProps {
 }
 
 export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: EditSkillModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<CreateSkillRequest>({
     title: (existingData?.title as string) || '',
     description: (existingData?.description as string) || '',
+    titleFr: (existingData?.titleFr as string) || '',
+    descriptionFr: (existingData?.descriptionFr as string) || '',
     type: (existingData?.type as 'frontend' | 'backend' | 'other') || 'other'
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -55,13 +59,13 @@ export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: 
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <span>Edit Skill</span>
+          <span>{t('common.edit')} {t('skillsubdomain.title')}</span>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">Title *</label>
+            <label className="form-label">Title EN *</label>
             <input 
               type="text"
               className="form-input"
@@ -74,7 +78,19 @@ export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: 
           </div>
 
           <div className="form-group">
-            <label className="form-label">Type *</label>
+            <label className="form-label">Titre FR</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder="Titre de la compétence"
+              value={formData.titleFr || ''}
+              onChange={(e) => handleChange('titleFr', e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">{t('skillsubdomain.type')} *</label>
             <select 
               className="form-input"
               value={formData.type}
@@ -83,13 +99,13 @@ export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: 
             >
               <option value="frontend">Frontend</option>
               <option value="backend">Backend</option>
-              <option value="other">Other</option>
+              <option value="other">{t('skillsubdomain.other')}</option>
             </select>
             {errors.type && <span className="form-error">{errors.type}</span>}
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description *</label>
+            <label className="form-label">Description EN *</label>
             <textarea 
               className="form-input"
               placeholder="Skill description"
@@ -101,6 +117,18 @@ export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: 
             {errors.description && <span className="form-error">{errors.description}</span>}
           </div>
 
+          <div className="form-group">
+            <label className="form-label">Description FR</label>
+            <textarea 
+              className="form-input"
+              placeholder="Description de la compétence"
+              value={formData.descriptionFr || ''}
+              onChange={(e) => handleChange('descriptionFr', e.target.value)}
+              disabled={loading}
+              rows={4}
+            />
+          </div>
+
           {errors.submit && (
             <div style={{ color: '#ef4444', marginBottom: '1rem' }}>{errors.submit}</div>
           )}
@@ -108,14 +136,14 @@ export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: 
 
         <div className="modal-footer">
           <button className="form-btn form-btn-secondary" onClick={onClose} disabled={loading}>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button 
             className="form-btn form-btn-primary" 
             onClick={handleSubmit}
             disabled={loading}
           >
-            {loading ? 'Updating...' : 'Update'}
+            {loading ? t('common.loading') : t('common.save')}
           </button>
         </div>
       </div>

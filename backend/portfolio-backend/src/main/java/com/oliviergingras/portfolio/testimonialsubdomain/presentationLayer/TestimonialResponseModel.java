@@ -5,8 +5,11 @@ public class TestimonialResponseModel {
     public String name;
     public String title;
     public String company;
+    public String titleFr;
+    public String companyFr;
     public Integer rating;
     public String message;
+    public String messageFr;
     public String status;
     public String createdAt;
 

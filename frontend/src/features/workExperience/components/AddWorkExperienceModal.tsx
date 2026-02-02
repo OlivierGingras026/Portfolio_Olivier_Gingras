@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { workExperienceAPI } from '../api/workExperienceAPI';
 import type { CreateWorkExperienceRequest } from '../../../shared/models';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -9,10 +10,14 @@ interface AddWorkExperienceModalProps {
 }
 
 export const AddWorkExperienceModal = ({ onClose, onSuccess }: AddWorkExperienceModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<CreateWorkExperienceRequest>({
     company: '',
     position: '',
     description: '',
+    companyFr: '',
+    positionFr: '',
+    descriptionFr: '',
     startDate: '',
     endDate: '',
     isCurrent: false
@@ -62,13 +67,13 @@ export const AddWorkExperienceModal = ({ onClose, onSuccess }: AddWorkExperience
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <span>Add New Work Experience</span>
+          <span>{t('common.add')} {t('workexperiencesubdomain.title')}</span>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">Company *</label>
+            <label className="form-label">Company EN *</label>
             <input 
               type="text"
               className="form-input"
@@ -81,7 +86,19 @@ export const AddWorkExperienceModal = ({ onClose, onSuccess }: AddWorkExperience
           </div>
 
           <div className="form-group">
-            <label className="form-label">Position *</label>
+            <label className="form-label">Entreprise FR</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder="Nom de l\'entreprise"
+              value={formData.companyFr || ''}
+              onChange={(e) => handleChange('companyFr', e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Position EN *</label>
             <input 
               type="text"
               className="form-input"
@@ -94,7 +111,19 @@ export const AddWorkExperienceModal = ({ onClose, onSuccess }: AddWorkExperience
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description *</label>
+            <label className="form-label">Poste FR</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder="Intitulé du poste"
+              value={formData.positionFr || ''}
+              onChange={(e) => handleChange('positionFr', e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description EN *</label>
             <textarea
               className="form-textarea"
               placeholder="Job description"
@@ -103,6 +132,17 @@ export const AddWorkExperienceModal = ({ onClose, onSuccess }: AddWorkExperience
               disabled={loading}
             />
             {errors.description && <span className="form-error">{errors.description}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description FR</label>
+            <textarea
+              className="form-textarea"
+              placeholder="Description du poste"
+              value={formData.descriptionFr || ''}
+              onChange={(e) => handleChange('descriptionFr', e.target.value)}
+              disabled={loading}
+            />
           </div>
 
           <div className="form-group">
@@ -148,10 +188,10 @@ export const AddWorkExperienceModal = ({ onClose, onSuccess }: AddWorkExperience
 
         <div className="form-actions">
           <button className="form-btn form-btn-primary" onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Saving...' : 'Save'}
+            {loading ? t('common.loading') : t('common.save')}
           </button>
           <button className="form-btn form-btn-secondary" onClick={onClose} disabled={loading}>
-            Cancel
+            {t('common.cancel')}
           </button>
         </div>
       </div>

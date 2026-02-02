@@ -4,9 +4,12 @@ export interface Testimonial {
   testimonialId: string;
   name: string;
   title: string;
+  titleFr?: string;
   company?: string;
+  companyFr?: string;
   rating: number;
   message: string;
+  messageFr?: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   createdAt: string;
 }

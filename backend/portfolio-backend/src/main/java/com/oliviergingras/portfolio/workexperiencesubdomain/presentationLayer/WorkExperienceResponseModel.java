@@ -21,6 +21,12 @@ public class WorkExperienceResponseModel {
 
     private String description;
 
+    private String companyFr;
+
+    private String positionFr;
+
+    private String descriptionFr;
+
     private LocalDate startDate;
 
     private LocalDate endDate;

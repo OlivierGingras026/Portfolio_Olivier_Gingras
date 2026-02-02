@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { workExperienceAPI } from '../api/workExperienceAPI';
 import type { CreateWorkExperienceRequest } from '../../../shared/models';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -11,10 +12,14 @@ interface EditWorkExperienceModalProps {
 }
 
 export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existingData }: EditWorkExperienceModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<CreateWorkExperienceRequest>({
     company: (existingData?.company as string) || '',
     position: (existingData?.position as string) || '',
     description: (existingData?.description as string) || '',
+    companyFr: (existingData?.companyFr as string) || '',
+    positionFr: (existingData?.positionFr as string) || '',
+    descriptionFr: (existingData?.descriptionFr as string) || '',
     startDate: (existingData?.startDate as string) || '',
     endDate: (existingData?.endDate as string) || '',
     isCurrent: (existingData?.isCurrent as boolean) || false
@@ -63,13 +68,13 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <span>Edit Work Experience</span>
+          <span>{t('common.edit')} {t('workexperiencesubdomain.title')}</span>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">Company *</label>
+            <label className="form-label">Company EN *</label>
             <input 
               type="text"
               className="form-input"
@@ -82,7 +87,19 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
           </div>
 
           <div className="form-group">
-            <label className="form-label">Position *</label>
+            <label className="form-label">Entreprise FR</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder="Nom de l\'entreprise"
+              value={formData.companyFr || ''}
+              onChange={(e) => handleChange('companyFr', e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Position EN *</label>
             <input 
               type="text"
               className="form-input"
@@ -95,7 +112,19 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description *</label>
+            <label className="form-label">Poste FR</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder="Intitulé du poste"
+              value={formData.positionFr || ''}
+              onChange={(e) => handleChange('positionFr', e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description EN *</label>
             <textarea 
               className="form-input"
               placeholder="Job description"
@@ -105,6 +134,18 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
               rows={4}
             />
             {errors.description && <span className="form-error">{errors.description}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description FR</label>
+            <textarea 
+              className="form-input"
+              placeholder="Description du poste"
+              value={formData.descriptionFr || ''}
+              onChange={(e) => handleChange('descriptionFr', e.target.value)}
+              disabled={loading}
+              rows={4}
+            />
           </div>
 
           <div className="form-group">
@@ -151,14 +192,14 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
 
         <div className="modal-footer">
           <button className="form-btn form-btn-secondary" onClick={onClose} disabled={loading}>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button 
             className="form-btn form-btn-primary" 
             onClick={handleSubmit}
             disabled={loading}
           >
-            {loading ? 'Updating...' : 'Update'}
+            {loading ? t('common.loading') : t('common.save')}
           </button>
         </div>
       </div>

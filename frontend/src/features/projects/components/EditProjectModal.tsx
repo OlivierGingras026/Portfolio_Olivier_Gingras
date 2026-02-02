@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { projectsAPI } from '../api/projectsAPI';
 import type { CreateProjectRequest } from '../../../shared/models';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -11,9 +12,12 @@ interface EditProjectModalProps {
 }
 
 export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }: EditProjectModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<CreateProjectRequest & { technologies?: string[] }>({
     title: (existingData?.title as string) || '',
     description: (existingData?.description as string) || '',
+    titleFr: (existingData?.titleFr as string) || '',
+    descriptionFr: (existingData?.descriptionFr as string) || '',
     url: (existingData?.url as string) || '',
     imageUrl: (existingData?.imageUrl as string) || '',
     technologies: (existingData?.technologies as string[]) || []
@@ -89,13 +93,13 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <span>Edit Project</span>
+          <span>{t('common.edit')} {t('projectsubdomain.title')}</span>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">Title *</label>
+            <label className="form-label">Title EN *</label>
             <input 
               type="text"
               className="form-input"
@@ -108,7 +112,19 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description *</label>
+            <label className="form-label">Titre FR</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder="Titre du projet"
+              value={formData.titleFr || ''}
+              onChange={(e) => handleChange('titleFr', e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description EN *</label>
             <textarea
               className="form-textarea"
               placeholder="Project description"
@@ -117,6 +133,17 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
               disabled={loading}
             />
             {errors.description && <span className="form-error">{errors.description}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description FR</label>
+            <textarea
+              className="form-textarea"
+              placeholder="Description du projet"
+              value={formData.descriptionFr || ''}
+              onChange={(e) => handleChange('descriptionFr', e.target.value)}
+              disabled={loading}
+            />
           </div>
 
           <div className="form-group">
@@ -215,10 +242,10 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
 
         <div className="form-actions">
           <button className="form-btn form-btn-primary" onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Saving...' : 'Save Changes'}
+            {loading ? t('common.loading') : t('common.save')}
           </button>
           <button className="form-btn form-btn-secondary" onClick={onClose} disabled={loading}>
-            Cancel
+            {t('common.cancel')}
           </button>
         </div>
       </div>

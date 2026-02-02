@@ -1,0 +1,120 @@
+{
+  "common": {
+    "language": "Langue",
+    "english": "English",
+    "french": "Français",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "close": "Fermer"
+  },
+  "hero": {
+    "welcome": "Bienvenue sur mon portfolio",
+    "name": "Olivier Gingras",
+    "subtitle": "Développeur full-stack passionné par la création d'applications web innovantes avec du code propre et des technologies modernes",
+    "cta": "Me Contacter",
+    "viewWork": "Voir Mon Travail"
+  },
+  "skillsubdomain": {
+    "title": "Compétences",
+    "sectionTitle": "Compétences & Technologies",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "other": "Autre",
+    "proficiency": "Maîtrise",
+    "type": "Type",
+    "description": "Description"
+  },
+  "workexperiencesubdomain": {
+    "title": "Expérience Professionnelle",
+    "sectionTitle": "Expérience Professionnelle",
+    "position": "Poste",
+    "company": "Entreprise",
+    "duration": "Durée",
+    "description": "Description",
+    "from": "De",
+    "to": "À",
+    "present": "Présent"
+  },
+  "testimonialsubdomain": {
+    "title": "Témoignages",
+    "sectionTitle": "Ce que les gens disent",
+    "from": "De",
+    "rating": "Évaluation",
+    "message": "Message",
+    "pending": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Rejeté"
+  },
+  "projectsubdomain": {
+    "title": "Projets",
+    "sectionTitle": "Projets en Vedette",
+    "description": "Description",
+    "technologies": "Technologies",
+    "viewProject": "Voir le Projet",
+    "github": "GitHub",
+    "demo": "Démo"
+  },
+  "educationsubdomain": {
+    "title": "Formation",
+    "sectionTitle": "Formation",
+    "degree": "Diplôme",
+    "institution": "Établissement",
+    "field": "Domaine d'études",
+    "graduationDate": "Date de Diplôme"
+  },
+  "hobbysubdomain": {
+    "title": "Loisirs et Centres d'Intérêt",
+    "sectionTitle": "Loisirs et Centres d'Intérêt",
+    "hobby": "Loisir"
+  },
+  "contactsubdomain": {
+    "title": "Me Contacter",
+    "name": "Nom",
+    "email": "Email",
+    "subject": "Sujet",
+    "message": "Message",
+    "send": "Envoyer le Message",
+    "sending": "Envoi en cours...",
+    "successMessage": "Merci ! Votre message a été envoyé avec succès.",
+    "errorMessage": "Désolé, une erreur s'est produite lors de l'envoi de votre message. Veuillez réessayer.",
+    "phone": "Téléphone",
+    "address": "Adresse"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "about": "À propos",
+    "skills": "Compétences",
+    "experience": "Expérience",
+    "projects": "Projets",
+    "education": "Formation",
+    "testimonials": "Témoignages",
+    "contact": "Contact",
+    "cv": "CV",
+    "hobbies": "Loisirs",
+    "admin": "Admin"
+  },
+  "admin": {
+    "title": "Tableau de Bord Admin",
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "loginButton": "Se Connecter",
+    "loginError": "Identifiants invalides",
+    "dashboard": "Tableau de Bord",
+    "manage": "Gérer",
+    "settings": "Paramètres",
+    "skills": "Gérer les Compétences",
+    "experience": "Gérer l'Expérience",
+    "projects": "Gérer les Projets",
+    "education": "Gérer la Formation",
+    "testimonials": "Gérer les Témoignages",
+    "hobbies": "Gérer les Loisirs"
+  }
+}

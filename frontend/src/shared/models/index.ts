@@ -2,6 +2,8 @@
 export interface CreateProjectRequest {
   title: string;
   description: string;
+  titleFr?: string;
+  descriptionFr?: string;
   url: string;
   imageUrl: string;
 }
@@ -13,6 +15,8 @@ export interface UpdateProjectRequest extends CreateProjectRequest {
 export interface CreateSkillRequest {
   title: string;
   description: string;
+  titleFr?: string;
+  descriptionFr?: string;
   type: 'frontend' | 'backend' | 'other';
 }
 
@@ -24,6 +28,9 @@ export interface CreateWorkExperienceRequest {
   company: string;
   position: string;
   description: string;
+  companyFr?: string;
+  positionFr?: string;
+  descriptionFr?: string;
   startDate: string;
   endDate?: string;
   isCurrent: boolean;
@@ -37,6 +44,9 @@ export interface CreateEducationRequest {
   school: string;
   degree: string;
   description: string;
+  schoolFr?: string;
+  degreeFr?: string;
+  descriptionFr?: string;
   startDate: string;
   endDate?: string;
   isCurrentlyStudying: boolean;
@@ -49,6 +59,8 @@ export interface UpdateEducationRequest extends CreateEducationRequest {
 export interface CreateHobbyRequest {
   title: string;
   description: string;
+  titleFr?: string;
+  descriptionFr?: string;
   imageUrl: string;
 }
 

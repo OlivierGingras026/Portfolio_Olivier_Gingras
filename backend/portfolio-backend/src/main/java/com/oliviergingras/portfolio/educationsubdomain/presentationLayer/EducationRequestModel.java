@@ -22,6 +22,15 @@ public class EducationRequestModel {
     @Size(max = 2000)
     private String description;
 
+    @Size(max = 120)
+    private String schoolFr;
+
+    @Size(max = 120)
+    private String degreeFr;
+
+    @Size(max = 2000)
+    private String descriptionFr;
+
     @NotNull
     private LocalDate startDate;
 

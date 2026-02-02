@@ -1,10 +1,12 @@
 import type { Skill } from '../types';
 import { usePortfolioData } from '../../../shared/context/usePortfolioData';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import './SkillsSection.css';
 
 export const SkillsSection = () => {
   const { data } = usePortfolioData();
+  const { i18n, t } = useTranslation();
   const skills = (data?.skills || []) as Skill[];
 
   // Group skills by type
@@ -12,6 +14,10 @@ export const SkillsSection = () => {
   const backendSkills = skills.filter(s => s.type === 'backend');
   const otherSkills = skills.filter(s => s.type === 'other');
   const allSkills = [...frontendSkills, ...backendSkills, ...otherSkills];
+
+  const getSkillTitle = (skill: Skill): string => {
+    return i18n.language === 'fr' ? (skill.titleFr || skill.title) : skill.title;
+  };
 
   return (
     <section id="skills" className="skills-section">
@@ -23,7 +29,7 @@ export const SkillsSection = () => {
           className="skills-header"
         >
           <p className="skills-label">EXPERTISE</p>
-          <h2 className="skills-title">Skills & <span className="skills-gradient">Technologies</span></h2>
+          <h2 className="skills-title">{t('skillsubdomain.sectionTitle').split(' & ')[0]} & <span className="skills-gradient">{t('skillsubdomain.sectionTitle').split(' & ')[1]}</span></h2>
         </motion.div>
 
         <div className="skills-grid">
@@ -48,7 +54,7 @@ export const SkillsSection = () => {
                   className="skill-item"
                 >
                   <div className="skill-header">
-                    <span className="skill-name">{skill.title}</span>
+                    <span className="skill-name">{getSkillTitle(skill)}</span>
                   </div>
                   <div className="skill-bar">
                     <motion.div 
@@ -85,7 +91,7 @@ export const SkillsSection = () => {
                   className="skill-item"
                 >
                   <div className="skill-header">
-                    <span className="skill-name">{skill.title}</span>
+                    <span className="skill-name">{getSkillTitle(skill)}</span>
                   </div>
                   <div className="skill-bar">
                     <motion.div 
@@ -122,7 +128,7 @@ export const SkillsSection = () => {
                   className="skill-item"
                 >
                   <div className="skill-header">
-                    <span className="skill-name">{skill.title}</span>
+                    <span className="skill-name">{getSkillTitle(skill)}</span>
                   </div>
                   <div className="skill-bar">
                     <motion.div 
@@ -156,7 +162,7 @@ export const SkillsSection = () => {
                 viewport={{ once: true, amount: 0.3 }}
                 className="ecosystem-tag"
               >
-                {skill.title}
+                {getSkillTitle(skill)}
               </motion.span>
             ))}
           </div>

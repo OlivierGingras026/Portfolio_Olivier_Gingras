@@ -27,11 +27,20 @@ public class Testimonial {
     @Column(name = "company", nullable = true)
     private String company;
 
+    @Column(name = "title_fr")
+    private String titleFr;
+
+    @Column(name = "company_fr")
+    private String companyFr;
+
     @Column(name = "rating")
     private Integer rating;
 
     @Column(name = "message", nullable = false, columnDefinition = "TEXT")
     private String message;
+
+    @Column(name = "message_fr", columnDefinition = "TEXT")
+    private String messageFr;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

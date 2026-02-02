@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuthStore from '../../authentication/store/authStore';
+import { LanguageSwitcher } from '../../../shared/components/LanguageSwitcher';
 import './AdminDashboard.css';
 
 // Modal Components - Add
@@ -22,6 +24,7 @@ import { contactAPI, reachMeAPI, type ContactMessage, type ReachMeProfile } from
 import { cvAPI, type CVFile } from '../../cv/api/cvAPI';
 import { testimonialAPI, type Testimonial } from '../../testimonials/api/testimonialAPI';
 import { authAPI } from '../../authentication/api/authAPI';
+import { portfolioAPI } from '../../../shared/api/portfolioAPI';
 
 // Types
 import type { Project } from '../../projects/types';
@@ -45,6 +48,7 @@ import { DeleteCVModal } from '../../cv/components/DeleteCVModal';
 export const AdminDashboard = () => {
   const { logout } = useAuthStore();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'projects' | 'work' | 'education' | 'skills' | 'hobbies' | 'contact' | 'reachme' | 'cv' | 'testimonials'>('projects');
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'add' | 'edit' | 'delete'>('add');
@@ -175,21 +179,22 @@ export const AdminDashboard = () => {
 
   const handleModalSuccess = async () => {
     console.log('[AdminDashboard] Modal success - starting data refresh');
+    portfolioAPI.invalidateCache();
     await fetchAllData();
     console.log('[AdminDashboard] Data refresh complete - closing modal');
     handleCloseModal();
   };
 
   const tabs = [
-    { id: 'projects', label: 'Projects' },
-    { id: 'work', label: 'Work Experience' },
-    { id: 'education', label: 'Education' },
-    { id: 'skills', label: 'Skills' },
-    { id: 'hobbies', label: 'Hobbies' },
+    { id: 'projects', label: t('admin.projects') },
+    { id: 'work', label: t('admin.experience') },
+    { id: 'education', label: t('admin.education') },
+    { id: 'skills', label: t('admin.skills') },
+    { id: 'hobbies', label: t('admin.hobbies') },
     { id: 'contact', label: 'Messages' },
     { id: 'reachme', label: 'Profile' },
     { id: 'cv', label: 'CV' },
-    { id: 'testimonials', label: 'Testimonials' },
+    { id: 'testimonials', label: t('admin.testimonials') },
   ] as const;
 
   // CRUD Handlers
@@ -314,7 +319,7 @@ export const AdminDashboard = () => {
       {/* Sidebar */}
       <aside className="admin-sidebar">
         <div className="sidebar-header">
-          <h1 className="sidebar-title">Admin Portal</h1>
+          <h1 className="sidebar-title">{t('admin.dashboard')}</h1>
         </div>
         
         <nav className="sidebar-nav">
@@ -335,7 +340,7 @@ export const AdminDashboard = () => {
             onClick={handleLogout}
             className="logout-btn"
           >
-            Sign Out
+            {t('admin.logout')}
           </button>
         </div>
       </aside>
@@ -347,16 +352,19 @@ export const AdminDashboard = () => {
                  <div className="admin-header-title">
                     {tabs.find(t => t.id === activeTab)?.label}
                 </div>
-                <div className="admin-header-subtitle">Manage your content here.</div>
+                <div className="admin-header-subtitle">{t('admin.manage')}</div>
             </div>
-            {activeTab !== 'contact' && activeTab !== 'reachme' && activeTab !== 'cv' && activeTab !== 'testimonials' && (
-                <button 
-                  onClick={() => handleOpenModal()}
-                  className="add-new-btn"
-                >
-                    + Add New
-                </button>
-            )}
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <LanguageSwitcher />
+              {activeTab !== 'contact' && activeTab !== 'reachme' && activeTab !== 'cv' && activeTab !== 'testimonials' && (
+                  <button 
+                    onClick={() => handleOpenModal()}
+                    className="add-new-btn"
+                  >
+                      + {t('common.add')}
+                  </button>
+              )}
+            </div>
         </header>
 
         {loading ? (
@@ -415,21 +423,21 @@ export const AdminDashboard = () => {
                                             <button 
                                               className="card-action-btn edit"
                                               onClick={() => handleOpenModal(item.workExperienceId)}
-                                              title="Edit"
+                                              title={t('common.edit')}
                                             >
-                                              Edit
+                                              {t('common.edit')}
                                             </button>
                                             <button 
                                               className="card-action-btn delete"
                                               onClick={() => handleDeleteWorkExperience(item.workExperienceId, item.position)}
-                                              title="Delete"
+                                              title={t('common.delete')}
                                             >
-                                              Delete
+                                              {t('common.delete')}
                                             </button>
                                         </div>
                                     </div>
                                     <span className="card-meta">
-                                        {item.startDate} - {item.isCurrent ? "Present" : item.endDate}
+                                        {item.startDate} - {item.isCurrent ? t('workexperiencesubdomain.present') : item.endDate}
                                     </span>
                                     <p className="card-description" style={{ marginTop: '0.5rem' }}>{item.description}</p>
                                 </div>
@@ -447,7 +455,7 @@ export const AdminDashboard = () => {
                                   onDelete={() => handleDeleteEducation(item.educationId, item.school)}
                                 >
                                     <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.5rem' }}>
-                                      {item.startDate} - {item.isCurrentlyStudying ? 'Present' : item.endDate}
+                                      {item.startDate} - {item.isCurrentlyStudying ? t('workexperiencesubdomain.present') : item.endDate}
                                     </div>
                                     <p className="card-description">{item.description}</p>
                                 </AdminCard>
@@ -918,7 +926,9 @@ const AdminCard = ({
   children: ReactNode,
   onEdit: () => void,
   onDelete: () => void
-}) => (
+}) => {
+  const { t } = useTranslation();
+  return (
     <div className="card">
         <div className="card-header">
              <div>
@@ -926,10 +936,11 @@ const AdminCard = ({
                 {subtitle && <div className="card-subtitle">{subtitle}</div>}
              </div>
              <div className="card-actions">
-                <button className="card-action-btn edit" onClick={onEdit} title="Edit">Edit</button>
-                <button className="card-action-btn delete" onClick={onDelete} title="Delete">Delete</button>
+                <button className="card-action-btn edit" onClick={onEdit} title={t('common.edit')}>{t('common.edit')}</button>
+                <button className="card-action-btn delete" onClick={onDelete} title={t('common.delete')}>{t('common.delete')}</button>
              </div>
         </div>
         <div className="card-body">{children}</div>
     </div>
-);
+  );
+};

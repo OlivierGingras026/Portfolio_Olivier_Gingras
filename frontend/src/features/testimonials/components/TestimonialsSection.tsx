@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { usePortfolioData } from '../../../shared/context/usePortfolioData';
 import type { Testimonial } from '../api/testimonialAPI';
 import { TestimonialSubmitForm } from './TestimonialSubmitForm';
@@ -8,11 +9,24 @@ import './TestimonialsSection.css';
 
 export const TestimonialsSection = () => {
   const { data, refetch } = usePortfolioData();
+  const { i18n, t } = useTranslation();
   const testimonials = (data?.testimonials || []) as Testimonial[];
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showSubmitForm, setShowSubmitForm] = useState(false);
   const [autoPlayActive, setAutoPlayActive] = useState(true);
+
+  const getMessage = (testimonial: Testimonial): string => {
+    return i18n.language === 'fr' ? (testimonial.messageFr || testimonial.message) : testimonial.message;
+  };
+
+  const getTitle = (testimonial: Testimonial): string => {
+    return i18n.language === 'fr' ? (testimonial.titleFr || testimonial.title) : testimonial.title;
+  };
+
+  const getCompany = (testimonial: Testimonial): string | undefined => {
+    return i18n.language === 'fr' ? (testimonial.companyFr || testimonial.company) : testimonial.company;
+  };
 
   useEffect(() => {
     if (testimonials.length === 0 || !autoPlayActive) return;
@@ -47,8 +61,8 @@ export const TestimonialsSection = () => {
           viewport={{ once: true, amount: 0.5 }}
           className="testimonials-header"
         >
-          <h2 className="testimonials-title">What People <span className="testimonials-title-highlight">Say</span></h2>
-          <p className="testimonials-subtitle">Feedback from clients and colleagues I've had the pleasure to work with</p>
+          <h2 className="testimonials-title">{t('testimonialsubdomain.sectionTitle').split(' ')[0]} <span className="testimonials-title-highlight">{t('testimonialsubdomain.sectionTitle').split(' ')[1]}</span></h2>
+          <p className="testimonials-subtitle">{i18n.language === 'fr' ? 'Retours de clients et collègues avec lesquels j\'ai eu le plaisir de travailler' : 'Feedback from clients and colleagues I\'ve had the pleasure to work with'}</p>
         </motion.div>
 
         <div className="testimonials-carousel">
@@ -71,7 +85,7 @@ export const TestimonialsSection = () => {
                 ))}
               </div>
 
-              <p className="testimonial-text">{current.message}</p>
+              <p className="testimonial-text">{getMessage(current)}</p>
 
               <div className="testimonial-author">
                 <div className="testimonial-avatar">
@@ -80,7 +94,7 @@ export const TestimonialsSection = () => {
                 <div>
                   <h4 className="testimonial-name">{current.name}</h4>
                   <p className="testimonial-role">
-                    {current.title} {current.company && `at `}<span className="testimonial-company">{current.company}</span>
+                    {getTitle(current)} {getCompany(current) && `at `}<span className="testimonial-company">{getCompany(current) || ''}</span>
                   </p>
                 </div>
               </div>

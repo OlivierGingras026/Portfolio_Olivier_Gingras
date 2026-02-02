@@ -1,0 +1,120 @@
+{
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "french": "Français",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close"
+  },
+  "hero": {
+    "welcome": "Welcome to my portfolio",
+    "name": "Olivier Gingras",
+    "subtitle": "Full-stack developer passionate about building innovative web applications with clean code and modern technologies",
+    "cta": "Get In Touch",
+    "viewWork": "View My Work"
+  },
+  "skillsubdomain": {
+    "title": "Skills",
+    "sectionTitle": "Skills & Technologies",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "other": "Other",
+    "proficiency": "Proficiency",
+    "type": "Type",
+    "description": "Description"
+  },
+  "workexperiencesubdomain": {
+    "title": "Work Experience",
+    "sectionTitle": "Work Experience",
+    "position": "Position",
+    "company": "Company",
+    "duration": "Duration",
+    "description": "Description",
+    "from": "From",
+    "to": "To",
+    "present": "Present"
+  },
+  "testimonialsubdomain": {
+    "title": "Testimonials",
+    "sectionTitle": "What People Say",
+    "from": "From",
+    "rating": "Rating",
+    "message": "Message",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "projectsubdomain": {
+    "title": "Projects",
+    "sectionTitle": "Featured Projects",
+    "description": "Description",
+    "technologies": "Technologies",
+    "viewProject": "View Project",
+    "github": "GitHub",
+    "demo": "Demo"
+  },
+  "educationsubdomain": {
+    "title": "Education",
+    "sectionTitle": "Education",
+    "degree": "Degree",
+    "institution": "Institution",
+    "field": "Field of Study",
+    "graduationDate": "Graduation Date"
+  },
+  "hobbysubdomain": {
+    "title": "Hobbies & Interests",
+    "sectionTitle": "Interests & Hobbies",
+    "hobby": "Hobby"
+  },
+  "contactsubdomain": {
+    "title": "Get In Touch",
+    "name": "Name",
+    "email": "Email",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "successMessage": "Thank you! Your message has been sent successfully.",
+    "errorMessage": "Sorry, there was an error sending your message. Please try again.",
+    "phone": "Phone",
+    "address": "Address"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "skills": "Skills",
+    "experience": "Experience",
+    "projects": "Projects",
+    "education": "Education",
+    "testimonials": "Testimonials",
+    "contact": "Contact",
+    "cv": "Resume",
+    "hobbies": "Hobbies",
+    "admin": "Admin"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "login": "Login",
+    "logout": "Logout",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Sign In",
+    "loginError": "Invalid credentials",
+    "dashboard": "Dashboard",
+    "manage": "Manage",
+    "settings": "Settings",
+    "skills": "Manage Skills",
+    "experience": "Manage Experience",
+    "projects": "Manage Projects",
+    "education": "Manage Education",
+    "testimonials": "Manage Testimonials",
+    "hobbies": "Manage Hobbies"
+  }
+}

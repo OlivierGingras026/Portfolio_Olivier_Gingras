@@ -21,6 +21,12 @@ public class EducationResponseModel {
 
     private String description;
 
+    private String schoolFr;
+
+    private String degreeFr;
+
+    private String descriptionFr;
+
     private LocalDate startDate;
 
     private LocalDate endDate;

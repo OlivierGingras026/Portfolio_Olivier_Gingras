@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Menu, X, LogIn, LogOut } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './Portfolio.css';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../authentication/store/authStore';
+import { LanguageSwitcher } from '../../../shared/components/LanguageSwitcher';
 
 export const PortfolioNavbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +14,7 @@ export const PortfolioNavbar = () => {
     const navRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
     const { isAuthenticated, logout, adminUser } = useAuthStore();
+    const { t, i18n } = useTranslation();
 
     const scrollToSection = (id: string) => {
         const element = document.getElementById(id);
@@ -25,16 +28,16 @@ export const PortfolioNavbar = () => {
     };
 
     const navItems = useMemo(() => [
-        { label: 'Home', id: 'home' },
-        { label: 'Skills', id: 'skills' },
-        { label: 'Projects', id: 'projects' },
-        { label: 'Experience', id: 'experience' },
-        { label: 'Education', id: 'education' },
-        { label: 'Hobbies', id: 'hobbies' },
-        { label: 'Testimonials', id: 'testimonials' },
-        { label: 'CV', id: 'cv' },
-        { label: 'Contact', id: 'contact' },
-    ], []);
+        { label: t('navigation.home'), id: 'home' },
+        { label: t('navigation.skills'), id: 'skills' },
+        { label: t('navigation.projects'), id: 'projects' },
+        { label: t('navigation.experience'), id: 'experience' },
+        { label: t('navigation.education'), id: 'education' },
+        { label: t('navigation.hobbies'), id: 'hobbies' },
+        { label: t('navigation.testimonials'), id: 'testimonials' },
+        { label: t('navigation.cv'), id: 'cv' },
+        { label: t('navigation.contact'), id: 'contact' },
+    ], [t, i18n.language]);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -143,6 +146,9 @@ export const PortfolioNavbar = () => {
                             </button>
                         ))}
                     </div>
+
+                    {/* Language Switcher */}
+                    <LanguageSwitcher />
 
                     {/* Auth Button */}
                     {isAuthenticated ? (

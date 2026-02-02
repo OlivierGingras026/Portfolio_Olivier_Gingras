@@ -17,6 +17,10 @@ public class SkillResponseModel {
 
     private String description;
 
+    private String titleFr;
+
+    private String descriptionFr;
+
     private String type;
 
 }

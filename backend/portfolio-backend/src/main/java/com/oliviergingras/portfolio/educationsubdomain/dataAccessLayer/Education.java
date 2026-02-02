@@ -31,6 +31,15 @@ public class Education {
     @Column(nullable = false, length = 2000)
     private String description;
 
+    @Column(length = 120)
+    private String schoolFr;
+
+    @Column(length = 120)
+    private String degreeFr;
+
+    @Column(length = 2000)
+    private String descriptionFr;
+
     @Column(nullable = false)
     private LocalDate startDate;
 

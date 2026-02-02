@@ -16,6 +16,12 @@ public class ProjectRequestModel {
     @Size(max = 2000)
     private String description;
 
+    @Size(max = 120)
+    private String titleFr;
+
+    @Size(max = 2000)
+    private String descriptionFr;
+
     @NotBlank
     @Size(max = 500)
     private String url;

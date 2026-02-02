@@ -22,6 +22,15 @@ public class WorkExperienceRequestModel {
     @Size(max = 2000)
     private String description;
 
+    @Size(max = 120)
+    private String companyFr;
+
+    @Size(max = 120)
+    private String positionFr;
+
+    @Size(max = 2000)
+    private String descriptionFr;
+
     @NotNull
     private LocalDate startDate;
 

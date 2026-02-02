@@ -18,6 +18,10 @@ public class ProjectResponseModel {
 
     private String description;
 
+    private String titleFr;
+
+    private String descriptionFr;
+
     private String url;
 
     private String imageUrl;

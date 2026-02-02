@@ -5,6 +5,7 @@ import { ProtectedRoute } from './features/authentication/components/ProtectedRo
 import { PortfolioHome } from './features/portfolio/pages/PortfolioHome';
 import { AdminDashboard } from './features/admin/pages/AdminDashboard';
 import { Toast } from './shared/components/Toast';
+import { PortfolioProvider } from './shared/context/PortfolioContext';
 import useAuthStore from './features/authentication/store/authStore';
 import './index.css';
 
@@ -23,7 +24,11 @@ function App() {
     <Router>
       <Toast />
       <Routes>
-        <Route path="/" element={<PortfolioHome />} />
+        <Route path="/" element={
+          <PortfolioProvider>
+            <PortfolioHome />
+          </PortfolioProvider>
+        } />
         
         <Route path="/admin/login" element={<LoginPage />} />
         

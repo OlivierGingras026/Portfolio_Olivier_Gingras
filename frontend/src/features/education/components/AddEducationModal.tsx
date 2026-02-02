@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { educationAPI } from '../api/educationAPI';
 import type { CreateEducationRequest } from '../../../shared/models';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -9,10 +10,14 @@ interface AddEducationModalProps {
 }
 
 export const AddEducationModal = ({ onClose, onSuccess }: AddEducationModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<CreateEducationRequest>({
     school: '',
     degree: '',
     description: '',
+    schoolFr: '',
+    degreeFr: '',
+    descriptionFr: '',
     startDate: '',
     endDate: '',
     isCurrentlyStudying: false
@@ -62,13 +67,13 @@ export const AddEducationModal = ({ onClose, onSuccess }: AddEducationModalProps
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <span>Add New Education</span>
+          <span>{t('common.add')} {t('educationsubdomain.title')}</span>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">School *</label>
+            <label className="form-label">School EN *</label>
             <input 
               type="text"
               className="form-input"
@@ -81,7 +86,19 @@ export const AddEducationModal = ({ onClose, onSuccess }: AddEducationModalProps
           </div>
 
           <div className="form-group">
-            <label className="form-label">Degree *</label>
+            <label className="form-label">École FR</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder="Nom de l'école/université"
+              value={formData.schoolFr || ''}
+              onChange={(e) => handleChange('schoolFr', e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Degree EN *</label>
             <input 
               type="text"
               className="form-input"
@@ -94,7 +111,19 @@ export const AddEducationModal = ({ onClose, onSuccess }: AddEducationModalProps
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description *</label>
+            <label className="form-label">Diplôme FR</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder="Nom du diplôme"
+              value={formData.degreeFr || ''}
+              onChange={(e) => handleChange('degreeFr', e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description EN *</label>
             <textarea
               className="form-textarea"
               placeholder="Education description"
@@ -103,6 +132,17 @@ export const AddEducationModal = ({ onClose, onSuccess }: AddEducationModalProps
               disabled={loading}
             />
             {errors.description && <span className="form-error">{errors.description}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description FR</label>
+            <textarea
+              className="form-textarea"
+              placeholder="Description de l'éducation"
+              value={formData.descriptionFr || ''}
+              onChange={(e) => handleChange('descriptionFr', e.target.value)}
+              disabled={loading}
+            />
           </div>
 
           <div className="form-group">
@@ -148,10 +188,10 @@ export const AddEducationModal = ({ onClose, onSuccess }: AddEducationModalProps
 
         <div className="form-actions">
           <button className="form-btn form-btn-primary" onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Saving...' : 'Save'}
+            {loading ? t('common.loading') : t('common.save')}
           </button>
           <button className="form-btn form-btn-secondary" onClick={onClose} disabled={loading}>
-            Cancel
+            {t('common.cancel')}
           </button>
         </div>
       </div>

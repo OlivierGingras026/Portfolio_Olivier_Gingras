@@ -1,11 +1,21 @@
 import type { Project } from '../types';
 import { usePortfolioData } from '../../../shared/context/usePortfolioData';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import './ProjectsSection.css';
 
 export const ProjectsSection = () => {
   const { data } = usePortfolioData();
+  const { i18n, t } = useTranslation();
   const projects = (data?.projects || []) as Project[];
+
+  const getProjectTitle = (project: Project): string => {
+    return i18n.language === 'fr' ? (project.titleFr || project.title) : project.title;
+  };
+
+  const getProjectDescription = (project: Project): string => {
+    return i18n.language === 'fr' ? (project.descriptionFr || project.description) : project.description;
+  };
 
   return (
     <section id="projects" className="projects-section">
@@ -16,9 +26,9 @@ export const ProjectsSection = () => {
            viewport={{ once: true, amount: 0.5 }}
            className="projects-header"
         >
-          <h2 className="projects-title">Featured Projects</h2>
+          <h2 className="projects-title">{t('projectsubdomain.sectionTitle')}</h2>
           <p className="projects-description">
-            A showcase of my recent work, personal projects, and experiments.
+            {i18n.language === 'fr' ? 'Un aperçu de mon travail récent, de mes projets personnels et de mes expériences.' : 'A showcase of my recent work, personal projects, and experiments.'}
           </p>
         </motion.div>
 
@@ -70,8 +80,8 @@ export const ProjectsSection = () => {
                   Featured Project
                 </motion.div>
                 
-                <h3 className="project-title">{project.title}</h3>
-                <p className="project-description">{project.description}</p>
+                <h3 className="project-title">{getProjectTitle(project)}</h3>
+                <p className="project-description">{getProjectDescription(project)}</p>
 
                 {project.technologies && project.technologies.length > 0 && (
                   <div className="technologies-list">

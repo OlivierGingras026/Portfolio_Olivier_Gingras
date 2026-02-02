@@ -15,6 +15,12 @@ public class SkillRequestModel {
     @Size(max = 2000)
     private String description;
 
+    @Size(max = 120)
+    private String titleFr;
+
+    @Size(max = 2000)
+    private String descriptionFr;
+
     @NotBlank
     private String type = "other";
 }

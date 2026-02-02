@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { educationAPI } from '../api/educationAPI';
 import type { CreateEducationRequest } from '../../../shared/models';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -11,10 +12,14 @@ interface EditEducationModalProps {
 }
 
 export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData }: EditEducationModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<CreateEducationRequest>({
     school: (existingData?.school as string) || '',
     degree: (existingData?.degree as string) || '',
     description: (existingData?.description as string) || '',
+    schoolFr: (existingData?.schoolFr as string) || '',
+    degreeFr: (existingData?.degreeFr as string) || '',
+    descriptionFr: (existingData?.descriptionFr as string) || '',
     startDate: (existingData?.startDate as string) || '',
     endDate: (existingData?.endDate as string) || '',
     isCurrentlyStudying: (existingData?.isCurrentlyStudying as boolean) || false
@@ -63,13 +68,13 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <span>Edit Education</span>
+          <span>{t('common.edit')} {t('educationsubdomain.title')}</span>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">School *</label>
+            <label className="form-label">School EN *</label>
             <input 
               type="text"
               className="form-input"
@@ -82,7 +87,19 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
           </div>
 
           <div className="form-group">
-            <label className="form-label">Degree *</label>
+            <label className="form-label">École FR</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder="Nom de l'école"
+              value={formData.schoolFr || ''}
+              onChange={(e) => handleChange('schoolFr', e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Degree EN *</label>
             <input 
               type="text"
               className="form-input"
@@ -95,7 +112,19 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description *</label>
+            <label className="form-label">Diplôme FR</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder="Diplôme"
+              value={formData.degreeFr || ''}
+              onChange={(e) => handleChange('degreeFr', e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description EN *</label>
             <textarea 
               className="form-input"
               placeholder="Education description"
@@ -105,6 +134,18 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
               rows={4}
             />
             {errors.description && <span className="form-error">{errors.description}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description FR</label>
+            <textarea 
+              className="form-input"
+              placeholder="Description de l'éducation"
+              value={formData.descriptionFr || ''}
+              onChange={(e) => handleChange('descriptionFr', e.target.value)}
+              disabled={loading}
+              rows={4}
+            />
           </div>
 
           <div className="form-group">
@@ -151,14 +192,14 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
 
         <div className="modal-footer">
           <button className="form-btn form-btn-secondary" onClick={onClose} disabled={loading}>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button 
             className="form-btn form-btn-primary" 
             onClick={handleSubmit}
             disabled={loading}
           >
-            {loading ? 'Updating...' : 'Update'}
+            {loading ? t('common.loading') : t('common.save')}
           </button>
         </div>
       </div>

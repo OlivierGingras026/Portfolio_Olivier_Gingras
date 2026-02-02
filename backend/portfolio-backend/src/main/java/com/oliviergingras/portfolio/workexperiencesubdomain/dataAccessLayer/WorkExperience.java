@@ -31,6 +31,15 @@ public class WorkExperience {
     @Column(nullable = false, length = 2000)
     private String description;
 
+    @Column(length = 120)
+    private String companyFr;
+
+    @Column(length = 120)
+    private String positionFr;
+
+    @Column(length = 2000)
+    private String descriptionFr;
+
     @Column(nullable = false)
     private LocalDate startDate;
 

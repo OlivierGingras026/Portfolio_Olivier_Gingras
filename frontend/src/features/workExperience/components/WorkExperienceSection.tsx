@@ -1,12 +1,26 @@
 import type { WorkExperience } from '../types';
 import { usePortfolioData } from '../../../shared/context/usePortfolioData';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import './WorkExperienceSection.css';
 
 export const WorkExperienceSection = () => {
   const { data } = usePortfolioData();
+  const { i18n, t } = useTranslation();
   const experiences = ((data?.workExperiences || []) as WorkExperience[])
     .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+  const getPosition = (work: WorkExperience): string => {
+    return i18n.language === 'fr' ? (work.positionFr || work.position) : work.position;
+  };
+
+  const getCompany = (work: WorkExperience): string => {
+    return i18n.language === 'fr' ? (work.companyFr || work.company) : work.company;
+  };
+
+  const getDescription = (work: WorkExperience): string => {
+    return i18n.language === 'fr' ? (work.descriptionFr || work.description) : work.description;
+  };
 
   return (
     <section id="experience" className="work-experience-section">
@@ -17,7 +31,7 @@ export const WorkExperienceSection = () => {
           viewport={{ once: true, amount: 0.5 }}
           className="work-experience-title work-experience-title-white"
         >
-          Work Experience
+          {t('workexperiencesubdomain.sectionTitle')}
         </motion.h2>
 
         <div className="work-experience-list">
@@ -30,12 +44,12 @@ export const WorkExperienceSection = () => {
               className="work-experience-item"
             >
               <div className="work-experience-content">
-                <h3 className="work-position">{work.position}</h3>
-                <h4 className="work-company">{work.company}</h4>
+                <h3 className="work-position">{getPosition(work)}</h3>
+                <h4 className="work-company">{getCompany(work)}</h4>
                 <div className="work-dates">
                   {work.startDate} — {work.isCurrent ? 'Present' : work.endDate}
                 </div>
-                <p className="work-description">{work.description}</p>
+                <p className="work-description">{getDescription(work)}</p>
               </div>
             </motion.div>
           ))}

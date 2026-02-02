@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { hobbiesAPI } from '../api/hobbiesAPI';
 import type { CreateHobbyRequest } from '../../../shared/models';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -9,9 +10,12 @@ interface AddHobbyModalProps {
 }
 
 export const AddHobbyModal = ({ onClose, onSuccess }: AddHobbyModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<CreateHobbyRequest>({
     title: '',
     description: '',
+    titleFr: '',
+    descriptionFr: '',
     imageUrl: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -66,13 +70,13 @@ export const AddHobbyModal = ({ onClose, onSuccess }: AddHobbyModalProps) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <span>Add New Hobby</span>
+          <span>{t('common.add')} {t('hobbysubdomain.title')}</span>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">Title *</label>
+            <label className="form-label">Title EN *</label>
             <input 
               type="text"
               className="form-input"
@@ -85,7 +89,19 @@ export const AddHobbyModal = ({ onClose, onSuccess }: AddHobbyModalProps) => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description *</label>
+            <label className="form-label">Titre FR</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder="Titre du hobby"
+              value={formData.titleFr || ''}
+              onChange={(e) => handleChange('titleFr', e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description EN *</label>
             <textarea
               className="form-textarea"
               placeholder="Hobby description"
@@ -94,6 +110,17 @@ export const AddHobbyModal = ({ onClose, onSuccess }: AddHobbyModalProps) => {
               disabled={loading}
             />
             {errors.description && <span className="form-error">{errors.description}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description FR</label>
+            <textarea
+              className="form-textarea"
+              placeholder="Description du hobby"
+              value={formData.descriptionFr || ''}
+              onChange={(e) => handleChange('descriptionFr', e.target.value)}
+              disabled={loading}
+            />
           </div>
 
           <div className="form-group">
@@ -117,10 +144,10 @@ export const AddHobbyModal = ({ onClose, onSuccess }: AddHobbyModalProps) => {
 
         <div className="form-actions">
           <button className="form-btn form-btn-primary" onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Saving...' : 'Save'}
+            {loading ? t('common.loading') : t('common.save')}
           </button>
           <button className="form-btn form-btn-secondary" onClick={onClose} disabled={loading}>
-            Cancel
+            {t('common.cancel')}
           </button>
         </div>
       </div>

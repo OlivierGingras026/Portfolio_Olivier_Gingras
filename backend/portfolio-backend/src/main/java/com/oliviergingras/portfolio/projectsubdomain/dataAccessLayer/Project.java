@@ -27,6 +27,12 @@ public class Project {
     @Column(nullable = false, length = 2000)
     private String description;
 
+    @Column(length = 120)
+    private String titleFr;
+
+    @Column(length = 2000)
+    private String descriptionFr;
+
     @Column(nullable = false, length = 500)
     private String url;
 
