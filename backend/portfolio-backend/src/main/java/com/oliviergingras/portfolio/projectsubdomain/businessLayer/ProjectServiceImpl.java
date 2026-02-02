@@ -52,6 +52,8 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProjectIdentifier(new ProjectIdentifier());
         project.setTitle(request.getTitle());
         project.setDescription(request.getDescription());
+        project.setTitleFr(request.getTitleFr());
+        project.setDescriptionFr(request.getDescriptionFr());
         project.setUrl(request.getUrl());
         project.setImageUrl(request.getImageUrl());
         project.setTechnologies(request.getTechnologies());
@@ -67,6 +69,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         existing.setTitle(request.getTitle());
         existing.setDescription(request.getDescription());
+        existing.setTitleFr(request.getTitleFr());
+        existing.setDescriptionFr(request.getDescriptionFr());
         existing.setUrl(request.getUrl());
         existing.setImageUrl(request.getImageUrl());
         existing.setTechnologies(request.getTechnologies());

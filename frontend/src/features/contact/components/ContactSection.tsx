@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Mail, MapPin, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { contactAPI, reachMeAPI, type ReachMeProfile } from '../api/contactAPI';
 import './ContactSection.css';
 
 export const ContactSection = () => {
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -67,7 +69,7 @@ export const ContactSection = () => {
           className="contact-header"
         >
           <p className="contact-label">CONTACT</p>
-          <h2 className="contact-title">Let's Build <span className="contact-title-highlight">Something Great</span></h2>
+          <h2 className="contact-title">{i18n.language === 'fr' ? 'Construisons' : "Let's Build"} <span className="contact-title-highlight">{i18n.language === 'fr' ? 'Quelque Chose de Formidable' : 'Something Great'}</span></h2>
         </motion.div>
 
         {/* Content Grid */}
@@ -81,7 +83,7 @@ export const ContactSection = () => {
           >
             <h3 className="contact-info-title">Get in touch</h3>
             <p className="contact-info-description">
-              I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
+              {i18n.language === 'fr' ? 'Je suis toujours ouvert à discuter de nouveaux projets, d\'idées créatives ou d\'opportunités pour faire partie de votre vision.' : 'I\'m always open to discussing new projects, creative ideas, or opportunities to be part of your vision.'}
             </p>
 
             {/* Email Card */}
@@ -93,7 +95,7 @@ export const ContactSection = () => {
                 <Mail size={20} />
               </div>
               <div className="contact-card-content">
-                <p className="contact-card-label">Email me at</p>
+                <p className="contact-card-label">{t('contactsubdomain.emailMeAt')}</p>
                 <p className="contact-card-value">{profileData?.email || 'Loading...'}</p>
               </div>
               <svg className="contact-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -110,7 +112,7 @@ export const ContactSection = () => {
                 <MapPin size={20} />
               </div>
               <div className="contact-card-content">
-                <p className="contact-card-label">Based in</p>
+                <p className="contact-card-label">{t('contactsubdomain.basedIn')}</p>
                 <p className="contact-card-value">{profileData?.basedIn || 'Loading...'}</p>
               </div>
             </motion.div>
@@ -124,7 +126,7 @@ export const ContactSection = () => {
                 <div className="availability-dot"></div>
               </div>
               <div className="contact-card-content">
-                <p className="contact-card-label">Available for work</p>
+                <p className="contact-card-label">{t('contactsubdomain.availableForWork')}</p>
                 <p className="contact-card-value">{profileData?.availabilityStatus || 'Loading...'}</p>
               </div>
             </motion.div>
@@ -149,8 +151,8 @@ export const ContactSection = () => {
                 >
                   <CheckCircle size={64} className="success-icon" />
                 </motion.div>
-                <h3>Message Sent!</h3>
-                <p>Thank you for reaching out. I'll get back to you as soon as possible.</p>
+                <h3>{i18n.language === 'fr' ? 'Message Envoyé!' : 'Message Sent!'}</h3>
+                <p>{i18n.language === 'fr' ? 'Merci de m\'avoir contacté. Je vous répondrai dès que possible.' : 'Thank you for reaching out. I\'ll get back to you as soon as possible.'}</p>
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="contact-form">
@@ -167,7 +169,7 @@ export const ContactSection = () => {
                     viewport={{ once: true }}
                     className="form-group"
                   >
-                    <label htmlFor="name">Name</label>
+                    <label htmlFor="name">{t('contactsubdomain.name')}</label>
                     <input
                       type="text"
                       id="name"
@@ -204,7 +206,7 @@ export const ContactSection = () => {
                   viewport={{ once: true }}
                   className="form-group"
                 >
-                  <label htmlFor="message">Message</label>
+                  <label htmlFor="message">{t('contactsubdomain.message')}</label>
                   <textarea
                     id="message"
                     name="message"
@@ -229,11 +231,11 @@ export const ContactSection = () => {
                   {isLoading ? (
                     <>
                       <span className="spinner"></span>
-                      Sending...
+                      {t('contactsubdomain.sending')}
                     </>
                   ) : (
                     <>
-                      Send Message <span className="send-icon">✈</span>
+                      {t('contactsubdomain.send')} <span className="send-icon">✈</span>
                     </>
                   )}
                 </motion.button>

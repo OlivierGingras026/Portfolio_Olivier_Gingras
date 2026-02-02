@@ -47,7 +47,7 @@ export const WorkExperienceSection = () => {
                 <h3 className="work-position">{getPosition(work)}</h3>
                 <h4 className="work-company">{getCompany(work)}</h4>
                 <div className="work-dates">
-                  {work.startDate} — {work.isCurrent ? 'Present' : work.endDate}
+                  {work.startDate} — {work.isCurrent ? t('workexperiencesubdomain.present') : work.endDate}
                 </div>
                 <p className="work-description">{getDescription(work)}</p>
               </div>

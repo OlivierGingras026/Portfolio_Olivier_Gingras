@@ -52,6 +52,8 @@ public class HobbyServiceImpl implements HobbyService {
         hobby.setHobbyIdentifier(new HobbyIdentifier());
         hobby.setTitle(request.getTitle());
         hobby.setDescription(request.getDescription());
+        hobby.setTitleFr(request.getTitleFr());
+        hobby.setDescriptionFr(request.getDescriptionFr());
         hobby.setImageUrl(request.getImageUrl());
 
         Hobby saved = hobbyRepository.save(hobby);
@@ -65,6 +67,8 @@ public class HobbyServiceImpl implements HobbyService {
 
         existing.setTitle(request.getTitle());
         existing.setDescription(request.getDescription());
+        existing.setTitleFr(request.getTitleFr());
+        existing.setDescriptionFr(request.getDescriptionFr());
         existing.setImageUrl(request.getImageUrl());
 
         Hobby updated = hobbyRepository.save(existing);

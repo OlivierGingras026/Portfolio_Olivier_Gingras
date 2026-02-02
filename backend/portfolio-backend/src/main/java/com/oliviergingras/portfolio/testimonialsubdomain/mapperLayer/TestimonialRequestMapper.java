@@ -7,6 +7,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestimonialRequestMapper {
     public Testimonial toEntity(TestimonialRequestModel model) {
-        return new Testimonial(model.getName(), model.getTitle(), model.getCompany(), model.getRating(), model.getMessage());
+        Testimonial testimonial = new Testimonial(model.getName(), model.getTitle(), model.getCompany(), model.getRating(), model.getMessage());
+        testimonial.setTitleFr(model.titleFr);
+        testimonial.setCompanyFr(model.companyFr);
+        testimonial.setMessageFr(model.messageFr);
+        return testimonial;
     }
 }

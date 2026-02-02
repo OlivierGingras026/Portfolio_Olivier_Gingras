@@ -16,6 +16,9 @@ public interface WorkExperienceResponseMapper {
             @Mapping(source = "workExperience.company", target = "company"),
             @Mapping(source = "workExperience.position", target = "position"),
             @Mapping(source = "workExperience.description", target = "description"),
+            @Mapping(source = "workExperience.companyFr", target = "companyFr"),
+            @Mapping(source = "workExperience.positionFr", target = "positionFr"),
+            @Mapping(source = "workExperience.descriptionFr", target = "descriptionFr"),
             @Mapping(source = "workExperience.startDate", target = "startDate"),
             @Mapping(source = "workExperience.endDate", target = "endDate"),
             @Mapping(source = "workExperience.isCurrent", target = "isCurrent")

@@ -15,6 +15,8 @@ public interface ProjectResponseMapper {
             @Mapping(source = "project.projectIdentifier.projectId", target = "projectId"),
             @Mapping(source = "project.title", target = "title"),
             @Mapping(source = "project.description", target = "description"),
+            @Mapping(source = "project.titleFr", target = "titleFr"),
+            @Mapping(source = "project.descriptionFr", target = "descriptionFr"),
             @Mapping(source = "project.url", target = "url"),
             @Mapping(source = "project.imageUrl", target = "imageUrl"),
             @Mapping(source = "project.technologies", target = "technologies")

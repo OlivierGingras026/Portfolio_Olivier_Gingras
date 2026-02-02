@@ -16,6 +16,9 @@ public interface EducationRequestMapper {
             @Mapping(source = "requestModel.school", target = "school"),
             @Mapping(source = "requestModel.degree", target = "degree"),
             @Mapping(source = "requestModel.description", target = "description"),
+            @Mapping(source = "requestModel.schoolFr", target = "schoolFr"),
+            @Mapping(source = "requestModel.degreeFr", target = "degreeFr"),
+            @Mapping(source = "requestModel.descriptionFr", target = "descriptionFr"),
             @Mapping(source = "requestModel.startDate", target = "startDate"),
             @Mapping(source = "requestModel.endDate", target = "endDate"),
             @Mapping(source = "requestModel.isCurrentlyStudying", target = "isCurrentlyStudying")

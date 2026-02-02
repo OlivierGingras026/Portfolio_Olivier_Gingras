@@ -52,6 +52,8 @@ public class SkillServiceImpl implements SkillService {
         skill.setSkillIdentifier(new SkillIdentifier());
         skill.setTitle(request.getTitle());
         skill.setDescription(request.getDescription());
+        skill.setTitleFr(request.getTitleFr());
+        skill.setDescriptionFr(request.getDescriptionFr());
         
         // Set type with null check and conversion
         if (request.getType() != null && !request.getType().isEmpty()) {
@@ -75,6 +77,8 @@ public class SkillServiceImpl implements SkillService {
 
         existing.setTitle(request.getTitle());
         existing.setDescription(request.getDescription());
+        existing.setTitleFr(request.getTitleFr());
+        existing.setDescriptionFr(request.getDescriptionFr());
         
         // Update type with null check and conversion
         if (request.getType() != null && !request.getType().isEmpty()) {

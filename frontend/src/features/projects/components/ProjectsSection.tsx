@@ -77,7 +77,7 @@ export const ProjectsSection = () => {
                   viewport={{ once: true, amount: 0.3 }}
                   className="project-label"
                 >
-                  Featured Project
+                  {i18n.language === 'fr' ? 'Projet en Vedette' : 'Featured Project'}
                 </motion.div>
                 
                 <h3 className="project-title">{getProjectTitle(project)}</h3>
@@ -98,7 +98,7 @@ export const ProjectsSection = () => {
                     rel="noopener noreferrer"
                     className="project-link"
                   >
-                    View Project →
+                    {i18n.language === 'fr' ? 'Voir le Projet' : 'View Project'} →
                   </a>
                 )}
               </div>

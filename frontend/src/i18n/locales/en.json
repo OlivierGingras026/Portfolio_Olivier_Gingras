@@ -44,6 +44,9 @@
   "testimonialsubdomain": {
     "title": "Testimonials",
     "sectionTitle": "What People Say",
+    "sectionTitleMain": "What",
+    "sectionTitleHighlight": "People Say",
+    "subtitle": "Feedback from clients and colleagues I've had the pleasure to work with",
     "from": "From",
     "rating": "Rating",
     "message": "Message",
@@ -73,8 +76,15 @@
     "sectionTitle": "Interests & Hobbies",
     "hobby": "Hobby"
   },
+  "cvsubdomain": {
+    "title": "Download My CV",
+    "download": "Download",
+    "uploaded": "Uploaded"
+  },
   "contactsubdomain": {
     "title": "Get In Touch",
+    "subtitle": "Let's Build Something Great",
+    "description": "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.",
     "name": "Name",
     "email": "Email",
     "subject": "Subject",
@@ -84,7 +94,11 @@
     "successMessage": "Thank you! Your message has been sent successfully.",
     "errorMessage": "Sorry, there was an error sending your message. Please try again.",
     "phone": "Phone",
-    "address": "Address"
+    "address": "Address",
+    "emailMeAt": "Email me at",
+    "basedIn": "Based in",
+    "availableForWork": "Available for work",
+    "workDescription": "Currently accepting new projects. Typical response time: < 24 hours."
   },
   "navigation": {
     "home": "Home",

@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 public class TestimonialResponseMapper {
     public TestimonialResponseModel toModel(Testimonial entity) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return new TestimonialResponseModel(
+        TestimonialResponseModel model = new TestimonialResponseModel(
             entity.getTestimonialId(),
             entity.getName(),
             entity.getTitle(),
@@ -20,5 +20,9 @@ public class TestimonialResponseMapper {
             entity.getStatus().toString(),
             entity.getCreatedAt().format(formatter)
         );
+        model.titleFr = entity.getTitleFr();
+        model.companyFr = entity.getCompanyFr();
+        model.messageFr = entity.getMessageFr();
+        return model;
     }
 }

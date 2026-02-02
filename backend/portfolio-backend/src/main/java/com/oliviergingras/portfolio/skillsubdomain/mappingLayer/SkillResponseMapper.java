@@ -15,6 +15,8 @@ public interface SkillResponseMapper {
             @Mapping(source = "skill.skillIdentifier.skillId", target = "skillId"),
             @Mapping(source = "skill.title", target = "title"),
             @Mapping(source = "skill.description", target = "description"),
+            @Mapping(source = "skill.titleFr", target = "titleFr"),
+            @Mapping(source = "skill.descriptionFr", target = "descriptionFr"),
             @Mapping(expression = "java(skill.getType() != null ? skill.getType().toString().toLowerCase() : \"other\")", target = "type")
     })
     SkillResponseModel toResponseModel(Skill skill);

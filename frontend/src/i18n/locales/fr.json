@@ -44,6 +44,9 @@
   "testimonialsubdomain": {
     "title": "Témoignages",
     "sectionTitle": "Ce que les gens disent",
+    "sectionTitleMain": "Ce que",
+    "sectionTitleHighlight": "les gens disent",
+    "subtitle": "Retours de clients et collègues avec lesquels j'ai eu le plaisir de travailler",
     "from": "De",
     "rating": "Évaluation",
     "message": "Message",
@@ -73,8 +76,15 @@
     "sectionTitle": "Loisirs et Centres d'Intérêt",
     "hobby": "Loisir"
   },
+  "cvsubdomain": {
+    "title": "Télécharger Mon CV",
+    "download": "Télécharger",
+    "uploaded": "Mis en ligne"
+  },
   "contactsubdomain": {
     "title": "Me Contacter",
+    "subtitle": "Construisons Quelque Chose de Formidable",
+    "description": "Je suis toujours ouvert à discuter de nouveaux projets, d'idées créatives ou d'opportunités pour faire partie de votre vision.",
     "name": "Nom",
     "email": "Email",
     "subject": "Sujet",
@@ -84,7 +94,11 @@
     "successMessage": "Merci ! Votre message a été envoyé avec succès.",
     "errorMessage": "Désolé, une erreur s'est produite lors de l'envoi de votre message. Veuillez réessayer.",
     "phone": "Téléphone",
-    "address": "Adresse"
+    "address": "Adresse",
+    "emailMeAt": "Contactez-moi à",
+    "basedIn": "Basé à",
+    "availableForWork": "Disponible pour travailler",
+    "workDescription": "Accepte actuellement de nouveaux projets. Temps de réponse typique : < 24 heures."
   },
   "navigation": {
     "home": "Accueil",

@@ -53,6 +53,9 @@ public class WorkExperienceServiceImpl implements WorkExperienceService {
         workExperience.setCompany(request.getCompany());
         workExperience.setPosition(request.getPosition());
         workExperience.setDescription(request.getDescription());
+        workExperience.setCompanyFr(request.getCompanyFr());
+        workExperience.setPositionFr(request.getPositionFr());
+        workExperience.setDescriptionFr(request.getDescriptionFr());
         workExperience.setStartDate(request.getStartDate());
         workExperience.setEndDate(request.getEndDate());
         workExperience.setIsCurrent(request.getIsCurrent());
@@ -69,6 +72,9 @@ public class WorkExperienceServiceImpl implements WorkExperienceService {
         existing.setCompany(request.getCompany());
         existing.setPosition(request.getPosition());
         existing.setDescription(request.getDescription());
+        existing.setCompanyFr(request.getCompanyFr());
+        existing.setPositionFr(request.getPositionFr());
+        existing.setDescriptionFr(request.getDescriptionFr());
         existing.setStartDate(request.getStartDate());
         existing.setEndDate(request.getEndDate());
         existing.setIsCurrent(request.getIsCurrent());

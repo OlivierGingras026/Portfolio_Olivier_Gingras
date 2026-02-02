@@ -61,8 +61,8 @@ export const TestimonialsSection = () => {
           viewport={{ once: true, amount: 0.5 }}
           className="testimonials-header"
         >
-          <h2 className="testimonials-title">{t('testimonialsubdomain.sectionTitle').split(' ')[0]} <span className="testimonials-title-highlight">{t('testimonialsubdomain.sectionTitle').split(' ')[1]}</span></h2>
-          <p className="testimonials-subtitle">{i18n.language === 'fr' ? 'Retours de clients et collègues avec lesquels j\'ai eu le plaisir de travailler' : 'Feedback from clients and colleagues I\'ve had the pleasure to work with'}</p>
+          <h2 className="testimonials-title">{t('testimonialsubdomain.sectionTitleMain')} <span className="testimonials-title-highlight">{t('testimonialsubdomain.sectionTitleHighlight')}</span></h2>
+          <p className="testimonials-subtitle">{t('testimonialsubdomain.subtitle')}</p>
         </motion.div>
 
         <div className="testimonials-carousel">

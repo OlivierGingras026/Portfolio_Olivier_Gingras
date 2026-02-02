@@ -16,6 +16,9 @@ public interface EducationResponseMapper {
             @Mapping(source = "education.school", target = "school"),
             @Mapping(source = "education.degree", target = "degree"),
             @Mapping(source = "education.description", target = "description"),
+            @Mapping(source = "education.schoolFr", target = "schoolFr"),
+            @Mapping(source = "education.degreeFr", target = "degreeFr"),
+            @Mapping(source = "education.descriptionFr", target = "descriptionFr"),
             @Mapping(source = "education.startDate", target = "startDate"),
             @Mapping(source = "education.endDate", target = "endDate"),
             @Mapping(source = "education.isCurrentlyStudying", target = "isCurrentlyStudying")

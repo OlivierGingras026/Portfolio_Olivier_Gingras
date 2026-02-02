@@ -53,6 +53,9 @@ public class EducationServiceImpl implements EducationService {
         education.setSchool(request.getSchool());
         education.setDegree(request.getDegree());
         education.setDescription(request.getDescription());
+        education.setSchoolFr(request.getSchoolFr());
+        education.setDegreeFr(request.getDegreeFr());
+        education.setDescriptionFr(request.getDescriptionFr());
         education.setStartDate(request.getStartDate());
         education.setEndDate(request.getEndDate());
         education.setIsCurrentlyStudying(request.getIsCurrentlyStudying());
@@ -69,6 +72,9 @@ public class EducationServiceImpl implements EducationService {
         existing.setSchool(request.getSchool());
         existing.setDegree(request.getDegree());
         existing.setDescription(request.getDescription());
+        existing.setSchoolFr(request.getSchoolFr());
+        existing.setDegreeFr(request.getDegreeFr());
+        existing.setDescriptionFr(request.getDescriptionFr());
         existing.setStartDate(request.getStartDate());
         existing.setEndDate(request.getEndDate());
         existing.setIsCurrentlyStudying(request.getIsCurrentlyStudying());

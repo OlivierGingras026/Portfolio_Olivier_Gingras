@@ -15,6 +15,8 @@ public interface HobbyRequestMapper {
             @Mapping(source = "hobbyIdentifier", target = "hobbyIdentifier"),
             @Mapping(source = "requestModel.title", target = "title"),
             @Mapping(source = "requestModel.description", target = "description"),
+            @Mapping(source = "requestModel.titleFr", target = "titleFr"),
+            @Mapping(source = "requestModel.descriptionFr", target = "descriptionFr"),
             @Mapping(source = "requestModel.imageUrl", target = "imageUrl")
     })
     Hobby toEntity(HobbyRequestModel requestModel, HobbyIdentifier hobbyIdentifier);
