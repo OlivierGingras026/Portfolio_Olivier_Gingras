@@ -63,16 +63,28 @@ export const AddSkillModal = ({ onClose, onSuccess }: AddSkillModalProps) => {
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">{i18n.language === 'fr' ? 'Titre FR *' : 'Title EN *'}</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Titre EN *' : 'Title EN *'}</label>
             <input 
               type="text"
               className="form-input"
               placeholder={i18n.language === 'fr' ? 'Titre de la compétence' : 'Skill title'}
-              value={i18n.language === 'fr' ? (formData.titleFr || '') : formData.title}
-              onChange={(e) => handleChange(i18n.language === 'fr' ? 'titleFr' : 'title', e.target.value)}
+              value={formData.title}
+              onChange={(e) => handleChange('title', e.target.value)}
               disabled={loading}
             />
-            {errors[i18n.language === 'fr' ? 'titleFr' : 'title'] && <span className="form-error">{errors[i18n.language === 'fr' ? 'titleFr' : 'title']}</span>}
+            {errors.title && <span className="form-error">{errors.title}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">{i18n.language === 'fr' ? 'Titre FR' : 'Title FR'}</label>
+            <input 
+              type="text"
+              className="form-input"
+              placeholder={i18n.language === 'fr' ? 'Titre de la compétence' : 'Skill title'}
+              value={formData.titleFr || ''}
+              onChange={(e) => handleChange('titleFr', e.target.value)}
+              disabled={loading}
+            />
           </div>
 
           <div className="form-group">
@@ -83,23 +95,34 @@ export const AddSkillModal = ({ onClose, onSuccess }: AddSkillModalProps) => {
               onChange={(e) => handleChange('type', e.target.value as 'frontend' | 'backend' | 'other')}
               disabled={loading}
             >
-              <option value="frontend">Frontend</option>
-              <option value="backend">Backend</option>
+              <option value="frontend">{t('skillsubdomain.frontend')}</option>
+              <option value="backend">{t('skillsubdomain.backend')}</option>
               <option value="other">{t('skillsubdomain.other')}</option>
             </select>
             {errors.type && <span className="form-error">{errors.type}</span>}
           </div>
 
           <div className="form-group">
-            <label className="form-label">{i18n.language === 'fr' ? 'Description FR *' : 'Description EN *'}</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Description EN *' : 'Description EN *'}</label>
             <textarea
               className="form-textarea"
               placeholder={i18n.language === 'fr' ? 'Description de la compétence' : 'Skill description'}
-              value={i18n.language === 'fr' ? (formData.descriptionFr || '') : formData.description}
-              onChange={(e) => handleChange(i18n.language === 'fr' ? 'descriptionFr' : 'description', e.target.value)}
+              value={formData.description}
+              onChange={(e) => handleChange('description', e.target.value)}
               disabled={loading}
             />
-            {errors[i18n.language === 'fr' ? 'descriptionFr' : 'description'] && <span className="form-error">{errors[i18n.language === 'fr' ? 'descriptionFr' : 'description']}</span>}
+            {errors.description && <span className="form-error">{errors.description}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">{i18n.language === 'fr' ? 'Description FR' : 'Description FR'}</label>
+            <textarea
+              className="form-textarea"
+              placeholder={i18n.language === 'fr' ? 'Description de la compétence' : 'Skill description'}
+              value={formData.descriptionFr || ''}
+              onChange={(e) => handleChange('descriptionFr', e.target.value)}
+              disabled={loading}
+            />
           </div>
 
           {errors.submit && <div className="form-error" style={{ marginBottom: '1rem' }}>{errors.submit}</div>}

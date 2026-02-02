@@ -12,7 +12,7 @@ interface EditWorkExperienceModalProps {
 }
 
 export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existingData }: EditWorkExperienceModalProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState<CreateWorkExperienceRequest>({
     company: (existingData?.company as string) || '',
     position: (existingData?.position as string) || '',
@@ -74,11 +74,11 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">Company EN *</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Entreprise EN *' : 'Company EN *'}</label>
             <input 
               type="text"
               className="form-input"
-              placeholder="Company name"
+              placeholder={i18n.language === 'fr' ? "Nom de l'entreprise" : "Company name"}
               value={formData.company}
               onChange={(e) => handleChange('company', e.target.value)}
               disabled={loading}
@@ -87,11 +87,11 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
           </div>
 
           <div className="form-group">
-            <label className="form-label">Entreprise FR</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Entreprise FR' : 'Company FR'}</label>
             <input 
               type="text"
               className="form-input"
-              placeholder="Nom de l\'entreprise"
+              placeholder="Nom de l'entreprise"
               value={formData.companyFr || ''}
               onChange={(e) => handleChange('companyFr', e.target.value)}
               disabled={loading}
@@ -99,11 +99,11 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
           </div>
 
           <div className="form-group">
-            <label className="form-label">Position EN *</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Poste EN *' : 'Position EN *'}</label>
             <input 
               type="text"
               className="form-input"
-              placeholder="Job title"
+              placeholder={i18n.language === 'fr' ? "Intitulé du poste" : "Job title"}
               value={formData.position}
               onChange={(e) => handleChange('position', e.target.value)}
               disabled={loading}
@@ -112,7 +112,7 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
           </div>
 
           <div className="form-group">
-            <label className="form-label">Poste FR</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Poste FR' : 'Position FR'}</label>
             <input 
               type="text"
               className="form-input"
@@ -124,10 +124,10 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description EN *</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Description EN *' : 'Description EN *'}</label>
             <textarea 
               className="form-input"
-              placeholder="Job description"
+              placeholder={i18n.language === 'fr' ? "Description du poste" : "Job description"}
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
               disabled={loading}
@@ -137,7 +137,7 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description FR</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Description FR' : 'Description FR'}</label>
             <textarea 
               className="form-input"
               placeholder="Description du poste"

@@ -12,7 +12,7 @@ interface EditEducationModalProps {
 }
 
 export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData }: EditEducationModalProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState<CreateEducationRequest>({
     school: (existingData?.school as string) || '',
     degree: (existingData?.degree as string) || '',
@@ -74,11 +74,11 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">School EN *</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'École EN *' : 'School EN *'}</label>
             <input 
               type="text"
               className="form-input"
-              placeholder="School name"
+              placeholder={i18n.language === 'fr' ? "Nom de l'école" : "School name"}
               value={formData.school}
               onChange={(e) => handleChange('school', e.target.value)}
               disabled={loading}
@@ -87,7 +87,7 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
           </div>
 
           <div className="form-group">
-            <label className="form-label">École FR</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'École FR' : 'School FR'}</label>
             <input 
               type="text"
               className="form-input"
@@ -99,11 +99,11 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
           </div>
 
           <div className="form-group">
-            <label className="form-label">Degree EN *</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Diplôme EN *' : 'Degree EN *'}</label>
             <input 
               type="text"
               className="form-input"
-              placeholder="Degree"
+              placeholder={i18n.language === 'fr' ? "Diplôme" : "Degree"}
               value={formData.degree}
               onChange={(e) => handleChange('degree', e.target.value)}
               disabled={loading}
@@ -112,7 +112,7 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
           </div>
 
           <div className="form-group">
-            <label className="form-label">Diplôme FR</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Diplôme FR' : 'Degree FR'}</label>
             <input 
               type="text"
               className="form-input"
@@ -124,10 +124,10 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description EN *</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Description EN *' : 'Description EN *'}</label>
             <textarea 
               className="form-input"
-              placeholder="Education description"
+              placeholder={i18n.language === 'fr' ? "Description de la formation" : "Education description"}
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
               disabled={loading}
@@ -137,7 +137,7 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description FR</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Description FR' : 'Description FR'}</label>
             <textarea 
               className="form-input"
               placeholder="Description de l'éducation"

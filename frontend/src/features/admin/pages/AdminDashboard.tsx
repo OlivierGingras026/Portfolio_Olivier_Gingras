@@ -483,7 +483,7 @@ export const AdminDashboard = () => {
                             <>
                             {messages.length === 0 ? (
                                 <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-                                    No messages yet
+                                    {t('admin.noMessagesYet')}
                                 </div>
                             ) : (
                                 messages.map(item => (

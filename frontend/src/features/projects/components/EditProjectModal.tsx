@@ -12,7 +12,7 @@ interface EditProjectModalProps {
 }
 
 export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }: EditProjectModalProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState<CreateProjectRequest & { technologies?: string[] }>({
     title: (existingData?.title as string) || '',
     description: (existingData?.description as string) || '',
@@ -99,11 +99,11 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">Title EN *</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Titre EN *' : 'Title EN *'}</label>
             <input 
               type="text"
               className="form-input"
-              placeholder="Project title"
+              placeholder={i18n.language === 'fr' ? "Titre du projet" : "Project title"}
               value={formData.title}
               onChange={(e) => handleChange('title', e.target.value)}
               disabled={loading}
@@ -112,11 +112,11 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
           </div>
 
           <div className="form-group">
-            <label className="form-label">Titre FR</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Titre FR' : 'Title FR'}</label>
             <input 
               type="text"
               className="form-input"
-              placeholder="Titre du projet"
+              placeholder={i18n.language === 'fr' ? "Titre du projet" : "Titre du projet"}
               value={formData.titleFr || ''}
               onChange={(e) => handleChange('titleFr', e.target.value)}
               disabled={loading}
@@ -124,10 +124,10 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description EN *</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Description EN *' : 'Description EN *'}</label>
             <textarea
               className="form-textarea"
-              placeholder="Project description"
+              placeholder={i18n.language === 'fr' ? "Description du projet" : "Project description"}
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
               disabled={loading}
@@ -136,10 +136,10 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description FR</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Description FR' : 'Description FR'}</label>
             <textarea
               className="form-textarea"
-              placeholder="Description du projet"
+              placeholder={i18n.language === 'fr' ? "Description du projet" : "Description du projet"}
               value={formData.descriptionFr || ''}
               onChange={(e) => handleChange('descriptionFr', e.target.value)}
               disabled={loading}
@@ -147,7 +147,7 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
           </div>
 
           <div className="form-group">
-            <label className="form-label">URL *</label>
+            <label className="form-label">{t('admin.url')} *</label>
             <input 
               type="url"
               className="form-input"
@@ -160,7 +160,7 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
           </div>
 
           <div className="form-group">
-            <label className="form-label">Project Image</label>
+            <label className="form-label">{t('admin.imageUrl')}</label>
             <input 
               type="file"
               accept="image/*"
@@ -176,7 +176,7 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
           </div>
 
           <div className="form-group">
-            <label className="form-label">Technologies</label>
+            <label className="form-label">{t('admin.technologies')}</label>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
               <input 
                 type="text"
@@ -195,7 +195,7 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
                 disabled={loading || !techInput.trim()}
                 style={{ whiteSpace: 'nowrap' }}
               >
-                Add
+                {t('common.add')}
               </button>
             </div>
             {formData.technologies && formData.technologies.length > 0 && (

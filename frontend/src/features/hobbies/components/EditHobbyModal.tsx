@@ -12,7 +12,7 @@ interface EditHobbyModalProps {
 }
 
 export const EditHobbyModal = ({ onClose, onSuccess, editingId, existingData }: EditHobbyModalProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState<CreateHobbyRequest>({
     title: (existingData?.title as string) || '',
     description: (existingData?.description as string) || '',
@@ -78,11 +78,11 @@ export const EditHobbyModal = ({ onClose, onSuccess, editingId, existingData }: 
 
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">Title EN *</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Titre EN *' : 'Title EN *'}</label>
             <input 
               type="text"
               className="form-input"
-              placeholder="Hobby title"
+              placeholder={i18n.language === 'fr' ? "Titre du hobby" : "Hobby title"}
               value={formData.title}
               onChange={(e) => handleChange('title', e.target.value)}
               disabled={loading}
@@ -91,7 +91,7 @@ export const EditHobbyModal = ({ onClose, onSuccess, editingId, existingData }: 
           </div>
 
           <div className="form-group">
-            <label className="form-label">Titre FR</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Titre FR' : 'Title FR'}</label>
             <input 
               type="text"
               className="form-input"
@@ -103,10 +103,10 @@ export const EditHobbyModal = ({ onClose, onSuccess, editingId, existingData }: 
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description EN *</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Description EN *' : 'Description EN *'}</label>
             <textarea 
               className="form-input"
-              placeholder="Hobby description"
+              placeholder={i18n.language === 'fr' ? "Description du hobby" : "Hobby description"}
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
               disabled={loading}
@@ -116,7 +116,7 @@ export const EditHobbyModal = ({ onClose, onSuccess, editingId, existingData }: 
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description FR</label>
+            <label className="form-label">{i18n.language === 'fr' ? 'Description FR' : 'Description FR'}</label>
             <textarea 
               className="form-input"
               placeholder="Description du hobby"
