@@ -48,7 +48,7 @@ import { DeleteCVModal } from '../../cv/components/DeleteCVModal';
 export const AdminDashboard = () => {
   const { logout } = useAuthStore();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<'projects' | 'work' | 'education' | 'skills' | 'hobbies' | 'contact' | 'reachme' | 'cv' | 'testimonials'>('projects');
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'add' | 'edit' | 'delete'>('add');
@@ -72,6 +72,67 @@ export const AdminDashboard = () => {
   const [pendingTestimonials, setPendingTestimonials] = useState<Testimonial[]>([]);
   const [cvFileInput, setCvFileInput] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Language-aware getter functions
+  const getProjectTitle = (project: Project): string => {
+    return i18n.language === 'fr' ? (project.titleFr || project.title) : project.title;
+  };
+
+  const getProjectDescription = (project: Project): string => {
+    return i18n.language === 'fr' ? (project.descriptionFr || project.description) : project.description;
+  };
+
+  const getSkillTitle = (skill: Skill): string => {
+    return i18n.language === 'fr' ? (skill.titleFr || skill.title) : skill.title;
+  };
+
+  const getSkillDescription = (skill: Skill): string => {
+    return i18n.language === 'fr' ? (skill.descriptionFr || skill.description) : skill.description;
+  };
+
+  const getWorkPosition = (work: WorkExperience): string => {
+    return i18n.language === 'fr' ? (work.positionFr || work.position) : work.position;
+  };
+
+  const getWorkCompany = (work: WorkExperience): string => {
+    return i18n.language === 'fr' ? (work.companyFr || work.company) : work.company;
+  };
+
+  const getWorkDescription = (work: WorkExperience): string => {
+    return i18n.language === 'fr' ? (work.descriptionFr || work.description) : work.description;
+  };
+
+  const getEducationSchool = (edu: Education): string => {
+    return i18n.language === 'fr' ? (edu.schoolFr || edu.school) : edu.school;
+  };
+
+  const getEducationDegree = (edu: Education): string => {
+    return i18n.language === 'fr' ? (edu.degreeFr || edu.degree) : edu.degree;
+  };
+
+  const getEducationDescription = (edu: Education): string => {
+    return i18n.language === 'fr' ? (edu.descriptionFr || edu.description) : edu.description;
+  };
+
+  const getHobbyTitle = (hobby: Hobby): string => {
+    return i18n.language === 'fr' ? (hobby.titleFr || hobby.title) : hobby.title;
+  };
+
+  const getHobbyDescription = (hobby: Hobby): string => {
+    return i18n.language === 'fr' ? (hobby.descriptionFr || hobby.description) : hobby.description;
+  };
+
+  const getTestimonialTitle = (testimonial: Testimonial): string => {
+    return i18n.language === 'fr' ? (testimonial.titleFr || testimonial.title) : testimonial.title;
+  };
+
+  const getTestimonialCompany = (testimonial: Testimonial): string | undefined => {
+    return i18n.language === 'fr' ? (testimonial.companyFr || testimonial.company) : testimonial.company;
+  };
+
+  const getTestimonialMessage = (testimonial: Testimonial): string => {
+    return i18n.language === 'fr' ? (testimonial.messageFr || testimonial.message) : testimonial.message;
+  };
 
   const fetchAllData = useCallback(async () => {
     setLoading(true);
@@ -191,9 +252,9 @@ export const AdminDashboard = () => {
     { id: 'education', label: t('admin.education') },
     { id: 'skills', label: t('admin.skills') },
     { id: 'hobbies', label: t('admin.hobbies') },
-    { id: 'contact', label: 'Messages' },
-    { id: 'reachme', label: 'Profile' },
-    { id: 'cv', label: 'CV' },
+    { id: 'contact', label: t('admin.messages') },
+    { id: 'reachme', label: t('admin.profileTab') },
+    { id: 'cv', label: t('admin.cvTab') },
     { id: 'testimonials', label: t('admin.testimonials') },
   ] as const;
 
@@ -386,12 +447,12 @@ export const AdminDashboard = () => {
                             {projects.map(item => (
                                 <AdminCard 
                                   key={item.projectId} 
-                                  title={item.title} 
+                                  title={getProjectTitle(item)} 
                                   subtitle={item.url}
                                   onEdit={() => handleOpenModal(item.projectId)}
-                                  onDelete={() => handleDeleteProject(item.projectId, item.title)}
+                                  onDelete={() => handleDeleteProject(item.projectId, getProjectTitle(item))}
                                 >
-                                    <p className="card-description">{item.description}</p>
+                                    <p className="card-description">{getProjectDescription(item)}</p>
                                 </AdminCard>
                             ))}
                             </>
@@ -401,11 +462,11 @@ export const AdminDashboard = () => {
                             {skills.map(item => (
                                 <AdminCard 
                                   key={item.skillId} 
-                                  title={item.title}
+                                  title={getSkillTitle(item)}
                                   onEdit={() => handleOpenModal(item.skillId)}
-                                  onDelete={() => handleDeleteSkill(item.skillId, item.title)}
+                                  onDelete={() => handleDeleteSkill(item.skillId, getSkillTitle(item))}
                                 >
-                                    <p className="card-description">{item.description}</p>
+                                    <p className="card-description">{getSkillDescription(item)}</p>
                                 </AdminCard>
                             ))}
                             </>
@@ -416,8 +477,8 @@ export const AdminDashboard = () => {
                                 <div key={item.workExperienceId} className="card" style={{ gridColumn: '1 / -1' }}>
                                     <div className="card-header">
                                         <div style={{ flex: 1 }}>
-                                            <div className="card-title">{item.position}</div>
-                                            <div style={{ color: '#60a5fa', fontSize: '0.875rem' }}>{item.company}</div>
+                                            <div className="card-title">{getWorkPosition(item)}</div>
+                                            <div style={{ color: '#60a5fa', fontSize: '0.875rem' }}>{getWorkCompany(item)}</div>
                                         </div>
                                         <div className="card-actions">
                                             <button 
@@ -429,7 +490,7 @@ export const AdminDashboard = () => {
                                             </button>
                                             <button 
                                               className="card-action-btn delete"
-                                              onClick={() => handleDeleteWorkExperience(item.workExperienceId, item.position)}
+                                              onClick={() => handleDeleteWorkExperience(item.workExperienceId, getWorkPosition(item))}
                                               title={t('common.delete')}
                                             >
                                               {t('common.delete')}
@@ -439,7 +500,7 @@ export const AdminDashboard = () => {
                                     <span className="card-meta">
                                         {item.startDate} - {item.isCurrent ? t('workexperiencesubdomain.present') : item.endDate}
                                     </span>
-                                    <p className="card-description" style={{ marginTop: '0.5rem' }}>{item.description}</p>
+                                    <p className="card-description" style={{ marginTop: '0.5rem' }}>{getWorkDescription(item)}</p>
                                 </div>
                             ))}
                             </>
@@ -449,15 +510,15 @@ export const AdminDashboard = () => {
                             {education.map(item => (
                                 <AdminCard 
                                   key={item.educationId} 
-                                  title={item.school} 
-                                  subtitle={item.degree}
+                                  title={getEducationSchool(item)} 
+                                  subtitle={getEducationDegree(item)}
                                   onEdit={() => handleOpenModal(item.educationId)}
-                                  onDelete={() => handleDeleteEducation(item.educationId, item.school)}
+                                  onDelete={() => handleDeleteEducation(item.educationId, getEducationSchool(item))}
                                 >
                                     <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.5rem' }}>
                                       {item.startDate} - {item.isCurrentlyStudying ? t('workexperiencesubdomain.present') : item.endDate}
                                     </div>
-                                    <p className="card-description">{item.description}</p>
+                                    <p className="card-description">{getEducationDescription(item)}</p>
                                 </AdminCard>
                             ))}
                             </>
@@ -467,14 +528,14 @@ export const AdminDashboard = () => {
                             {hobbies.map(item => (
                                 <AdminCard 
                                   key={item.hobbyId} 
-                                  title={item.title}
+                                  title={getHobbyTitle(item)}
                                   onEdit={() => handleOpenModal(item.hobbyId)}
-                                  onDelete={() => handleDeleteHobby(item.hobbyId, item.title)}
+                                  onDelete={() => handleDeleteHobby(item.hobbyId, getHobbyTitle(item))}
                                 >
                                     <div className="card-image">
-                                        {item.imageUrl && <img src={item.imageUrl} alt={item.title} />}
+                                        {item.imageUrl && <img src={item.imageUrl} alt={getHobbyTitle(item)} />}
                                     </div>
-                                    <p className="card-description">{item.description}</p>
+                                    <p className="card-description">{getHobbyDescription(item)}</p>
                                 </AdminCard>
                             ))}
                             </>
@@ -506,7 +567,7 @@ export const AdminDashboard = () => {
                                                     className="btn-secondary"
                                                     style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                                                 >
-                                                    Mark as Read
+                                                    {t('admin.markAsRead')}
                                                 </button>
                                             )}
                                             <button 
@@ -514,7 +575,7 @@ export const AdminDashboard = () => {
                                                 className="btn-secondary"
                                                 style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#ef4444' }}
                                             >
-                                                Delete
+                                                {t('common.delete')}
                                             </button>
                                         </div>
                                     </div>
@@ -527,26 +588,26 @@ export const AdminDashboard = () => {
                                 {!isEditingReachme ? (
                                     <>
                                         <div className="card-header">
-                                            <h3 className="card-title">Your Contact Information</h3>
+                                            <h3 className="card-title">{t('admin.yourContactInformation')}</h3>
                                             <button 
                                                 onClick={() => setIsEditingReachme(true)}
                                                 className="btn-secondary"
                                                 style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                                             >
-                                                Edit
+                                                {t('common.edit')}
                                             </button>
                                         </div>
                                         <div style={{ marginTop: '1rem' }}>
                                             <div style={{ marginBottom: '1rem' }}>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Email</label>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>{t('admin.email')}</label>
                                                 <p style={{ color: '#fff' }}>{profileData.email}</p>
                                             </div>
                                             <div style={{ marginBottom: '1rem' }}>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Location</label>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>{t('admin.location')}</label>
                                                 <p style={{ color: '#fff' }}>{profileData.basedIn}</p>
                                             </div>
                                             <div>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Availability</label>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>{t('admin.availability')}</label>
                                                 <p style={{ color: '#fff' }}>{profileData.availabilityStatus}</p>
                                             </div>
                                         </div>
@@ -554,11 +615,11 @@ export const AdminDashboard = () => {
                                 ) : (
                                     <>
                                         <div className="card-header">
-                                            <h3 className="card-title">Edit Profile</h3>
+                                            <h3 className="card-title">{t('admin.editProfile')}</h3>
                                         </div>
                                         <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                             <div>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Email</label>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>{t('admin.email')}</label>
                                                 <input 
                                                     type="email"
                                                     value={reachmeEditForm.email}
@@ -567,7 +628,7 @@ export const AdminDashboard = () => {
                                                 />
                                             </div>
                                             <div>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Location</label>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>{t('admin.location')}</label>
                                                 <input 
                                                     type="text"
                                                     value={reachmeEditForm.basedIn}
@@ -576,7 +637,7 @@ export const AdminDashboard = () => {
                                                 />
                                             </div>
                                             <div>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Availability Status</label>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>{t('admin.availability')}</label>
                                                 <textarea 
                                                     value={reachmeEditForm.availabilityStatus}
                                                     onChange={(e) => setReachmeEditForm({ ...reachmeEditForm, availabilityStatus: e.target.value })}
@@ -607,21 +668,21 @@ export const AdminDashboard = () => {
                         {activeTab === 'cv' && (
                             <div className="card" style={{ gridColumn: '1 / -1' }}>
                                 <div className="card-header">
-                                    <h3 className="card-title">CV Management</h3>
+                                    <h3 className="card-title">{t('admin.cvManagement')}</h3>
                                 </div>
                                 <div style={{ marginTop: '1rem' }}>
                                     {cvFile ? (
                                         <>
                                             <div style={{ marginBottom: '1rem' }}>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Active CV</label>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>{t('admin.activeCv')}</label>
                                                 <p style={{ color: '#fff', fontSize: '0.95rem' }}>{cvFile.fileName}</p>
                                             </div>
                                             <div style={{ marginBottom: '1rem' }}>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>File Size</label>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>{t('admin.fileSize')}</label>
                                                 <p style={{ color: '#fff', fontSize: '0.95rem' }}>{(cvFile.fileSize / 1024).toFixed(2)} KB</p>
                                             </div>
                                             <div style={{ marginBottom: '1rem' }}>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Uploaded</label>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>{t('admin.uploaded')}</label>
                                                 <p style={{ color: '#fff', fontSize: '0.95rem' }}>{new Date(cvFile.uploadedAt).toLocaleString()}</p>
                                             </div>
                                             <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -634,7 +695,7 @@ export const AdminDashboard = () => {
                                                     className="btn-secondary"
                                                     style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#60a5fa' }}
                                                 >
-                                                    Edit CV
+                                                    {t('admin.editCv')}
                                                 </button>
                                                 <button 
                                                     onClick={() => {
@@ -645,23 +706,23 @@ export const AdminDashboard = () => {
                                                     className="btn-secondary"
                                                     style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#ef4444' }}
                                                 >
-                                                    Delete CV
+                                                    {t('admin.deleteCv')}
                                                 </button>
                                                 <button 
                                                     onClick={handleDeactivateCV}
                                                     className="btn-secondary"
                                                     style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#f97316' }}
                                                 >
-                                                    Deactivate
+                                                    {t('admin.deactivate')}
                                                 </button>
                                             </div>
                                         </>
                                     ) : (
-                                        <p style={{ color: '#94a3b8' }}>No active CV uploaded yet.</p>
+                                        <p style={{ color: '#94a3b8' }}>{t('admin.noActiveCvUploaded')}</p>
                                     )}
                                 </div>
                                 <div style={{ marginTop: '2rem', borderTop: '1px solid #334155', paddingTop: '1.5rem' }}>
-                                    <h4 style={{ color: '#fff', marginBottom: '1rem' }}>Upload New CV</h4>
+                                    <h4 style={{ color: '#fff', marginBottom: '1rem' }}>{t('admin.uploadNewCv')}</h4>
                                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                         <input 
                                             type="file"
@@ -697,7 +758,7 @@ export const AdminDashboard = () => {
                                                 <div className="card-header">
                                                     <div style={{ flex: 1 }}>
                                                         <div className="card-title">{testimonial.name}</div>
-                                                        <span className="card-meta">{testimonial.title} {testimonial.company && `at ${testimonial.company}`}</span>
+                                                        <span className="card-meta">{getTestimonialTitle(testimonial)} {getTestimonialCompany(testimonial) && `at ${getTestimonialCompany(testimonial)}`}</span>
                                                     </div>
                                                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                         {[...Array(testimonial.rating)].map((_, i) => (
@@ -705,7 +766,7 @@ export const AdminDashboard = () => {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <p className="card-description" style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>{testimonial.message}</p>
+                                                <p className="card-description" style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>{getTestimonialMessage(testimonial)}</p>
                                                 <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '1rem' }}>
                                                     {new Date(testimonial.createdAt).toLocaleString()}
                                                 </div>
@@ -743,7 +804,7 @@ export const AdminDashboard = () => {
                                                     <div className="card-header">
                                                         <div style={{ flex: 1 }}>
                                                             <div className="card-title">{testimonial.name}</div>
-                                                            <span className="card-meta">{testimonial.title} {testimonial.company && `at ${testimonial.company}`}</span>
+                                                            <span className="card-meta">{getTestimonialTitle(testimonial)} {getTestimonialCompany(testimonial) && `at ${getTestimonialCompany(testimonial)}`}</span>
                                                             <span style={{ marginLeft: '1rem', fontSize: '0.75rem', color: testimonial.status === 'APPROVED' ? '#22c55e' : testimonial.status === 'REJECTED' ? '#ef4444' : '#f59e0b' }}>
                                                                 {testimonial.status}
                                                             </span>
@@ -754,7 +815,7 @@ export const AdminDashboard = () => {
                                                             ))}
                                                         </div>
                                                     </div>
-                                                    <p className="card-description" style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>{testimonial.message}</p>
+                                                    <p className="card-description" style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>{getTestimonialMessage(testimonial)}</p>
                                                     <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '1rem' }}>
                                                         {new Date(testimonial.createdAt).toLocaleString()}
                                                     </div>
