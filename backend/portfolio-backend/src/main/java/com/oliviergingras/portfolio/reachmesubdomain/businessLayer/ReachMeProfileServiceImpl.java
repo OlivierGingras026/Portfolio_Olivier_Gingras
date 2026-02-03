@@ -36,6 +36,7 @@ public class ReachMeProfileServiceImpl implements ReachMeProfileService {
         profile.setEmail(requestModel.getEmail());
         profile.setBasedIn(requestModel.getBasedIn());
         profile.setAvailabilityStatus(requestModel.getAvailabilityStatus());
+        profile.setAvailabilityStatusFr(requestModel.getAvailabilityStatusFr());
         
         ReachMeProfile savedProfile = reachMeProfileRepository.save(profile);
         return responseMapper.toResponseModel(savedProfile);

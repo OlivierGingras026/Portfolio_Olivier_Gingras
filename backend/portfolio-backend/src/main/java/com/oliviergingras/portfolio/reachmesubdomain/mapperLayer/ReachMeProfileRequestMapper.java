@@ -12,10 +12,12 @@ public class ReachMeProfileRequestMapper {
             return null;
         }
         
-        return new ReachMeProfile(
+        ReachMeProfile profile = new ReachMeProfile(
             requestModel.getEmail(),
             requestModel.getBasedIn(),
             requestModel.getAvailabilityStatus()
         );
+        profile.setAvailabilityStatusFr(requestModel.getAvailabilityStatusFr());
+        return profile;
     }
 }

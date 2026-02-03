@@ -88,8 +88,10 @@ public class ContactMessageServiceImpl implements ContactMessageService {
             return input;
         }
         
+        // Remove SQL injection patterns
+        String cleaned = input.replaceAll("(--|;|\\*|/|xp_|sp_)", "");
         // Remove HTML tags and dangerous characters
-        String cleaned = input.replaceAll("<[^>]*>", ""); // Remove HTML tags
+        cleaned = cleaned.replaceAll("<[^>]*>", ""); // Remove HTML tags
         cleaned = cleaned.replaceAll("javascript:", ""); // Remove javascript:
         cleaned = cleaned.replaceAll("on\\w+\\s*=", ""); // Remove event handlers like onclick=
         cleaned = cleaned.trim();
@@ -110,16 +112,16 @@ public class ContactMessageServiceImpl implements ContactMessageService {
             throw new RuntimeException("Message is required");
         }
         
-        if (message.getName().length() > 255) {
-            throw new RuntimeException("Name is too long");
+        if (message.getName().length() > ContactMessageRequestModel.MAX_NAME_LENGTH) {
+            throw new RuntimeException("Name must not exceed " + ContactMessageRequestModel.MAX_NAME_LENGTH + " characters");
         }
         
-        if (message.getEmail().length() > 255) {
-            throw new RuntimeException("Email is too long");
+        if (message.getEmail().length() > ContactMessageRequestModel.MAX_EMAIL_LENGTH) {
+            throw new RuntimeException("Email must not exceed " + ContactMessageRequestModel.MAX_EMAIL_LENGTH + " characters");
         }
         
-        if (message.getMessage().length() > 5000) {
-            throw new RuntimeException("Message is too long");
+        if (message.getMessage().length() > ContactMessageRequestModel.MAX_MESSAGE_CHARACTERS) {
+            throw new RuntimeException("Message must not exceed " + ContactMessageRequestModel.MAX_MESSAGE_CHARACTERS + " characters (currently " + message.getMessage().length() + " characters)");
         }
     }
 }

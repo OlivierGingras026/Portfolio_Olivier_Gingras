@@ -158,7 +158,7 @@ export const PortfolioNavbar = () => {
                                 className="navbar-cta-button"
                                 title={adminUser?.fullName}
                             >
-                                <span className="navbar-cta-text">{t('common.adminUser')}: {adminUser?.fullName}</span>
+                                <span className="navbar-cta-text">{t('common.adminUser')}</span>
                             </button>
                             <button
                                 onClick={() => {

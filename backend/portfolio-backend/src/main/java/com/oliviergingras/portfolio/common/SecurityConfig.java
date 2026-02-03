@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/reachme").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/cv").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/cv/download/**").permitAll()
-                        .requestMatchers("/api/v1/testimonials/submit").anonymous()
+                        .requestMatchers("/api/v1/testimonials/submit").permitAll()
                         .requestMatchers("/api/v1/testimonials/approved").permitAll()
                         .requestMatchers("/api/admin/auth/login").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

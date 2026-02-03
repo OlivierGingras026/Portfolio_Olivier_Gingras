@@ -10,6 +10,12 @@ public class TestimonialRequestModel {
     public String message;
     public String messageFr;
 
+    // Validation constants
+    public static final int MAX_MESSAGE_CHARACTERS = 1000;
+    public static final int MAX_NAME_LENGTH = 100;
+    public static final int MAX_TITLE_LENGTH = 100;
+    public static final int MAX_COMPANY_LENGTH = 100;
+
     public TestimonialRequestModel() {}
 
     public TestimonialRequestModel(String name, String title, String company, Integer rating, String message) {

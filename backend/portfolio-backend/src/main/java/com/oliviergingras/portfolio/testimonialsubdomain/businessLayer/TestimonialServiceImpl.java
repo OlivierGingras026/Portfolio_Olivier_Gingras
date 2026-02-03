@@ -24,26 +24,62 @@ public class TestimonialServiceImpl implements TestimonialService {
 
     @Override
     public TestimonialResponseModel submitTestimonial(TestimonialRequestModel request) {
-        // Basic validation
-        if (request.getName() == null || request.getName().trim().isEmpty()) {
-            throw new RuntimeException("Name is required");
-        }
-        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
-            throw new RuntimeException("Title is required");
-        }
-        if (request.getCompany() == null || request.getCompany().trim().isEmpty()) {
-            throw new RuntimeException("Company is required");
-        }
-        if (request.getRating() == null || request.getRating() < 1 || request.getRating() > 5) {
-            throw new RuntimeException("Rating must be between 1 and 5");
-        }
-        if (request.getMessage() == null || request.getMessage().trim().isEmpty()) {
-            throw new RuntimeException("Message is required");
-        }
-
+        // Input validation and sanitization
+        validateTestimonialRequest(request);
+        
+        // Sanitize inputs to prevent SQL injection and XSS
+        request.setName(sanitizeInput(request.getName()));
+        request.setTitle(sanitizeInput(request.getTitle()));
+        request.setCompany(sanitizeInput(request.getCompany()));
+        request.setMessage(sanitizeInput(request.getMessage()));
+        
         Testimonial testimonial = requestMapper.toEntity(request);
         Testimonial saved = testimonialRepository.save(testimonial);
         return responseMapper.toModel(saved);
+    }
+
+    private void validateTestimonialRequest(TestimonialRequestModel request) {
+        if (request.getName() == null || request.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Name is required");
+        }
+        if (request.getName().length() > TestimonialRequestModel.MAX_NAME_LENGTH) {
+            throw new IllegalArgumentException("Name must not exceed " + TestimonialRequestModel.MAX_NAME_LENGTH + " characters");
+        }
+        
+        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Title is required");
+        }
+        if (request.getTitle().length() > TestimonialRequestModel.MAX_TITLE_LENGTH) {
+            throw new IllegalArgumentException("Title must not exceed " + TestimonialRequestModel.MAX_TITLE_LENGTH + " characters");
+        }
+        
+        if (request.getCompany() != null && request.getCompany().length() > TestimonialRequestModel.MAX_COMPANY_LENGTH) {
+            throw new IllegalArgumentException("Company must not exceed " + TestimonialRequestModel.MAX_COMPANY_LENGTH + " characters");
+        }
+        
+        if (request.getMessage() == null || request.getMessage().trim().isEmpty()) {
+            throw new IllegalArgumentException("Message is required");
+        }
+        
+        int charCount = request.getMessage().length();
+        if (charCount > TestimonialRequestModel.MAX_MESSAGE_CHARACTERS) {
+            throw new IllegalArgumentException("Message must not exceed " + TestimonialRequestModel.MAX_MESSAGE_CHARACTERS + " characters (currently " + charCount + " characters)");
+        }
+        
+        if (request.getRating() == null || request.getRating() < 1 || request.getRating() > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5");
+        }
+    }
+
+    private String sanitizeInput(String input) {
+        if (input == null) {
+            return null;
+        }
+        // Remove SQL injection attempts: --, ;, *, /, xp_, sp_
+        input = input.replaceAll("(--|;|\\*|/|xp_|sp_)", "");
+        // Trim whitespace
+        input = input.trim();
+        return input;
     }
 
     @Override

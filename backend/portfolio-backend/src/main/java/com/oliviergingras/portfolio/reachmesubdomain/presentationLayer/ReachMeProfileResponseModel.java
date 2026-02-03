@@ -5,16 +5,18 @@ public class ReachMeProfileResponseModel {
     private String email;
     private String basedIn;
     private String availabilityStatus;
+    private String availabilityStatusFr;
     
     // Constructors
     public ReachMeProfileResponseModel() {
     }
     
-    public ReachMeProfileResponseModel(String profileId, String email, String basedIn, String availabilityStatus) {
+    public ReachMeProfileResponseModel(String profileId, String email, String basedIn, String availabilityStatus, String availabilityStatusFr) {
         this.profileId = profileId;
         this.email = email;
         this.basedIn = basedIn;
         this.availabilityStatus = availabilityStatus;
+        this.availabilityStatusFr = availabilityStatusFr;
     }
     
     // Getters and Setters
@@ -48,5 +50,13 @@ public class ReachMeProfileResponseModel {
     
     public void setAvailabilityStatus(String availabilityStatus) {
         this.availabilityStatus = availabilityStatus;
+    }
+
+    public String getAvailabilityStatusFr() {
+        return availabilityStatusFr;
+    }
+
+    public void setAvailabilityStatusFr(String availabilityStatusFr) {
+        this.availabilityStatusFr = availabilityStatusFr;
     }
 }

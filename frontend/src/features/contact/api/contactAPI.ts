@@ -21,6 +21,7 @@ export interface ReachMeProfile {
   email: string;
   basedIn: string;
   availabilityStatus: string;
+  availabilityStatusFr?: string;
 }
 
 export const contactAPI = {

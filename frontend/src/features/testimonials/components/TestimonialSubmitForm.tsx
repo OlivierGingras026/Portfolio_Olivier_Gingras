@@ -11,6 +11,8 @@ interface TestimonialSubmitFormProps {
 
 export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitFormProps) => {
   const { t } = useTranslation();
+  const MAX_CHARACTERS = 1000;
+  
   const [formData, setFormData] = useState<TestimonialRequest>({
     name: '',
     title: '',
@@ -21,6 +23,7 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [charCount, setCharCount] = useState(0);
 
   // Prevent body scroll when modal is open
   React.useEffect(() => {
@@ -32,10 +35,22 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    // Sanitize input - remove SQL injection attempts
+    let sanitizedValue = value;
+    if (typeof sanitizedValue === 'string') {
+      sanitizedValue = sanitizedValue.replace(/(--|;|\*|\/|xp_|sp_)/g, '');
+    }
+    
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'rating' ? parseInt(value) : value
+      [name]: name === 'rating' ? parseInt(sanitizedValue) : sanitizedValue
     }));
+    
+    // Update character count for message
+    if (name === 'message') {
+      setCharCount(sanitizedValue.length);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,12 +63,28 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
       if (!formData.name.trim()) {
         throw new Error('Name is required');
       }
+      if (formData.name.length > 100) {
+        throw new Error('Name must not exceed 100 characters');
+      }
+      
       if (!formData.title.trim()) {
         throw new Error('Title is required');
       }
+      if (formData.title.length > 100) {
+        throw new Error('Title must not exceed 100 characters');
+      }
+      
+      if (formData.company && formData.company.length > 100) {
+        throw new Error('Company must not exceed 100 characters');
+      }
+      
       if (!formData.message.trim()) {
         throw new Error('Message is required');
       }
+      if (charCount > MAX_CHARACTERS) {
+        throw new Error(`Message must not exceed ${MAX_CHARACTERS} characters (currently ${charCount} characters)`);
+      }
+      
       if (formData.rating < 1 || formData.rating > 5) {
         throw new Error('Rating must be between 1 and 5');
       }
@@ -179,6 +210,20 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
                 rows={5}
                 required
               />
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                fontSize: '0.85rem',
+                marginTop: '0.5rem',
+                color: charCount > MAX_CHARACTERS ? '#ef4444' : '#cbd5e1'
+              }}>
+                <span>{t('common.characters') || 'Characters'}: {charCount} / {MAX_CHARACTERS}</span>
+                {charCount > MAX_CHARACTERS && (
+                  <span style={{ color: '#ef4444', fontWeight: 'bold' }}>
+                    Exceeds limit by {charCount - MAX_CHARACTERS} characters
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="form-actions">

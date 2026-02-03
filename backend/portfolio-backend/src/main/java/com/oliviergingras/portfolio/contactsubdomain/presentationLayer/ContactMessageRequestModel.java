@@ -1,6 +1,10 @@
 package com.oliviergingras.portfolio.contactsubdomain.presentationLayer;
 
 public class ContactMessageRequestModel {
+    public static final int MAX_NAME_LENGTH = 100;
+    public static final int MAX_EMAIL_LENGTH = 255;
+    public static final int MAX_MESSAGE_CHARACTERS = 1000;
+    
     private String name;
     private String email;
     private String message;

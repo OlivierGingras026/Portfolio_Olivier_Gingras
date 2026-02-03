@@ -19,6 +19,9 @@ public class ReachMeProfile {
     
     @Column(nullable = false, columnDefinition = "TEXT")
     private String availabilityStatus;
+
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String availabilityStatusFr;
     
     // Constructors
     public ReachMeProfile() {
@@ -61,5 +64,13 @@ public class ReachMeProfile {
     
     public void setAvailabilityStatus(String availabilityStatus) {
         this.availabilityStatus = availabilityStatus;
+    }
+
+    public String getAvailabilityStatusFr() {
+        return availabilityStatusFr;
+    }
+
+    public void setAvailabilityStatusFr(String availabilityStatusFr) {
+        this.availabilityStatusFr = availabilityStatusFr;
     }
 }

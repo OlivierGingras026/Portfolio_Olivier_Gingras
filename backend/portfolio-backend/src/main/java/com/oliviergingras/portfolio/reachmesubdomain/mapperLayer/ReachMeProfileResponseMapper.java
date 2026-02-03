@@ -16,7 +16,8 @@ public class ReachMeProfileResponseMapper {
             entity.getProfileId(),
             entity.getEmail(),
             entity.getBasedIn(),
-            entity.getAvailabilityStatus()
+            entity.getAvailabilityStatus(),
+            entity.getAvailabilityStatusFr()
         );
     }
 }

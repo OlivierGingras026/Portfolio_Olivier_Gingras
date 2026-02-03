@@ -16,7 +16,8 @@
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
-    "close": "Close"
+    "close": "Close",
+    "characters": "Characters"
   },
   "auth": {
     "adminAccess": "Admin Access",

@@ -2,6 +2,7 @@ import { ArrowRight, Github, Linkedin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useRef } from 'react';
 import type { MouseEvent } from 'react';
+import { motion } from 'framer-motion';
 import './Portfolio.css';
 
 export const HeroSection = () => {
@@ -32,21 +33,34 @@ export const HeroSection = () => {
 
             <div className="hero-content">
                 {/* Main Heading */}
-                <h1 
+                <motion.h1 
                     ref={titleRef}
                     className="hero-title interactive-title"
                     onMouseMove={handleMouseMove}
+                    initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 1, ease: [0.34, 1.56, 0.64, 1] }}
                 >
                     {t('hero.greeting')} {t('hero.name')}
-                </h1>
+                </motion.h1>
 
                 {/* Subtitle */}
-                <p className="hero-subtitle">
+                <motion.p 
+                    className="hero-subtitle"
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.9, delay: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
+                >
                     {t('hero.subtitle')}
-                </p>
+                </motion.p>
 
                 {/* CTA Buttons */}
-                <div className="hero-buttons">
+                <motion.div 
+                    className="hero-buttons"
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
+                >
                     <button
                         onClick={scrollToContact}
                         className="btn btn-primary"
@@ -62,10 +76,15 @@ export const HeroSection = () => {
                     >
                         {t('hero.viewWork')}
                     </button>
-                </div>
+                </motion.div>
 
                 {/* Social Links Under Buttons */}
-                <div className="hero-social-links">
+                <motion.div 
+                    className="hero-social-links"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+                >
                     <a
                         href="https://www.linkedin.com/in/olivier-gingras-a0032b380"
                         target="_blank"
@@ -84,7 +103,7 @@ export const HeroSection = () => {
                         <Github size={20} />
                         GitHub
                     </a>
-                </div>
+                </motion.div>
 
                 {/* Scroll Indicator */}
                 <div className="scroll-indicator">

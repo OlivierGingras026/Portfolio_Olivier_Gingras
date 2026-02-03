@@ -16,7 +16,8 @@
     "delete": "Supprimer",
     "edit": "Modifier",
     "add": "Ajouter",
-    "close": "Fermer"
+    "close": "Fermer",
+    "characters": "Caractères"
   },
   "auth": {
     "adminAccess": "Accès Admin",

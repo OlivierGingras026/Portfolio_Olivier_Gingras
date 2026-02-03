@@ -7,10 +7,21 @@ import './ContactSection.css';
 
 export const ContactSection = () => {
   const { t, i18n } = useTranslation();
+  
+  // Character limits
+  const MAX_NAME_LENGTH = 100;
+  const MAX_EMAIL_LENGTH = 255;
+  const MAX_MESSAGE_CHARACTERS = 1000;
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: ''
+  });
+  const [charCounts, setCharCounts] = useState({
+    name: 0,
+    email: 0,
+    message: 0
   });
   const [profileData, setProfileData] = useState<ReachMeProfile | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -31,9 +42,19 @@ export const ContactSection = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    
+    // Sanitize input - remove SQL injection patterns
+    const sanitizedValue = value.replace(/(--|;|\*|\/|xp_|sp_)/g, '');
+    
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: sanitizedValue
+    }));
+    
+    // Update character counts
+    setCharCounts(prev => ({
+      ...prev,
+      [name]: sanitizedValue.length
     }));
   };
 
@@ -42,10 +63,28 @@ export const ContactSection = () => {
     setIsLoading(true);
     setError(null);
 
+    // Validate character limits
+    if (charCounts.name > MAX_NAME_LENGTH) {
+      setError(`Name must not exceed ${MAX_NAME_LENGTH} characters (currently ${charCounts.name} characters)`);
+      setIsLoading(false);
+      return;
+    }
+    if (charCounts.email > MAX_EMAIL_LENGTH) {
+      setError(`Email must not exceed ${MAX_EMAIL_LENGTH} characters`);
+      setIsLoading(false);
+      return;
+    }
+    if (charCounts.message > MAX_MESSAGE_CHARACTERS) {
+      setError(`Message must not exceed ${MAX_MESSAGE_CHARACTERS} characters (currently ${charCounts.message} characters)`);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       await contactAPI.sendMessage(formData);
       setIsSubmitted(true);
       setFormData({ name: '', email: '', message: '' });
+      setCharCounts({ name: 0, email: 0, message: 0 });
       
       // Reset after 3 seconds
       setTimeout(() => setIsSubmitted(false), 3000);
@@ -81,7 +120,7 @@ export const ContactSection = () => {
             viewport={{ once: true }}
             className="contact-info"
           >
-            <h3 className="contact-info-title">Get in touch</h3>
+            <h3 className="contact-info-title">{t('contactsubdomain.getInTouch')}</h3>
             <p className="contact-info-description">
               {i18n.language === 'fr' ? 'Je suis toujours ouvert à discuter de nouveaux projets, d\'idées créatives ou d\'opportunités pour faire partie de votre vision.' : 'I\'m always open to discussing new projects, creative ideas, or opportunities to be part of your vision.'}
             </p>
@@ -127,7 +166,11 @@ export const ContactSection = () => {
               </div>
               <div className="contact-card-content">
                 <p className="contact-card-label">{t('contactsubdomain.availableForWork')}</p>
-                <p className="contact-card-value">{profileData?.availabilityStatus || 'Loading...'}</p>
+                <p className="contact-card-value">
+                  {i18n.language === 'fr' 
+                    ? (profileData?.availabilityStatusFr || profileData?.availabilityStatus || 'Loading...')
+                    : (profileData?.availabilityStatus || 'Loading...')}
+                </p>
               </div>
             </motion.div>
           </motion.div>
@@ -177,8 +220,13 @@ export const ContactSection = () => {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="John Doe"
+                      maxLength={MAX_NAME_LENGTH}
                       required
                     />
+                    <div className="form-counter" style={{ color: charCounts.name > MAX_NAME_LENGTH ? '#ef4444' : '#cbd5e1' }}>
+                      {t('common.characters')}: {charCounts.name} / {MAX_NAME_LENGTH}
+                    </div>
+                    {charCounts.name > MAX_NAME_LENGTH && <span style={{ color: '#ef4444' }}>Exceeds limit by {charCounts.name - MAX_NAME_LENGTH} characters</span>}
                   </motion.div>
 
                   <motion.div
@@ -195,8 +243,13 @@ export const ContactSection = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="john@example.com"
+                      maxLength={MAX_EMAIL_LENGTH}
                       required
                     />
+                    <div className="form-counter" style={{ color: charCounts.email > MAX_EMAIL_LENGTH ? '#ef4444' : '#cbd5e1' }}>
+                      {t('common.characters')}: {charCounts.email} / {MAX_EMAIL_LENGTH}
+                    </div>
+                    {charCounts.email > MAX_EMAIL_LENGTH && <span style={{ color: '#ef4444' }}>Exceeds limit by {charCounts.email - MAX_EMAIL_LENGTH} characters</span>}
                   </motion.div>
                 </div>
 
@@ -212,10 +265,15 @@ export const ContactSection = () => {
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Tell me about your project..."
+                    placeholder={t('contactsubdomain.tellMeAboutProject')}
                     rows={5}
+                    maxLength={MAX_MESSAGE_CHARACTERS}
                     required
                   ></textarea>
+                  <div className="form-counter" style={{ color: charCounts.message > MAX_MESSAGE_CHARACTERS ? '#ef4444' : '#cbd5e1' }}>
+                    {t('common.characters')}: {charCounts.message} / {MAX_MESSAGE_CHARACTERS}
+                  </div>
+                  {charCounts.message > MAX_MESSAGE_CHARACTERS && <span style={{ color: '#ef4444' }}>Exceeds limit by {charCounts.message - MAX_MESSAGE_CHARACTERS} characters</span>}
                 </motion.div>
 
                 <motion.button
