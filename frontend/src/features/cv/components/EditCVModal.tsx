@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { cvAPI } from '../api/cvAPI';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -10,10 +10,13 @@ interface EditCVModalProps {
 
 export const EditCVModal = ({ onClose, onSuccess }: EditCVModalProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isFrench, setIsFrench] = useState(false);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedFile(e.target.files?.[0] || null);
+    const file = e.target.files?.[0] || null;
+    setSelectedFile(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,7 +25,7 @@ export const EditCVModal = ({ onClose, onSuccess }: EditCVModalProps) => {
 
     setLoading(true);
     try {
-      await cvAPI.uploadCV(selectedFile);
+      await cvAPI.uploadCV(selectedFile, isFrench);
       await Promise.resolve(onSuccess());
       onClose();
     } catch (error) {
@@ -47,6 +50,7 @@ export const EditCVModal = ({ onClose, onSuccess }: EditCVModalProps) => {
               Select New CV File
             </label>
             <input
+              ref={fileInputRef}
               type="file"
               accept=".pdf,.doc,.docx"
               onChange={handleFileSelect}
@@ -60,7 +64,32 @@ export const EditCVModal = ({ onClose, onSuccess }: EditCVModalProps) => {
                 borderRadius: '0.5rem'
               }}
             />
+            {selectedFile && (
+              <p style={{ color: '#94a3b8', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                Selected: {selectedFile.name}
+              </p>
+            )}
           </div>
+
+          <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center' }}>
+            <input
+              type="checkbox"
+              id="isFrench"
+              checked={isFrench}
+              onChange={(e) => setIsFrench(e.target.checked)}
+              style={{
+                marginRight: '0.75rem',
+                width: '18px',
+                height: '18px',
+                accentColor: '#3b82f6',
+                cursor: 'pointer'
+              }}
+            />
+            <label htmlFor="isFrench" style={{ color: '#94a3b8', cursor: 'pointer', userSelect: 'none' }}>
+              French Version
+            </label>
+          </div>
+
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button
               type="submit"

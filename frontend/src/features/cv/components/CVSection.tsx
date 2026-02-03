@@ -13,7 +13,8 @@ export const CVSection = () => {
   useEffect(() => {
     const fetchCV = async () => {
       try {
-        const cv = await cvAPI.getActiveCV();
+        const isFrench = i18n.language.startsWith('fr');
+        const cv = await cvAPI.getActiveCV(isFrench);
         setCvFile(cv);
       } catch (error) {
         console.error('Failed to fetch CV:', error);
@@ -22,12 +23,12 @@ export const CVSection = () => {
       }
     };
     fetchCV();
-  }, []);
+  }, [i18n.language]);
 
   const handleDownload = async () => {
     if (cvFile) {
       try {
-        await cvAPI.downloadCV(cvFile.cvId);
+        await cvAPI.downloadCV(cvFile.cvId, cvFile.fileName);
       } catch (error) {
         console.error('Failed to download CV:', error);
       }

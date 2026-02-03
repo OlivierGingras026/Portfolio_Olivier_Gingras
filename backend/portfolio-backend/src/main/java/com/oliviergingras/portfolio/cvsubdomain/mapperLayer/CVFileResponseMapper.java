@@ -15,7 +15,8 @@ public class CVFileResponseMapper {
             entity.getFileName(),
             entity.getFileSize(),
             entity.getUploadedAt().format(formatter),
-            entity.getIsActive()
+            entity.getIsActive(),
+            entity.getIsFrench()
         );
     }
 }

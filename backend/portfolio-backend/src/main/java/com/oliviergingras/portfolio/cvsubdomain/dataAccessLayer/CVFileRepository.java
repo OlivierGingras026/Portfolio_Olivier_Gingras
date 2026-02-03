@@ -5,4 +5,5 @@ import java.util.Optional;
 
 public interface CVFileRepository extends JpaRepository<CVFile, String> {
     Optional<CVFile> findFirstByIsActiveOrderByUploadedAtDesc(Boolean isActive);
+    Optional<CVFile> findFirstByIsActiveAndIsFrenchOrderByUploadedAtDesc(Boolean isActive, Boolean isFrench);
 }

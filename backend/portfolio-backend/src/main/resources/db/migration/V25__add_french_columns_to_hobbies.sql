@@ -1,0 +1,3 @@
+ALTER TABLE hobbies
+ADD COLUMN title_fr VARCHAR(120),
+ADD COLUMN description_fr VARCHAR(2000);

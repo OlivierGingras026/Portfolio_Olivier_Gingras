@@ -1,5 +1,6 @@
 package com.oliviergingras.portfolio.common;
 
+import com.oliviergingras.portfolio.cvsubdomain.CVNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +15,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(NotFoundException ex) {
+        ApiError body = new ApiError(Instant.now(), 404, "Not Found", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CVNotFoundException.class)
+    public ResponseEntity<ApiError> handleCVNotFound(CVNotFoundException ex) {
         ApiError body = new ApiError(Instant.now(), 404, "Not Found", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }

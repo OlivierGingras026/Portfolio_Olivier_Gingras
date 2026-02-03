@@ -1,0 +1,2 @@
+ALTER TABLE cv_files
+ADD COLUMN is_french BOOLEAN NOT NULL DEFAULT false;

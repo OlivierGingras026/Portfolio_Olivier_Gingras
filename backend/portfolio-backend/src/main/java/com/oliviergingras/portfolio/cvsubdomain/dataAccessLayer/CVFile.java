@@ -33,12 +33,16 @@ public class CVFile {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
-    public CVFile(String fileName, byte[] fileData, Long fileSize) {
+    @Column(name = "is_french", nullable = false)
+    private Boolean isFrench;
+
+    public CVFile(String fileName, byte[] fileData, Long fileSize, Boolean isFrench) {
         this.cvId = java.util.UUID.randomUUID().toString();
         this.fileName = fileName;
         this.fileData = fileData;
         this.fileSize = fileSize;
         this.uploadedAt = LocalDateTime.now();
         this.isActive = true;
+        this.isFrench = isFrench != null ? isFrench : false;
     }
 }

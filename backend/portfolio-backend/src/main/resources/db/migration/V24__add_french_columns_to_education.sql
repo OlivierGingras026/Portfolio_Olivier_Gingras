@@ -1,0 +1,4 @@
+ALTER TABLE education
+ADD COLUMN school_fr VARCHAR(120),
+ADD COLUMN degree_fr VARCHAR(120),
+ADD COLUMN description_fr VARCHAR(2000);

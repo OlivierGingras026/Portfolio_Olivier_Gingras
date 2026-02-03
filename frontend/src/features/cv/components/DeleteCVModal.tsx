@@ -7,17 +7,16 @@ interface DeleteCVModalProps {
   onClose: () => void;
   onSuccess: () => Promise<void> | void;
   fileName: string;
+  cvId: string;
 }
 
-export const DeleteCVModal = ({ onClose, onSuccess, fileName }: DeleteCVModalProps) => {
+export const DeleteCVModal = ({ onClose, onSuccess, fileName, cvId }: DeleteCVModalProps) => {
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
     setLoading(true);
     try {
-      // Get the active CV to delete it
-      const activeCV = await cvAPI.getActiveCV();
-      await cvAPI.deleteCV(activeCV.cvId);
+      await cvAPI.deleteCV(cvId);
       await Promise.resolve(onSuccess());
       onClose();
     } catch (error) {

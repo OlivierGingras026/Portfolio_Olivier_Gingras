@@ -6,15 +6,17 @@ public class CVFileResponseModel {
     public Long fileSize;
     public String uploadedAt;
     public Boolean isActive;
+    public Boolean isFrench;
 
     public CVFileResponseModel() {}
 
-    public CVFileResponseModel(String cvId, String fileName, Long fileSize, String uploadedAt, Boolean isActive) {
+    public CVFileResponseModel(String cvId, String fileName, Long fileSize, String uploadedAt, Boolean isActive, Boolean isFrench) {
         this.cvId = cvId;
         this.fileName = fileName;
         this.fileSize = fileSize;
         this.uploadedAt = uploadedAt;
         this.isActive = isActive;
+        this.isFrench = isFrench;
     }
 
     public String getCvId() { return cvId; }
@@ -31,4 +33,7 @@ public class CVFileResponseModel {
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public Boolean getIsFrench() { return isFrench; }
+    public void setIsFrench(Boolean isFrench) { this.isFrench = isFrench; }
 }

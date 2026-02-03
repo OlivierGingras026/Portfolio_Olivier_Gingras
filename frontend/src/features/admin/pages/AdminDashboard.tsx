@@ -67,10 +67,14 @@ export const AdminDashboard = () => {
   const [profileData, setProfileData] = useState<ReachMeProfile | null>(null);
   const [reachmeEditForm, setReachmeEditForm] = useState({ email: '', basedIn: '', availabilityStatus: '' });
   const [isEditingReachme, setIsEditingReachme] = useState(false);
-  const [cvFile, setCvFile] = useState<CVFile | null>(null);
+  const [allCVs, setAllCVs] = useState<CVFile[]>([]);
+  const [editingCVId, setEditingCVId] = useState<string | null>(null);
+  const [editingCVLanguage, setEditingCVLanguage] = useState(false);
+  const [editingCVFile, setEditingCVFile] = useState<File | null>(null);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [pendingTestimonials, setPendingTestimonials] = useState<Testimonial[]>([]);
   const [cvFileInput, setCvFileInput] = useState<File | null>(null);
+  const [cvFileInputIsFrench, setCvFileInputIsFrench] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Language-aware getter functions
@@ -157,12 +161,12 @@ export const AdminDashboard = () => {
       setProfileData(prof);
       setReachmeEditForm({ email: prof.email, basedIn: prof.basedIn, availabilityStatus: prof.availabilityStatus });
       
-      // Fetch CV separately to handle missing CV gracefully
+      // Fetch all CVs
       try {
-        const cv = await cvAPI.getActiveCV();
-        setCvFile(cv);
+        const cvs = await cvAPI.getAllCVs();
+        setAllCVs(cvs);
       } catch {
-        setCvFile(null);
+        setAllCVs([]);
       }
       
       // Fetch testimonials
@@ -329,22 +333,12 @@ export const AdminDashboard = () => {
   const handleUploadCV = async () => {
     if (!cvFileInput) return;
     try {
-      await cvAPI.uploadCV(cvFileInput);
+      await cvAPI.uploadCV(cvFileInput, cvFileInputIsFrench);
       setCvFileInput(null);
+      setCvFileInputIsFrench(false);
       fetchAllData();
     } catch (err) {
       console.error("Failed to upload CV", err);
-    }
-  };
-
-  const handleDeactivateCV = async () => {
-    if (!cvFile) return;
-    try {
-      await cvAPI.deactivateCV(cvFile.cvId);
-      setCvFile(null);
-      fetchAllData();
-    } catch (err) {
-      console.error("Failed to deactivate CV", err);
     }
   };
 
@@ -670,82 +664,282 @@ export const AdminDashboard = () => {
                                 <div className="card-header">
                                     <h3 className="card-title">{t('admin.cvManagement')}</h3>
                                 </div>
+                                
+                                {/* All CVs List */}
                                 <div style={{ marginTop: '1rem' }}>
-                                    {cvFile ? (
-                                        <>
-                                            <div style={{ marginBottom: '1rem' }}>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>{t('admin.activeCv')}</label>
-                                                <p style={{ color: '#fff', fontSize: '0.95rem' }}>{cvFile.fileName}</p>
-                                            </div>
-                                            <div style={{ marginBottom: '1rem' }}>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>{t('admin.fileSize')}</label>
-                                                <p style={{ color: '#fff', fontSize: '0.95rem' }}>{(cvFile.fileSize / 1024).toFixed(2)} KB</p>
-                                            </div>
-                                            <div style={{ marginBottom: '1rem' }}>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>{t('admin.uploaded')}</label>
-                                                <p style={{ color: '#fff', fontSize: '0.95rem' }}>{new Date(cvFile.uploadedAt).toLocaleString()}</p>
-                                            </div>
-                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                <button 
-                                                    onClick={() => {
-                                                        setModalType('edit');
-                                                        setEditingId(cvFile.cvId);
-                                                        setShowModal(true);
-                                                    }}
-                                                    className="btn-secondary"
-                                                    style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#60a5fa' }}
-                                                >
-                                                    {t('admin.editCv')}
-                                                </button>
-                                                <button 
-                                                    onClick={() => {
-                                                        setModalType('delete');
-                                                        setEditingId(cvFile.cvId);
-                                                        setShowModal(true);
-                                                    }}
-                                                    className="btn-secondary"
-                                                    style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#ef4444' }}
-                                                >
-                                                    {t('admin.deleteCv')}
-                                                </button>
-                                                <button 
-                                                    onClick={handleDeactivateCV}
-                                                    className="btn-secondary"
-                                                    style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#f97316' }}
-                                                >
-                                                    {t('admin.deactivate')}
-                                                </button>
-                                            </div>
-                                        </>
+                                    <h4 style={{ color: '#fff', marginBottom: '1rem' }}>All CVs</h4>
+                                    {allCVs.length > 0 ? (
+                                        <div style={{ display: 'grid', gap: '1rem' }}>
+                                            {allCVs.map(cv => (
+                                                <div key={cv.cvId} style={{ padding: '1rem', backgroundColor: '#1e293b', borderRadius: '0.5rem', border: cv.isActive ? '2px solid #22c55e' : '1px solid #334155' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                                                <p style={{ color: '#fff', fontSize: '0.95rem', fontWeight: '500' }}>{cv.fileName}</p>
+                                                                <span style={{ padding: '0.25rem 0.75rem', backgroundColor: cv.isFrench ? '#ef4444' : '#3b82f6', color: '#fff', fontSize: '0.75rem', borderRadius: '0.25rem' }}>
+                                                                    {cv.isFrench ? 'French' : 'English'}
+                                                                </span>
+                                                                {cv.isActive && (
+                                                                    <span style={{ padding: '0.25rem 0.75rem', backgroundColor: '#22c55e', color: '#000', fontSize: '0.75rem', borderRadius: '0.25rem', fontWeight: '600' }}>
+                                                                        ACTIVE
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Size: {(cv.fileSize / 1024).toFixed(2)} KB</p>
+                                                            <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Uploaded: {new Date(cv.uploadedAt).toLocaleString()}</p>
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
+                                                            {!cv.isActive && (
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        try {
+                                                                            await cvAPI.activateCV(cv.cvId);
+                                                                            fetchAllData();
+                                                                        } catch (err) {
+                                                                            console.error('Failed to activate CV:', err);
+                                                                        }
+                                                                    }}
+                                                                    style={{
+                                                                        padding: '0.4rem 0.8rem',
+                                                                        fontSize: '0.75rem',
+                                                                        backgroundColor: '#22c55e',
+                                                                        color: '#000',
+                                                                        border: 'none',
+                                                                        borderRadius: '0.25rem',
+                                                                        cursor: 'pointer',
+                                                                        fontWeight: '600',
+                                                                        whiteSpace: 'nowrap'
+                                                                    }}
+                                                                >
+                                                                    Activate
+                                                                </button>
+                                                            )}
+                                                            <button
+                                                                onClick={() => {
+                                                                    setEditingCVId(cv.cvId);
+                                                                    setEditingCVLanguage(cv.isFrench);
+                                                                }}
+                                                                style={{
+                                                                    padding: '0.4rem 0.8rem',
+                                                                    fontSize: '0.75rem',
+                                                                    backgroundColor: '#f59e0b',
+                                                                    color: '#000',
+                                                                    border: 'none',
+                                                                    borderRadius: '0.25rem',
+                                                                    cursor: 'pointer',
+                                                                    fontWeight: '600',
+                                                                    whiteSpace: 'nowrap'
+                                                                }}
+                                                            >
+                                                                Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => cvAPI.downloadCV(cv.cvId, cv.fileName)}
+                                                                style={{
+                                                                    padding: '0.4rem 0.8rem',
+                                                                    fontSize: '0.75rem',
+                                                                    backgroundColor: '#3b82f6',
+                                                                    color: '#fff',
+                                                                    border: 'none',
+                                                                    borderRadius: '0.25rem',
+                                                                    cursor: 'pointer',
+                                                                    whiteSpace: 'nowrap'
+                                                                }}
+                                                            >
+                                                                Download
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setModalType('delete');
+                                                                    setEditingId(cv.cvId);
+                                                                    setShowModal(true);
+                                                                }}
+                                                                style={{
+                                                                    padding: '0.4rem 0.8rem',
+                                                                    fontSize: '0.75rem',
+                                                                    backgroundColor: '#ef4444',
+                                                                    color: '#fff',
+                                                                    border: 'none',
+                                                                    borderRadius: '0.25rem',
+                                                                    cursor: 'pointer',
+                                                                    whiteSpace: 'nowrap'
+                                                                }}
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     ) : (
-                                        <p style={{ color: '#94a3b8' }}>{t('admin.noActiveCvUploaded')}</p>
+                                        <p style={{ color: '#94a3b8' }}>No CVs uploaded yet</p>
                                     )}
                                 </div>
+
+                                {/* Upload New CV Section */}
                                 <div style={{ marginTop: '2rem', borderTop: '1px solid #334155', paddingTop: '1.5rem' }}>
                                     <h4 style={{ color: '#fff', marginBottom: '1rem' }}>{t('admin.uploadNewCv')}</h4>
-                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    <div style={{ marginBottom: '1rem' }}>
                                         <input 
                                             type="file"
                                             accept=".pdf,.doc,.docx"
                                             onChange={(e) => setCvFileInput(e.target.files?.[0] || null)}
-                                            style={{ flex: 1 }}
+                                            style={{ width: '100%', padding: '0.5rem', backgroundColor: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '0.5rem' }}
                                         />
-                                        <button 
-                                            onClick={handleUploadCV}
-                                            disabled={!cvFileInput}
-                                            className="btn-secondary"
-                                            style={{ 
-                                                padding: '0.5rem 1rem', 
-                                                fontSize: '0.875rem',
-                                                backgroundColor: cvFileInput ? '#22c55e' : '#64748b',
-                                                color: cvFileInput ? '#000' : '#94a3b8',
-                                                cursor: cvFileInput ? 'pointer' : 'not-allowed'
-                                            }}
-                                        >
-                                            Upload
-                                        </button>
                                     </div>
+                                    <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center' }}>
+                                        <input
+                                            type="checkbox"
+                                            id="cvFileInputIsFrench"
+                                            checked={cvFileInputIsFrench}
+                                            onChange={(e) => setCvFileInputIsFrench(e.target.checked)}
+                                            style={{
+                                                marginRight: '0.75rem',
+                                                width: '18px',
+                                                height: '18px',
+                                                accentColor: '#3b82f6',
+                                                cursor: 'pointer'
+                                            }}
+                                        />
+                                        <label htmlFor="cvFileInputIsFrench" style={{ color: '#94a3b8', cursor: 'pointer', userSelect: 'none' }}>
+                                            French Version
+                                        </label>
+                                    </div>
+                                    <button 
+                                        onClick={handleUploadCV}
+                                        disabled={!cvFileInput}
+                                        className="btn-secondary"
+                                        style={{ 
+                                            width: '100%',
+                                            padding: '0.5rem 1rem', 
+                                            fontSize: '0.875rem',
+                                            backgroundColor: cvFileInput ? '#22c55e' : '#64748b',
+                                            color: cvFileInput ? '#000' : '#94a3b8',
+                                            cursor: cvFileInput ? 'pointer' : 'not-allowed'
+                                        }}
+                                    >
+                                        Upload
+                                    </button>
                                 </div>
+
+                                {/* Edit CV Modal */}
+                                {editingCVId && (
+                                    <div style={{ 
+                                        position: 'fixed', 
+                                        top: 0, 
+                                        left: 0, 
+                                        right: 0, 
+                                        bottom: 0, 
+                                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        zIndex: 1000
+                                    }}>
+                                        <div style={{
+                                            backgroundColor: '#1e293b',
+                                            borderRadius: '0.5rem',
+                                            padding: '1.5rem',
+                                            maxWidth: '500px',
+                                            width: '90%',
+                                            border: '1px solid #334155'
+                                        }}>
+                                            <h3 style={{ color: '#fff', marginBottom: '1rem' }}>Edit CV</h3>
+                                            
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <label style={{ display: 'block', color: '#94a3b8', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+                                                    Replace File (Optional)
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    accept=".pdf,.doc,.docx"
+                                                    onChange={(e) => setEditingCVFile(e.target.files?.[0] || null)}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '0.5rem',
+                                                        backgroundColor: '#0f172a',
+                                                        color: '#fff',
+                                                        border: '1px solid #334155',
+                                                        borderRadius: '0.25rem'
+                                                    }}
+                                                />
+                                                {editingCVFile && (
+                                                    <p style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: '0.5rem' }}>
+                                                        Selected: {editingCVFile.name}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            
+                                            <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    id="editCVLanguage"
+                                                    checked={editingCVLanguage}
+                                                    onChange={(e) => setEditingCVLanguage(e.target.checked)}
+                                                    style={{
+                                                        marginRight: '0.75rem',
+                                                        width: '18px',
+                                                        height: '18px',
+                                                        accentColor: '#3b82f6',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                />
+                                                <label htmlFor="editCVLanguage" style={{ color: '#94a3b8', cursor: 'pointer', userSelect: 'none' }}>
+                                                    Mark as French Version
+                                                </label>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button
+                                                    onClick={async () => {
+                                                        try {
+                                                            if (editingCVFile) {
+                                                                await cvAPI.updateCVFile(editingCVId, editingCVFile, editingCVLanguage);
+                                                            } else {
+                                                                await cvAPI.updateCVLanguage(editingCVId, editingCVLanguage);
+                                                            }
+                                                            setEditingCVId(null);
+                                                            setEditingCVFile(null);
+                                                            fetchAllData();
+                                                        } catch (err) {
+                                                            console.error('Failed to update CV:', err);
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        flex: 1,
+                                                        padding: '0.5rem 1rem',
+                                                        backgroundColor: '#22c55e',
+                                                        color: '#000',
+                                                        border: 'none',
+                                                        borderRadius: '0.25rem',
+                                                        cursor: 'pointer',
+                                                        fontWeight: '600'
+                                                    }}
+                                                >
+                                                    Save
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingCVId(null);
+                                                        setEditingCVFile(null);
+                                                    }}
+                                                    style={{
+                                                        flex: 1,
+                                                        padding: '0.5rem 1rem',
+                                                        backgroundColor: '#334155',
+                                                        color: '#fff',
+                                                        border: 'none',
+                                                        borderRadius: '0.25rem',
+                                                        cursor: 'pointer',
+                                                        fontWeight: '600'
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                         {activeTab === 'testimonials' && (
@@ -968,7 +1162,8 @@ export const AdminDashboard = () => {
         <DeleteCVModal
           onClose={handleCloseModal}
           onSuccess={handleModalSuccess}
-          fileName={cvFile?.fileName || ''}
+          fileName={allCVs.find(cv => cv.cvId === editingId)?.fileName || ''}
+          cvId={editingId || ''}
         />
       )}
     </div>

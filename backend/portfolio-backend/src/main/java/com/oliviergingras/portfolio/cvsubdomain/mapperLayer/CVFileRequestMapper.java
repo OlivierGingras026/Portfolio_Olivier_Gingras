@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class CVFileRequestMapper {
     public CVFile toEntity(CVFileRequestModel model) {
-        return new CVFile(model.getFileName(), model.getFileData(), model.getFileSize());
+        return new CVFile(model.getFileName(), model.getFileData(), model.getFileSize(), model.getIsFrench());
     }
 }
