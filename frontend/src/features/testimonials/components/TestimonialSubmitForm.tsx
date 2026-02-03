@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { testimonialAPI, type TestimonialRequest } from '../api/testimonialAPI';
 import './TestimonialSubmitForm.css';
 import React from 'react';
@@ -9,6 +10,7 @@ interface TestimonialSubmitFormProps {
 }
 
 export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitFormProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<TestimonialRequest>({
     name: '',
     title: '',
@@ -91,55 +93,55 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
     <div className="testimonial-form-container">
       <div className="testimonial-form">
         <div className="form-header">
-          <h3>Share Your Feedback</h3>
-          <p>Help others by sharing your experience working with me</p>
+          <h3>{t('testimonialsubdomain.shareYourFeedback')}</h3>
+          <p>{t('testimonialsubdomain.helpOthers')}</p>
         </div>
 
         {success ? (
           <div className="success-message">
             <div className="checkmark">✓</div>
-            <h4>Thank You!</h4>
-            <p>Your testimonial has been submitted and is pending approval.</p>
+            <h4>{t('testimonialsubdomain.thankyouForFeedback')}</h4>
+            <p>{t('testimonialsubdomain.feedbackWillBeReviewed')}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
             {error && <div className="error-message">{error}</div>}
 
             <div className="form-group">
-              <label htmlFor="name">Your Name *</label>
+              <label htmlFor="name">{t('testimonialsubdomain.yourName')} *</label>
               <input
                 type="text"
                 id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="John Doe"
+                placeholder={t('testimonialsubdomain.yourName')}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="title">Your Title *</label>
+              <label htmlFor="title">{t('testimonialsubdomain.yourTitle')} *</label>
               <input
                 type="text"
                 id="title"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="e.g., Project Manager, Developer"
+                placeholder={t('testimonialsubdomain.yourTitle')}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="company">Company (Optional)</label>
+              <label htmlFor="company">{t('testimonialsubdomain.companyOptional')}</label>
               <input
                 type="text"
                 id="company"
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
-                placeholder="e.g., Acme Corp"
+                placeholder={t('testimonialsubdomain.companyOptional')}
               />
             </div>
 
@@ -152,11 +154,11 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
                   value={formData.rating}
                   onChange={handleChange}
                 >
-                  <option value={5}>5 Stars - Excellent</option>
-                  <option value={4}>4 Stars - Very Good</option>
-                  <option value={3}>3 Stars - Good</option>
-                  <option value={2}>2 Stars - Fair</option>
-                  <option value={1}>1 Star - Poor</option>
+                  <option value={5}>{t('testimonialsubdomain.fiveStarsExcellent')}</option>
+                  <option value={4}>{t('testimonialsubdomain.fourStarsGood')}</option>
+                  <option value={3}>{t('testimonialsubdomain.threeStarsFair')}</option>
+                  <option value={2}>{t('testimonialsubdomain.twoStarsPoor')}</option>
+                  <option value={1}>{t('testimonialsubdomain.oneStarAwful')}</option>
                 </select>
                 <div className="stars">
                   {[...Array(formData.rating)].map((_, i) => (
@@ -167,13 +169,13 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
             </div>
 
             <div className="form-group">
-              <label htmlFor="message">Your Testimonial *</label>
+              <label htmlFor="message">{t('testimonialsubdomain.yourTestimonial')} *</label>
               <textarea
                 id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                placeholder="Share your experience and what made working together special..."
+                placeholder={t('testimonialsubdomain.yourTestimonial')}
                 rows={5}
                 required
               />
@@ -181,11 +183,11 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
 
             <div className="form-actions">
               <button type="submit" disabled={loading} className="submit-btn">
-                {loading ? 'Submitting...' : 'Submit Testimonial'}
+                {loading ? t('testimonialsubdomain.submitting') || 'Submitting...' : t('testimonialsubdomain.submitTestimonial')}
               </button>
               {onClose && (
                 <button type="button" onClick={onClose} className="cancel-btn">
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               )}
             </div>

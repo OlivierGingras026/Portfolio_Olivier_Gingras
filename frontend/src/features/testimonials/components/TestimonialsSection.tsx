@@ -124,7 +124,7 @@ export const TestimonialsSection = () => {
             }}
             className="submit-testimonial-btn"
           >
-            Share Your Feedback
+            {t('testimonialsubdomain.shareYourFeedback')}
           </button>
         </div>
       </div>

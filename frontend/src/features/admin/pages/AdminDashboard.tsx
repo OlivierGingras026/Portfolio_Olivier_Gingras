@@ -392,10 +392,63 @@ export const AdminDashboard = () => {
 
         <div className="sidebar-footer">
           <button
-            onClick={handleLogout}
-            className="logout-btn"
+            onClick={() => navigate('/')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              width: '100%',
+              padding: '0.75rem',
+              backgroundColor: '#1e293b',
+              color: '#fff',
+              border: '1px solid #475569',
+              borderRadius: '0.375rem',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              transition: 'all 0.2s',
+              marginBottom: '0.5rem',
+            }}
+            onMouseEnter={(e) => {
+              (e.target as HTMLElement).style.backgroundColor = '#334155';
+              (e.target as HTMLElement).style.borderColor = '#64748b';
+            }}
+            onMouseLeave={(e) => {
+              (e.target as HTMLElement).style.backgroundColor = '#1e293b';
+              (e.target as HTMLElement).style.borderColor = '#475569';
+            }}
           >
-            {t('admin.logout')}
+            {t('common.home')}
+          </button>
+          <button
+            onClick={handleLogout}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              width: '100%',
+              padding: '0.75rem',
+              backgroundColor: '#ef4444',
+              color: '#fff',
+              border: '1px solid #dc2626',
+              borderRadius: '0.375rem',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              (e.target as HTMLElement).style.backgroundColor = '#dc2626';
+              (e.target as HTMLElement).style.borderColor = '#991b1b';
+            }}
+            onMouseLeave={(e) => {
+              (e.target as HTMLElement).style.backgroundColor = '#ef4444';
+              (e.target as HTMLElement).style.borderColor = '#dc2626';
+            }}
+          >
+            {t('common.logout')}
           </button>
         </div>
       </aside>
@@ -667,7 +720,7 @@ export const AdminDashboard = () => {
                                 
                                 {/* All CVs List */}
                                 <div style={{ marginTop: '1rem' }}>
-                                    <h4 style={{ color: '#fff', marginBottom: '1rem' }}>All CVs</h4>
+                                    <h4 style={{ color: '#fff', marginBottom: '1rem' }}>{t('admin.allCVs')}</h4>
                                     {allCVs.length > 0 ? (
                                         <div style={{ display: 'grid', gap: '1rem' }}>
                                             {allCVs.map(cv => (
@@ -677,16 +730,16 @@ export const AdminDashboard = () => {
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                                                                 <p style={{ color: '#fff', fontSize: '0.95rem', fontWeight: '500' }}>{cv.fileName}</p>
                                                                 <span style={{ padding: '0.25rem 0.75rem', backgroundColor: cv.isFrench ? '#ef4444' : '#3b82f6', color: '#fff', fontSize: '0.75rem', borderRadius: '0.25rem' }}>
-                                                                    {cv.isFrench ? 'French' : 'English'}
+                                                                    {cv.isFrench ? t('admin.frenchVersion') : t('admin.englishVersion')}
                                                                 </span>
                                                                 {cv.isActive && (
                                                                     <span style={{ padding: '0.25rem 0.75rem', backgroundColor: '#22c55e', color: '#000', fontSize: '0.75rem', borderRadius: '0.25rem', fontWeight: '600' }}>
-                                                                        ACTIVE
+                                                                        {t('admin.activeCv')}
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Size: {(cv.fileSize / 1024).toFixed(2)} KB</p>
-                                                            <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Uploaded: {new Date(cv.uploadedAt).toLocaleString()}</p>
+                                                            <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>{t('admin.fileSize')}: {(cv.fileSize / 1024).toFixed(2)} KB</p>
+                                                            <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>{t('admin.uploaded')}: {new Date(cv.uploadedAt).toLocaleString()}</p>
                                                         </div>
                                                         <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
                                                             {!cv.isActive && (
@@ -711,7 +764,7 @@ export const AdminDashboard = () => {
                                                                         whiteSpace: 'nowrap'
                                                                     }}
                                                                 >
-                                                                    Activate
+                                                                    {t('admin.activate')}
                                                                 </button>
                                                             )}
                                                             <button
@@ -731,7 +784,7 @@ export const AdminDashboard = () => {
                                                                     whiteSpace: 'nowrap'
                                                                 }}
                                                             >
-                                                                Edit
+                                                                {t('admin.editCv')}
                                                             </button>
                                                             <button
                                                                 onClick={() => cvAPI.downloadCV(cv.cvId, cv.fileName)}
@@ -746,7 +799,7 @@ export const AdminDashboard = () => {
                                                                     whiteSpace: 'nowrap'
                                                                 }}
                                                             >
-                                                                Download
+                                                                {t('admin.download')}
                                                             </button>
                                                             <button
                                                                 onClick={() => {
@@ -765,7 +818,7 @@ export const AdminDashboard = () => {
                                                                     whiteSpace: 'nowrap'
                                                                 }}
                                                             >
-                                                                Delete
+                                                                {t('admin.deleteCv')}
                                                             </button>
                                                         </div>
                                                     </div>
@@ -773,7 +826,7 @@ export const AdminDashboard = () => {
                                             ))}
                                         </div>
                                     ) : (
-                                        <p style={{ color: '#94a3b8' }}>No CVs uploaded yet</p>
+                                        <p style={{ color: '#94a3b8' }}>{t('admin.noActiveCvUploaded')}</p>
                                     )}
                                 </div>
 
@@ -803,7 +856,7 @@ export const AdminDashboard = () => {
                                             }}
                                         />
                                         <label htmlFor="cvFileInputIsFrench" style={{ color: '#94a3b8', cursor: 'pointer', userSelect: 'none' }}>
-                                            French Version
+                                            {t('admin.frenchVersion')}
                                         </label>
                                     </div>
                                     <button 
@@ -946,7 +999,7 @@ export const AdminDashboard = () => {
                             <>
                                 {pendingTestimonials.length > 0 && (
                                     <div style={{ gridColumn: '1 / -1' }}>
-                                        <h3 style={{ color: '#fff', marginBottom: '1rem', fontSize: '1rem' }}>Pending Testimonials</h3>
+                                        <h3 style={{ color: '#fff', marginBottom: '1rem', fontSize: '1rem' }}>{t('testimonialsubdomain.pendingTestimonials')}</h3>
                                         {pendingTestimonials.map(testimonial => (
                                             <div key={testimonial.testimonialId} className="card" style={{ gridColumn: '1 / -1', marginBottom: '1rem' }}>
                                                 <div className="card-header">
@@ -970,14 +1023,14 @@ export const AdminDashboard = () => {
                                                         className="btn-secondary"
                                                         style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', backgroundColor: '#22c55e', color: '#000' }}
                                                     >
-                                                        Approve
+                                                        {t('testimonialsubdomain.approve')}
                                                     </button>
                                                     <button 
                                                         onClick={() => handleRejectTestimonial(testimonial.testimonialId)}
                                                         className="btn-secondary"
                                                         style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#ef4444' }}
                                                     >
-                                                        Reject
+                                                        {t('testimonialsubdomain.reject')}
                                                     </button>
                                                 </div>
                                             </div>
@@ -986,13 +1039,13 @@ export const AdminDashboard = () => {
                                 )}
                                 {testimonials.length === 0 ? (
                                     <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-                                        No testimonials yet
+                                        {t('testimonialsubdomain.noTestimonials')}
                                     </div>
                                 ) : (
                                     <>
                                         {pendingTestimonials.length > 0 && <div style={{ gridColumn: '1 / -1', margin: '1.5rem 0', borderTop: '1px solid #334155' }} />}
                                         <div style={{ gridColumn: '1 / -1' }}>
-                                            {pendingTestimonials.length > 0 && <h3 style={{ color: '#fff', marginBottom: '1rem', fontSize: '1rem', marginTop: '1.5rem' }}>All Testimonials</h3>}
+                                            {pendingTestimonials.length > 0 && <h3 style={{ color: '#fff', marginBottom: '1rem', fontSize: '1rem', marginTop: '1.5rem' }}>{t('testimonialsubdomain.allTestimonials')}</h3>}
                                             {testimonials.map(testimonial => (
                                                 <div key={testimonial.testimonialId} className="card" style={{ gridColumn: '1 / -1', marginBottom: '1rem' }}>
                                                     <div className="card-header">
@@ -1000,7 +1053,7 @@ export const AdminDashboard = () => {
                                                             <div className="card-title">{testimonial.name}</div>
                                                             <span className="card-meta">{getTestimonialTitle(testimonial)} {getTestimonialCompany(testimonial) && `at ${getTestimonialCompany(testimonial)}`}</span>
                                                             <span style={{ marginLeft: '1rem', fontSize: '0.75rem', color: testimonial.status === 'APPROVED' ? '#22c55e' : testimonial.status === 'REJECTED' ? '#ef4444' : '#f59e0b' }}>
-                                                                {testimonial.status}
+                                                                {testimonial.status === 'APPROVED' ? t('admin.approvedStatus') : testimonial.status === 'REJECTED' ? t('admin.rejectedStatus') : t('admin.pendingStatus')}
                                                             </span>
                                                         </div>
                                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -1018,7 +1071,7 @@ export const AdminDashboard = () => {
                                                         className="btn-secondary"
                                                         style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: '#ef4444' }}
                                                     >
-                                                        Delete
+                                                        {t('common.delete')}
                                                     </button>
                                                 </div>
                                             ))}

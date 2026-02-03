@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
+import './LanguageSwitcher.css';
 
 export function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
@@ -13,12 +14,12 @@ export function LanguageSwitcher() {
   return (
     <button
       onClick={toggleLanguage}
-      className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800 transition-colors"
-      title={t('language')}
-      aria-label={t('language')}
+      className="language-switcher"
+      title={t('common.language')}
+      aria-label={t('common.language')}
     >
       <Globe size={18} />
-      <span className="text-sm font-medium">
+      <span className="language-code">
         {i18n.language.toUpperCase()}
       </span>
     </button>

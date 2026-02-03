@@ -150,25 +150,35 @@ export const PortfolioNavbar = () => {
                     {/* Language Switcher */}
                     <LanguageSwitcher />
 
-                    {/* Auth Button */}
+                    {/* Auth Buttons */}
                     {isAuthenticated ? (
-                        <button
-                            onClick={() => {
-                                logout();
-                                navigate('/');
-                            }}
-                            className="navbar-cta-button"
-                        >
-                            <LogOut size={16} />
-                            <span className="navbar-cta-text">{adminUser?.fullName}</span>
-                        </button>
+                        <>
+                            <button
+                                onClick={() => navigate('/admin/dashboard')}
+                                className="navbar-cta-button"
+                                title={adminUser?.fullName}
+                            >
+                                <span className="navbar-cta-text">{t('common.adminUser')}: {adminUser?.fullName}</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    logout();
+                                    navigate('/');
+                                }}
+                                className="navbar-cta-button logout"
+                                style={{ backgroundColor: '#ef4444' }}
+                            >
+                                <LogOut size={16} />
+                                <span className="navbar-cta-text">{t('common.logout')}</span>
+                            </button>
+                        </>
                     ) : (
                         <button
                             onClick={() => navigate('/admin/login')}
                             className="navbar-cta-button"
                         >
                             <LogIn size={16} />
-                            <span className="navbar-cta-text">Login</span>
+                            <span className="navbar-cta-text">{t('common.login')}</span>
                         </button>
                     )}
 
@@ -196,17 +206,28 @@ export const PortfolioNavbar = () => {
                             </button>
                         ))}
                         {isAuthenticated ? (
-                            <button
-                                onClick={() => {
-                                    logout();
-                                    setIsOpen(false);
-                                    navigate('/');
-                                }}
-                                className="navbar-mobile-card logout-card"
-                            >
-                                <LogOut size={16} />
-                                <span className="mobile-card-text">Logout</span>
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => {
+                                        navigate('/admin/dashboard');
+                                        setIsOpen(false);
+                                    }}
+                                    className="navbar-mobile-card"
+                                >
+                                    <span className="mobile-card-text">{t('common.adminDashboard')}</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        logout();
+                                        setIsOpen(false);
+                                        navigate('/');
+                                    }}
+                                    className="navbar-mobile-card logout-card"
+                                >
+                                    <LogOut size={16} />
+                                    <span className="mobile-card-text">{t('common.logout')}</span>
+                                </button>
+                            </>
                         ) : (
                             <button
                                 onClick={() => {
@@ -216,7 +237,7 @@ export const PortfolioNavbar = () => {
                                 className="navbar-mobile-card login-card"
                             >
                                 <LogIn size={16} />
-                                <span className="mobile-card-text">Login</span>
+                                <span className="mobile-card-text">{t('common.login')}</span>
                             </button>
                         )}
                     </div>

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import useAuthStore from '../store/authStore';
 import { authAPI } from '../api/authAPI';
 import { getErrorMessage } from '../../../shared/api/errorHandler';
+import { LanguageSwitcher } from '../../../shared/components/LanguageSwitcher';
 
 const FloatingShape = ({ delay, size }: { delay: number; size: string }) => {
   return (
@@ -28,6 +30,7 @@ const FloatingShape = ({ delay, size }: { delay: number; size: string }) => {
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -72,6 +75,49 @@ export function LoginPage() {
       padding: '16px',
       fontFamily: 'system-ui, -apple-system, sans-serif',
     }}>
+      {/* Top Navigation Bar */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 100,
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: '1rem',
+        padding: '1rem',
+        background: 'linear-gradient(180deg, rgba(3, 7, 18, 0.8) 0%, transparent 100%)',
+        backdropFilter: 'blur(4px)',
+      }}>
+        <button
+          onClick={() => navigate('/')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.5rem 1rem',
+            backgroundColor: '#1e293b',
+            color: '#fff',
+            border: '1px solid #475569',
+            borderRadius: '0.375rem',
+            cursor: 'pointer',
+            fontSize: '0.875rem',
+            fontWeight: '500',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => {
+            (e.target as HTMLElement).style.backgroundColor = '#334155';
+            (e.target as HTMLElement).style.borderColor = '#64748b';
+          }}
+          onMouseLeave={(e) => {
+            (e.target as HTMLElement).style.backgroundColor = '#1e293b';
+            (e.target as HTMLElement).style.borderColor = '#475569';
+          }}
+        >
+          {t('common.home')}
+        </button>
+        <LanguageSwitcher />
+      </div>
       {/* Animated Background Shapes - LOWER Z-INDEX */}
       <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', zIndex: 1 }}>
         <FloatingShape delay={0} size="w-72 h-72" />
@@ -110,13 +156,13 @@ export function LoginPage() {
               backgroundClip: 'text',
               marginBottom: '8px',
             }}>
-              Admin Access
+              {t('auth.adminAccess')}
             </h1>
             <p style={{
               color: '#9ca3af',
               fontSize: '14px',
             }}>
-              Manage your portfolio with secure authentication
+              {t('auth.managePortfolio')}
             </p>
           </motion.div>
 
@@ -135,7 +181,7 @@ export function LoginPage() {
                 marginBottom: '12px',
                 color: '#00d9ff',
               }}>
-                Email Address
+                {t('auth.emailAddress')}
               </label>
               <motion.input
                 id="email"
@@ -183,7 +229,7 @@ export function LoginPage() {
                 marginBottom: '12px',
                 color: '#00d9ff',
               }}>
-                Password
+                {t('auth.password')}
               </label>
               <motion.input
                 id="password"
@@ -274,11 +320,11 @@ export function LoginPage() {
                   >
                     ⏳
                   </motion.span>
-                  Authenticating...
+                  {t('common.loading')}
                 </>
               ) : (
                 <>
-                  🔐 Login
+                  {t('auth.login')}
                 </>
               )}
             </motion.button>
