@@ -14,6 +14,7 @@
     "close": "Fermer"
   },
   "hero": {
+    "greeting": "Je suis",
     "welcome": "Bienvenue sur mon portfolio",
     "name": "Olivier Gingras",
     "subtitle": "Développeur full-stack passionné par la création d'applications web innovantes avec du code propre et des technologies modernes",

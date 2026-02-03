@@ -1,13 +1,17 @@
-import type { Hobby } from '../types';
 import { usePortfolioData } from '../../../shared/context/usePortfolioData';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import './HobbiesSection.css';
+import type { Hobby } from '../types';
 
 export const HobbiesSection = () => {
   const { data } = usePortfolioData();
   const { i18n, t } = useTranslation();
-  const hobbies = (data?.hobbies || []) as Hobby[];
+  
+  // Filter out any garbage/test data and keep only the main hobbies
+  const hobbies = (data?.hobbies || [])
+    .filter(h => !['efef', 'scscs'].includes(h.title))
+    .slice(0, 3) as Hobby[];
 
   const getHobbyTitle = (hobby: Hobby): string => {
     return i18n.language === 'fr' ? (hobby.titleFr || hobby.title) : hobby.title;
@@ -30,12 +34,13 @@ export const HobbiesSection = () => {
         </motion.h2>
 
         <div className="hobbies-grid">
-          {hobbies.map((hobby) => (
+          {hobbies.map((hobby, index) => (
             <motion.div
               key={hobby.hobbyId}
-              initial={false}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, amount: 0.3 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
               className="hobby-card"
             >
               <h3 className="hobby-name">{getHobbyTitle(hobby)}</h3>

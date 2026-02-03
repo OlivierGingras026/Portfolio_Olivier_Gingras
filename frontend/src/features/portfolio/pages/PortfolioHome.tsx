@@ -9,12 +9,10 @@ import { CVSection } from '../../cv/components/CVSection';
 import { TestimonialsSection } from '../../testimonials/components/TestimonialsSection';
 import { PortfolioNavbar } from '../components/PortfolioNavbar';
 import { HeroSection } from '../components/HeroSection';
-import { ParticleBackground } from '../../../shared/components/ParticleBackground';
 
 export const PortfolioHome = () => {
     return (
         <div className="bg-slate-950 min-h-screen text-white selection:bg-blue-500/30">
-            <ParticleBackground />
             <PortfolioNavbar />
             
             <main style={{ position: 'relative', zIndex: 1 }}>
@@ -28,21 +26,11 @@ export const PortfolioHome = () => {
                     <ProjectsSection />
                 </div>
                 
-                {/* Experience and Education Side by Side */}
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '60px',
-                    maxWidth: '1200px',
-                    margin: '0 auto',
-                    padding: '60px 40px'
-                }}>
-                    <div id="experience">
-                        <WorkExperienceSection />
-                    </div>
-                    <div id="education">
-                        <EducationSection />
-                    </div>
+                <div id="experience">
+                    <WorkExperienceSection />
+                </div>
+                <div id="education">
+                    <EducationSection />
                 </div>
                 
                 <div id="hobbies">

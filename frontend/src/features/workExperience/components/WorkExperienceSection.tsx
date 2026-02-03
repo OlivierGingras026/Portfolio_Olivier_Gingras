@@ -34,21 +34,25 @@ export const WorkExperienceSection = () => {
           {t('workexperiencesubdomain.sectionTitle')}
         </motion.h2>
 
-        <div className="work-experience-list">
-          {experiences.map((work) => (
+        <div className="work-experience-timeline">
+          <div className="timeline-line"></div>
+          {experiences.map((work, index) => (
             <motion.div
               key={work.workExperienceId}
-              initial={false}
-              whileInView={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
-              className="work-experience-item"
+              transition={{ delay: index * 0.1 }}
+              className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}
             >
-              <div className="work-experience-content">
+              <div className="timeline-dot"></div>
+              <div className="timeline-content">
+                <div className="work-date-badge">
+                   {work.startDate} — {work.isCurrent ? t('workexperiencesubdomain.present') : work.endDate}
+                </div>
                 <h3 className="work-position">{getPosition(work)}</h3>
                 <h4 className="work-company">{getCompany(work)}</h4>
-                <div className="work-dates">
-                  {work.startDate} — {work.isCurrent ? t('workexperiencesubdomain.present') : work.endDate}
-                </div>
+                
                 <p className="work-description">{getDescription(work)}</p>
               </div>
             </motion.div>

@@ -1,12 +1,25 @@
 import { ArrowRight, Github, Linkedin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useRef } from 'react';
+import type { MouseEvent } from 'react';
 import './Portfolio.css';
 
 export const HeroSection = () => {
     const { t } = useTranslation();
+    const titleRef = useRef<HTMLHeadingElement>(null);
+
     const scrollToContact = () => {
         const element = document.getElementById('contact');
         element?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const handleMouseMove = (e: MouseEvent<HTMLHeadingElement>) => {
+        if (!titleRef.current) return;
+        const rect = titleRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        titleRef.current.style.setProperty('--mouse-x', `${x}px`);
+        titleRef.current.style.setProperty('--mouse-y', `${y}px`);
     };
 
     return (
@@ -18,14 +31,13 @@ export const HeroSection = () => {
             </div>
 
             <div className="hero-content">
-                {/* Greeting */}
-                <div className="hero-greeting">
-                    <span>{t('hero.welcome')}</span>
-                </div>
-
                 {/* Main Heading */}
-                <h1 className="hero-title">
-                    Hi, I'm <span className="hero-gradient">{t('hero.name')}</span>
+                <h1 
+                    ref={titleRef}
+                    className="hero-title interactive-title"
+                    onMouseMove={handleMouseMove}
+                >
+                    {t('hero.greeting')} {t('hero.name')}
                 </h1>
 
                 {/* Subtitle */}

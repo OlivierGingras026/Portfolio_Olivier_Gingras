@@ -19,6 +19,12 @@ export const SkillsSection = () => {
     return i18n.language === 'fr' ? (skill.titleFr || skill.title) : skill.title;
   };
 
+  const categoryConfigs = [
+    { type: 'frontend', title: 'Frontend', skills: frontendSkills, color: 'frontend' },
+    { type: 'backend', title: 'Backend', skills: backendSkills, color: 'backend' },
+    { type: 'other', title: 'Other', skills: otherSkills, color: 'other' },
+  ];
+
   return (
     <section id="skills" className="skills-section">
       <div className="skills-container">
@@ -29,120 +35,53 @@ export const SkillsSection = () => {
           className="skills-header"
         >
           <p className="skills-label">EXPERTISE</p>
-          <h2 className="skills-title">{t('skillsubdomain.sectionTitle').split(' & ')[0]} & <span className="skills-gradient">{t('skillsubdomain.sectionTitle').split(' & ')[1]}</span></h2>
+          <h2 className="skills-title">
+            {t('skillsubdomain.sectionTitle').split(' & ')[0]} & 
+            <span className="skills-gradient">{t('skillsubdomain.sectionTitle').split(' & ')[1]}</span>
+          </h2>
+          <p className="skills-subtitle">
+            {i18n.language === 'fr' 
+              ? 'Maîtrise professionnelle dans différents domaines technologiques' 
+              : 'Professional mastery across diverse technological domains'}
+          </p>
         </motion.div>
 
-        <div className="skills-grid">
-          {/* Frontend Column */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="skills-column"
-          >
-            <div className="column-header">
-              <div className="category-dot frontend"></div>
-              <h3 className="column-title">Frontend</h3>
-            </div>
-            <div className="skills-list">
-              {frontendSkills.map((skill) => (
-                <motion.div
-                  key={skill.skillId}
-                  initial={false}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  className="skill-item"
-                >
-                  <div className="skill-header">
-                    <span className="skill-name">{getSkillTitle(skill)}</span>
-                  </div>
-                  <div className="skill-bar">
-                    <motion.div 
-                      className="skill-progress"
-                      initial={{ width: '0%' }}
-                      whileInView={{ width: '95%' }}
-                      viewport={{ once: true, amount: 0.3 }}
-                      transition={{ duration: 0.8, ease: 'easeOut' }}
-                    />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+        <div className="skills-showcase">
+          {categoryConfigs.map((category, categoryIndex) => (
+            <motion.div
+              key={category.type}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: categoryIndex * 0.1 }}
+              className="skill-category"
+            >
+              <div className="category-header">
+                <div className={`category-icon ${category.color}`}>
+                  <div className="icon-inner"></div>
+                </div>
+                <h3 className="category-name">{category.title}</h3>
+                <span className="skill-count">{category.skills.length}</span>
+              </div>
 
-          {/* Backend Column */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="skills-column"
-          >
-            <div className="column-header">
-              <div className="category-dot backend"></div>
-              <h3 className="column-title">Backend</h3>
-            </div>
-            <div className="skills-list">
-              {backendSkills.map((skill) => (
-                <motion.div
-                  key={skill.skillId}
-                  initial={false}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  className="skill-item"
-                >
-                  <div className="skill-header">
+              <div className="category-skills">
+                {category.skills.map((skill, skillIndex) => (
+                  <motion.div
+                    key={skill.skillId}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: skillIndex * 0.03 }}
+                    className="skill-pill"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                  >
+                    <div className={`skill-dot ${category.color}`}></div>
                     <span className="skill-name">{getSkillTitle(skill)}</span>
-                  </div>
-                  <div className="skill-bar">
-                    <motion.div 
-                      className="skill-progress"
-                      initial={{ width: '0%' }}
-                      whileInView={{ width: '85%' }}
-                      viewport={{ once: true, amount: 0.3 }}
-                      transition={{ duration: 0.8, ease: 'easeOut' }}
-                    />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Other Column */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="skills-column skills-column-other"
-          >
-            <div className="column-header">
-              <div className="category-dot other"></div>
-              <h3 className="column-title">Other</h3>
-            </div>
-            <div className="skills-list">
-              {otherSkills.map((skill) => (
-                <motion.div
-                  key={skill.skillId}
-                  initial={false}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  className="skill-item"
-                >
-                  <div className="skill-header">
-                    <span className="skill-name">{getSkillTitle(skill)}</span>
-                  </div>
-                  <div className="skill-bar">
-                    <motion.div 
-                      className="skill-progress"
-                      initial={{ width: '0%' }}
-                      whileInView={{ width: '80%' }}
-                      viewport={{ once: true, amount: 0.3 }}
-                      transition={{ duration: 0.8, ease: 'easeOut' }}
-                    />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          ))}
         </div>
 
         {/* Technology Ecosystem Section */}
@@ -152,18 +91,22 @@ export const SkillsSection = () => {
           viewport={{ once: true, amount: 0.3 }}
           className="tech-ecosystem"
         >
-          <h3 className="ecosystem-title">Technology Ecosystem</h3>
-          <div className="ecosystem-tags">
-            {allSkills.map((skill) => (
-              <motion.span
+          <h3 className="ecosystem-title">
+            {i18n.language === 'fr' ? 'Écosystème Technologique' : 'Technology Ecosystem'}
+          </h3>
+          <div className="ecosystem-grid">
+            {allSkills.map((skill, index) => (
+              <motion.div
                 key={skill.skillId}
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.3 }}
-                className="ecosystem-tag"
+                viewport={{ once: true }}
+                transition={{ delay: (index % 6) * 0.05 }}
+                whileHover={{ scale: 1.08 }}
+                className={`ecosystem-badge ${skill.type}`}
               >
                 {getSkillTitle(skill)}
-              </motion.span>
+              </motion.div>
             ))}
           </div>
         </motion.div>

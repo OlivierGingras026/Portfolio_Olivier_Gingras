@@ -1,33 +1,60 @@
 .portfolio-home {
   width: 100%;
   min-height: 100vh;
-  background-color: #030712;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  background-attachment: fixed;
   color: white;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.portfolio-home::before {
+  display: none;
 }
 
 .portfolio-main {
   width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .portfolio-footer {
   width: 100%;
-  padding: 80px 20px;
-  background-color: #000000;
-  border-top: 1px solid rgb(30, 41, 59);
-  margin-top: 60px;
+  padding: 60px 20px;
+  background: linear-gradient(180deg, 
+    rgba(15, 23, 42, 0.5) 0%,
+    rgba(10, 15, 30, 0.8) 100%);
+  border-top: 1px solid rgba(59, 130, 246, 0.1);
+  margin-top: 0;
+  position: relative;
+}
+
+.portfolio-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent,
+    rgba(59, 130, 246, 0.5),
+    transparent);
 }
 
 .footer-container {
-  max-width: 1024px;
+  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .footer-container h2 {
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 32px;
-  background: linear-gradient(to right, rgb(96, 165, 250), rgb(168, 85, 247));
+  font-size: 42px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #a855f7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -35,16 +62,19 @@
 
 .footer-container p {
   font-size: 16px;
-  color: rgb(148, 163, 184);
-  margin-bottom: 32px;
+  color: #cbd5e1;
+  margin-bottom: 40px;
   max-width: 640px;
   margin-left: auto;
   margin-right: auto;
-  line-height: 1.6;
+  line-height: 1.8;
 }
 
 .footer-copyright {
-  margin-top: 48px;
+  margin-top: 60px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(59, 130, 246, 0.1);
   font-size: 14px;
-  color: rgb(107, 114, 128);
+  color: #64748b;
+  letter-spacing: 0.5px;
 }
