@@ -65,7 +65,7 @@ export const AdminDashboard = () => {
   const [hobbies, setHobbies] = useState<Hobby[]>([]);
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [profileData, setProfileData] = useState<ReachMeProfile | null>(null);
-  const [reachmeEditForm, setReachmeEditForm] = useState({ email: '', basedIn: '', availabilityStatus: '', availabilityStatusFr: '' });
+  const [reachmeEditForm, setReachmeEditForm] = useState({ email: '', basedIn: '', availabilityStatus: '' });
   const [isEditingReachme, setIsEditingReachme] = useState(false);
   const [allCVs, setAllCVs] = useState<CVFile[]>([]);
   const [editingCVId, setEditingCVId] = useState<string | null>(null);
@@ -159,7 +159,7 @@ export const AdminDashboard = () => {
       setHobbies(h);
       setMessages(msgs);
       setProfileData(prof);
-      setReachmeEditForm({ email: prof.email, basedIn: prof.basedIn, availabilityStatus: prof.availabilityStatus, availabilityStatusFr: prof.availabilityStatusFr || '' });
+      setReachmeEditForm({ email: prof.email, basedIn: prof.basedIn, availabilityStatus: prof.availabilityStatus });
       
       // Fetch all CVs
       try {
@@ -321,8 +321,7 @@ export const AdminDashboard = () => {
       await reachMeAPI.updateProfile({
         email: reachmeEditForm.email,
         basedIn: reachmeEditForm.basedIn,
-        availabilityStatus: reachmeEditForm.availabilityStatus,
-        availabilityStatusFr: reachmeEditForm.availabilityStatusFr
+        availabilityStatus: reachmeEditForm.availabilityStatus
       });
       setIsEditingReachme(false);
       fetchAllData();
@@ -657,11 +656,6 @@ export const AdminDashboard = () => {
                                             <div>
                                                 <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.25rem' }}>{t('admin.availability')}</label>
                                                 <p style={{ color: '#fff' }}>{profileData.availabilityStatus}</p>
-                                                {profileData.availabilityStatusFr && (
-                                                  <p style={{ color: '#cbd5e1', fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                                                    <strong>FR:</strong> {profileData.availabilityStatusFr}
-                                                  </p>
-                                                )}
                                             </div>
                                         </div>
                                     </>
@@ -690,18 +684,10 @@ export const AdminDashboard = () => {
                                                 />
                                             </div>
                                             <div>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>{t('admin.availability')} (EN)</label>
+                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>{t('admin.availability')}</label>
                                                 <textarea 
                                                     value={reachmeEditForm.availabilityStatus}
                                                     onChange={(e) => setReachmeEditForm({ ...reachmeEditForm, availabilityStatus: e.target.value })}
-                                                    style={{ width: '100%', padding: '0.5rem', backgroundColor: '#1e293b', color: '#fff', border: '1px solid #334155', borderRadius: '0.375rem', minHeight: '100px' }}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>{t('admin.availability')} (FR)</label>
-                                                <textarea 
-                                                    value={reachmeEditForm.availabilityStatusFr}
-                                                    onChange={(e) => setReachmeEditForm({ ...reachmeEditForm, availabilityStatusFr: e.target.value })}
                                                     style={{ width: '100%', padding: '0.5rem', backgroundColor: '#1e293b', color: '#fff', border: '1px solid #334155', borderRadius: '0.375rem', minHeight: '100px' }}
                                                 />
                                             </div>

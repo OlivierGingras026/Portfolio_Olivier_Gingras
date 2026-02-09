@@ -16,9 +16,6 @@ public interface WorkExperienceRequestMapper {
             @Mapping(source = "requestModel.company", target = "company"),
             @Mapping(source = "requestModel.position", target = "position"),
             @Mapping(source = "requestModel.description", target = "description"),
-            @Mapping(source = "requestModel.companyFr", target = "companyFr"),
-            @Mapping(source = "requestModel.positionFr", target = "positionFr"),
-            @Mapping(source = "requestModel.descriptionFr", target = "descriptionFr"),
             @Mapping(source = "requestModel.startDate", target = "startDate"),
             @Mapping(source = "requestModel.endDate", target = "endDate"),
             @Mapping(source = "requestModel.isCurrent", target = "isCurrent")

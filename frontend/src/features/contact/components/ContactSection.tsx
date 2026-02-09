@@ -167,9 +167,7 @@ export const ContactSection = () => {
               <div className="contact-card-content">
                 <p className="contact-card-label">{t('contactsubdomain.availableForWork')}</p>
                 <p className="contact-card-value">
-                  {i18n.language === 'fr' 
-                    ? (profileData?.availabilityStatusFr || profileData?.availabilityStatus || 'Loading...')
-                    : (profileData?.availabilityStatus || 'Loading...')}
+                  {profileData?.availabilityStatus || 'Loading...'}
                 </p>
               </div>
             </motion.div>

@@ -15,8 +15,6 @@ public interface ProjectRequestMapper {
             @Mapping(source = "projectIdentifier", target = "projectIdentifier"),
             @Mapping(source = "requestModel.title", target = "title"),
             @Mapping(source = "requestModel.description", target = "description"),
-            @Mapping(source = "requestModel.titleFr", target = "titleFr"),
-            @Mapping(source = "requestModel.descriptionFr", target = "descriptionFr"),
             @Mapping(source = "requestModel.url", target = "url"),
             @Mapping(source = "requestModel.imageUrl", target = "imageUrl"),
             @Mapping(source = "requestModel.technologies", target = "technologies")

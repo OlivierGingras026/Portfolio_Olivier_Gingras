@@ -15,8 +15,6 @@ public interface SkillRequestMapper {
             @Mapping(source = "skillIdentifier", target = "skillIdentifier"),
             @Mapping(source = "requestModel.title", target = "title"),
             @Mapping(source = "requestModel.description", target = "description"),
-            @Mapping(source = "requestModel.titleFr", target = "titleFr"),
-            @Mapping(source = "requestModel.descriptionFr", target = "descriptionFr"),
             @Mapping(source = "requestModel.type", target = "type")
     })
     Skill toEntity(SkillRequestModel requestModel, SkillIdentifier skillIdentifier);

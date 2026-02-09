@@ -21,30 +21,28 @@ function App() {
   }, [initializeFromStorage]);
 
   return (
-    <Router>
-      <Toast />
-      <Routes>
-        <Route path="/" element={
-          <PortfolioProvider>
-            <PortfolioHome />
-          </PortfolioProvider>
-        } />
-        
-        <Route path="/admin/login" element={<LoginPage />} />
-        
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
+    <PortfolioProvider>
+      <Router>
+        <Toast />
+        <Routes>
+          <Route path="/" element={<PortfolioHome />} />
+          
+          <Route path="/admin/login" element={<LoginPage />} />
+          
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Catch-all route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+          {/* Catch-all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </PortfolioProvider>
   );
 }
 
