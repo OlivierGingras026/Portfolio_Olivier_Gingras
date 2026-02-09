@@ -18,9 +18,9 @@ public class ContactMessageServiceImpl implements ContactMessageService {
     private final ContactMessageRequestMapper requestMapper;
     private final ContactMessageResponseMapper responseMapper;
     
-    // Rate limiting: max 20 messages per 5 minutes
-    private static final int MAX_MESSAGES = 20;
-    private static final long TIME_WINDOW_MINUTES = 5;
+
+    private static final int MAX_MESSAGES = 5;
+    private static final long TIME_WINDOW_MINUTES = 20;
     
     public ContactMessageServiceImpl(
         ContactMessageRepository contactMessageRepository,

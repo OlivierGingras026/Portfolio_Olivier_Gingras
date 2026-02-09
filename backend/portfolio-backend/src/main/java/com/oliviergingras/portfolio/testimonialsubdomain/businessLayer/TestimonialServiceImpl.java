@@ -9,12 +9,17 @@ import com.oliviergingras.portfolio.testimonialsubdomain.presentationLayer.Testi
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 @Service
 public class TestimonialServiceImpl implements TestimonialService {
     private final TestimonialRepository testimonialRepository;
     private final TestimonialRequestMapper requestMapper;
     private final TestimonialResponseMapper responseMapper;
+    
+
+    private static final int MAX_TESTIMONIALS = 5;
+    private static final long TIME_WINDOW_MINUTES = 20;
 
     public TestimonialServiceImpl(TestimonialRepository testimonialRepository, TestimonialRequestMapper requestMapper, TestimonialResponseMapper responseMapper) {
         this.testimonialRepository = testimonialRepository;
@@ -24,6 +29,17 @@ public class TestimonialServiceImpl implements TestimonialService {
 
     @Override
     public TestimonialResponseModel submitTestimonial(TestimonialRequestModel request) {
+        // Rate limiting check (global)
+        LocalDateTime twentyMinutesAgo = LocalDateTime.now().minusMinutes(TIME_WINDOW_MINUTES);
+        long recentCount = testimonialRepository.findAllByOrderByCreatedAtDesc()
+            .stream()
+            .filter(t -> t.getCreatedAt() != null && t.getCreatedAt().isAfter(twentyMinutesAgo))
+            .count();
+        
+        if (recentCount >= MAX_TESTIMONIALS) {
+            throw new RuntimeException("Too many testimonials submitted. Please try again later.");
+        }
+        
         // Input validation and sanitization
         validateTestimonialRequest(request);
         
