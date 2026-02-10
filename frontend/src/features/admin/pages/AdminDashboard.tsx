@@ -51,6 +51,7 @@ export const AdminDashboard = () => {
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<'projects' | 'work' | 'education' | 'skills' | 'hobbies' | 'contact' | 'reachme' | 'cv' | 'testimonials'>('projects');
   const [showModal, setShowModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalType, setModalType] = useState<'add' | 'edit' | 'delete'>('add');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<Record<string, unknown> | undefined>(undefined);
@@ -373,16 +374,26 @@ export const AdminDashboard = () => {
   return (
     <div className="admin-container">
       {/* Sidebar */}
-      <aside className="admin-sidebar">
+      <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <h1 className="sidebar-title">{t('admin.dashboard')}</h1>
+          <button 
+            className="sidebar-close-btn"
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Close sidebar"
+          >
+            ✕
+          </button>
         </div>
         
         <nav className="sidebar-nav">
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setSidebarOpen(false);
+              }}
               className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
             >
               <span>{tab.label}</span>
@@ -457,11 +468,20 @@ export const AdminDashboard = () => {
       {/* Main Content */}
       <main className="admin-main">
         <header className="admin-header">
-            <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <button 
+                className="sidebar-toggle-btn"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                aria-label="Toggle sidebar"
+              >
+                ☰
+              </button>
+              <div>
                  <div className="admin-header-title">
                     {tabs.find(t => t.id === activeTab)?.label}
                 </div>
                 <div className="admin-header-subtitle">{t('admin.manage')}</div>
+              </div>
             </div>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
               <LanguageSwitcher />

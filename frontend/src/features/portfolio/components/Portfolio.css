@@ -642,14 +642,6 @@
     }
 }
 
-@media (hover: none) {
-    .interactive-title {
-        background: none;
-        -webkit-text-fill-color: #ffffff;
-        color: #ffffff;
-    }
-}
-
 @media (min-width: 768px) {
     .hero-title {
         font-size: 5rem;
@@ -866,7 +858,42 @@
     }
 }
 
-/* ==== GLOBAL STYLES ==== */
-html {
-    scroll-behavior: smooth;
+/* ==== TOUCH HOVER ANIMATIONS ==== */
+.touch-hover {
+    animation: touchHoverPulse 0.3s ease-out !important;
 }
+
+.navbar-floating-item.touch-hover {
+    color: #60a5fa !important;
+    background: rgba(59, 130, 246, 0.1) !important;
+    transform: scale(1.05) !important;
+}
+
+.navbar-cta-button.touch-hover {
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%) !important;
+    box-shadow: 0 10px 40px rgba(59, 130, 246, 0.5) !important;
+    transform: translateY(-2px) !important;
+    border-color: rgba(59, 130, 246, 0.8) !important;
+}
+
+.hero-social-link.touch-hover {
+    transform: translateY(-4px) scale(1.1) !important;
+    color: #60a5fa !important;
+}
+
+button.touch-hover {
+    transform: scale(0.98) !important;
+}
+
+@keyframes touchHoverPulse {
+    0% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+

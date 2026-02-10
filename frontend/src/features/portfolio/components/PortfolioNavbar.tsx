@@ -69,8 +69,34 @@ export const PortfolioNavbar = () => {
                 });
             }
         };
+
+        const handleTouchStart = (e: TouchEvent) => {
+            const allItems = document.querySelectorAll('.navbar-floating-item, .navbar-cta-button, .hero-social-link, button');
+            allItems.forEach(item => {
+                item.classList.remove('touch-hover');
+            });
+
+            const target = e.target as HTMLElement;
+            if (target.closest('.navbar-floating-item, .navbar-cta-button, .hero-social-link, button')) {
+                target.closest('.navbar-floating-item, .navbar-cta-button, .hero-social-link, button')?.classList.add('touch-hover');
+            }
+        };
+
+        const handleTouchEnd = () => {
+            const allItems = document.querySelectorAll('.navbar-floating-item, .navbar-cta-button, .hero-social-link, button');
+            allItems.forEach(item => {
+                item.classList.remove('touch-hover');
+            });
+        };
+
         window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
+        window.addEventListener('touchstart', handleTouchStart);
+        window.addEventListener('touchend', handleTouchEnd);
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchend', handleTouchEnd);
+        };
     }, []);
 
     useEffect(() => {

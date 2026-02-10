@@ -458,11 +458,15 @@
 
 @media (max-width: 768px) {
   .contact-section {
-    padding: 60px 20px;
+    padding: 40px 16px;
+  }
+
+  .contact-container {
+    max-width: 100%;
   }
 
   .contact-header {
-    margin-bottom: 50px;
+    margin-bottom: 40px;
   }
 
   .contact-title {
@@ -478,7 +482,58 @@
   }
 
   .contact-content {
+    grid-template-columns: 1fr;
     gap: 40px;
     margin-bottom: 40px;
+  }
+
+  .contact-form-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .contact-form {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-section {
+    padding: 30px 12px;
+  }
+
+  .contact-header {
+    margin-bottom: 30px;
+  }
+
+  .contact-title {
+    font-size: 24px;
+  }
+
+  .contact-description {
+    font-size: 14px;
+  }
+
+  .contact-content {
+    gap: 30px;
+  }
+
+  .contact-form {
+    gap: 14px;
+  }
+
+  .form-row {
+    gap: 12px;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  .contact-submit {
+    padding: 12px 20px;
+    font-size: 16px;
   }
 }

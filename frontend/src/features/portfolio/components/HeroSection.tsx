@@ -1,6 +1,6 @@
 import { ArrowRight, Github, Linkedin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import type { MouseEvent } from 'react';
 import { motion } from 'framer-motion';
 import './Portfolio.css';
@@ -22,6 +22,34 @@ export const HeroSection = () => {
         titleRef.current.style.setProperty('--mouse-x', `${x}px`);
         titleRef.current.style.setProperty('--mouse-y', `${y}px`);
     };
+
+    useEffect(() => {
+        const handleTouchStart = (e: TouchEvent) => {
+            const allItems = document.querySelectorAll('.hero-social-link, button');
+            allItems.forEach(item => {
+                item.classList.remove('touch-hover');
+            });
+
+            const target = e.target as HTMLElement;
+            if (target.closest('.hero-social-link, button')) {
+                target.closest('.hero-social-link, button')?.classList.add('touch-hover');
+            }
+        };
+
+        const handleTouchEnd = () => {
+            const allItems = document.querySelectorAll('.hero-social-link, button');
+            allItems.forEach(item => {
+                item.classList.remove('touch-hover');
+            });
+        };
+
+        window.addEventListener('touchstart', handleTouchStart);
+        window.addEventListener('touchend', handleTouchEnd);
+        return () => {
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchend', handleTouchEnd);
+        };
+    }, []);
 
     return (
         <section id="home" className="hero-section">
