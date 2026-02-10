@@ -19,12 +19,8 @@ public class ContactMessageController {
     
     @PostMapping("/send")
     public ResponseEntity<ContactMessageResponseModel> sendMessage(@RequestBody ContactMessageRequestModel requestModel) {
-        try {
-            ContactMessageResponseModel response = contactMessageService.sendMessage(requestModel);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        ContactMessageResponseModel response = contactMessageService.sendMessage(requestModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
     @GetMapping

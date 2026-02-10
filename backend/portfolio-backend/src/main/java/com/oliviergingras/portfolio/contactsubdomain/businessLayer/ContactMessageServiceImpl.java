@@ -1,5 +1,6 @@
 package com.oliviergingras.portfolio.contactsubdomain.businessLayer;
 
+import com.oliviergingras.portfolio.common.RateLimitExceededException;
 import com.oliviergingras.portfolio.contactsubdomain.dataAccessLayer.ContactMessage;
 import com.oliviergingras.portfolio.contactsubdomain.dataAccessLayer.ContactMessageRepository;
 import com.oliviergingras.portfolio.contactsubdomain.mappingLayer.ContactMessageRequestMapper;
@@ -35,11 +36,21 @@ public class ContactMessageServiceImpl implements ContactMessageService {
     @Override
     public ContactMessageResponseModel sendMessage(ContactMessageRequestModel requestModel) {
         // Rate limiting check
-        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(TIME_WINDOW_MINUTES);
-        List<ContactMessage> recentMessages = contactMessageRepository.findByCreatedAtAfter(fiveMinutesAgo);
+        LocalDateTime timeWindowStart = LocalDateTime.now().minusMinutes(TIME_WINDOW_MINUTES);
+        List<ContactMessage> recentMessages = contactMessageRepository.findByCreatedAtAfter(timeWindowStart);
         
         if (recentMessages.size() >= MAX_MESSAGES) {
-            throw new RuntimeException("Too many messages. Please try again later.");
+            // Calculate retry-after time (in seconds until the oldest message is no longer within the window)
+            LocalDateTime oldestMessageTime = recentMessages.stream()
+                .map(ContactMessage::getCreatedAt)
+                .min(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.now());
+            
+            LocalDateTime retryAt = oldestMessageTime.plusMinutes(TIME_WINDOW_MINUTES);
+            long retryAfterSeconds = java.time.temporal.ChronoUnit.SECONDS.between(LocalDateTime.now(), retryAt);
+            retryAfterSeconds = Math.max(1, retryAfterSeconds); // Ensure at least 1 second
+            
+            throw new RateLimitExceededException("Too many messages. Please try again later.", retryAfterSeconds);
         }
         
         // Sanitize inputs

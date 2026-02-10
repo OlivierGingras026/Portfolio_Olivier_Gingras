@@ -1,5 +1,6 @@
 package com.oliviergingras.portfolio.testimonialsubdomain.businessLayer;
 
+import com.oliviergingras.portfolio.common.RateLimitExceededException;
 import com.oliviergingras.portfolio.testimonialsubdomain.dataAccessLayer.Testimonial;
 import com.oliviergingras.portfolio.testimonialsubdomain.dataAccessLayer.TestimonialRepository;
 import com.oliviergingras.portfolio.testimonialsubdomain.mapperLayer.TestimonialRequestMapper;
@@ -30,14 +31,24 @@ public class TestimonialServiceImpl implements TestimonialService {
     @Override
     public TestimonialResponseModel submitTestimonial(TestimonialRequestModel request) {
         // Rate limiting check (global)
-        LocalDateTime twentyMinutesAgo = LocalDateTime.now().minusMinutes(TIME_WINDOW_MINUTES);
-        long recentCount = testimonialRepository.findAllByOrderByCreatedAtDesc()
+        LocalDateTime timeWindowStart = LocalDateTime.now().minusMinutes(TIME_WINDOW_MINUTES);
+        java.util.List<Testimonial> recentTestimonials = testimonialRepository.findAllByOrderByCreatedAtDesc()
             .stream()
-            .filter(t -> t.getCreatedAt() != null && t.getCreatedAt().isAfter(twentyMinutesAgo))
-            .count();
+            .filter(t -> t.getCreatedAt() != null && t.getCreatedAt().isAfter(timeWindowStart))
+            .toList();
         
-        if (recentCount >= MAX_TESTIMONIALS) {
-            throw new RuntimeException("Too many testimonials submitted. Please try again later.");
+        if (recentTestimonials.size() >= MAX_TESTIMONIALS) {
+            // Calculate retry-after time (in seconds until the oldest testimonial is no longer within the window)
+            LocalDateTime oldestTestimonialTime = recentTestimonials.stream()
+                .map(Testimonial::getCreatedAt)
+                .min(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.now());
+            
+            LocalDateTime retryAt = oldestTestimonialTime.plusMinutes(TIME_WINDOW_MINUTES);
+            long retryAfterSeconds = java.time.temporal.ChronoUnit.SECONDS.between(LocalDateTime.now(), retryAt);
+            retryAfterSeconds = Math.max(1, retryAfterSeconds); // Ensure at least 1 second
+            
+            throw new RateLimitExceededException("Too many testimonials submitted. Please try again later.", retryAfterSeconds);
         }
         
         // Input validation and sanitization

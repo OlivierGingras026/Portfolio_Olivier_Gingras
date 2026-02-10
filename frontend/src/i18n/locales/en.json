@@ -128,6 +128,7 @@
     "sending": "Sending...",
     "successMessage": "Thank you! Your message has been sent successfully.",
     "errorMessage": "Sorry, there was an error sending your message. Please try again.",
+    "rateLimitError": "You are sending messages too quickly. Please wait a moment before trying again.",
     "phone": "Phone",
     "address": "Address",
     "emailMeAt": "Email me at",

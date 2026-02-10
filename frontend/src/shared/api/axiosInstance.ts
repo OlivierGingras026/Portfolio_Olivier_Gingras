@@ -1,4 +1,5 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { handleAPIError } from './errorHandler';
 
 // Create axios instance
 let backendUrl = import.meta.env.VITE_BACKEND_URL || '';
@@ -74,7 +75,7 @@ axiosInstance.interceptors.response.use(
     }
 
     console.error('API Error:', error);
-    return Promise.reject(error);
+    return Promise.reject(handleAPIError(error));
   }
 );
 

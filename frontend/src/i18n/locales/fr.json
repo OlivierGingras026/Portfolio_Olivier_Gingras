@@ -128,6 +128,7 @@
     "sending": "Envoi en cours...",
     "successMessage": "Merci ! Votre message a été envoyé avec succès.",
     "errorMessage": "Désolé, une erreur s'est produite lors de l'envoi de votre message. Veuillez réessayer.",
+    "rateLimitError": "Vous envoyez les messages trop rapidement. Veuillez attendre un moment avant de réessayer.",
     "phone": "Téléphone",
     "address": "Adresse",
     "emailMeAt": "Contactez-moi à",

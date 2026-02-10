@@ -3,6 +3,7 @@ import { Mail, MapPin, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { contactAPI, reachMeAPI, type ReachMeProfile } from '../api/contactAPI';
+import { APIError } from '../../../shared/api/errorHandler';
 import './ContactSection.css';
 
 export const ContactSection = () => {
@@ -26,7 +27,15 @@ export const ContactSection = () => {
   const [profileData, setProfileData] = useState<ReachMeProfile | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorType, setErrorType] = useState<string | null>(null);
+  const [retryAfterSeconds, setRetryAfterSeconds] = useState<number>(0);
+
+  // Compute the displayed error message based on error type and current language
+  const displayError = errorType ? (
+    errorType === 'rate_limit_error' 
+      ? t('contactsubdomain.rateLimitError')
+      : errorType
+  ) : null;
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -39,6 +48,23 @@ export const ContactSection = () => {
     };
     fetchProfile();
   }, []);
+
+  // Countdown timer for rate limit
+  useEffect(() => {
+    if (retryAfterSeconds <= 0) return;
+
+    const timer = setInterval(() => {
+      setRetryAfterSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [retryAfterSeconds]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -61,21 +87,21 @@ export const ContactSection = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
+    setErrorType(null);
 
     // Validate character limits
     if (charCounts.name > MAX_NAME_LENGTH) {
-      setError(`Name must not exceed ${MAX_NAME_LENGTH} characters (currently ${charCounts.name} characters)`);
+      setErrorType(`Name must not exceed ${MAX_NAME_LENGTH} characters (currently ${charCounts.name} characters)`);
       setIsLoading(false);
       return;
     }
     if (charCounts.email > MAX_EMAIL_LENGTH) {
-      setError(`Email must not exceed ${MAX_EMAIL_LENGTH} characters`);
+      setErrorType(`Email must not exceed ${MAX_EMAIL_LENGTH} characters`);
       setIsLoading(false);
       return;
     }
     if (charCounts.message > MAX_MESSAGE_CHARACTERS) {
-      setError(`Message must not exceed ${MAX_MESSAGE_CHARACTERS} characters (currently ${charCounts.message} characters)`);
+      setErrorType(`Message must not exceed ${MAX_MESSAGE_CHARACTERS} characters (currently ${charCounts.message} characters)`);
       setIsLoading(false);
       return;
     }
@@ -88,10 +114,23 @@ export const ContactSection = () => {
       
       // Reset after 3 seconds
       setTimeout(() => setIsSubmitted(false), 3000);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to send message:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to send message. Please try again.';
-      setError(errorMessage);
+      let errorKey = 'Failed to send message. Please try again.';
+      let retryAfter = 0;
+      
+      if (err instanceof APIError) {
+        if (err.message === 'rate_limit_error') {
+          errorKey = 'rate_limit_error';
+          retryAfter = err.retryAfterSeconds || 0;
+          setRetryAfterSeconds(retryAfter);
+        } else {
+          errorKey = err.message;
+        }
+      } else if (err instanceof Error) {
+        errorKey = err.message;
+      }
+      setErrorType(errorKey);
     } finally {
       setIsLoading(false);
     }
@@ -167,7 +206,9 @@ export const ContactSection = () => {
               <div className="contact-card-content">
                 <p className="contact-card-label">{t('contactsubdomain.availableForWork')}</p>
                 <p className="contact-card-value">
-                  {profileData?.availabilityStatus || 'Loading...'}
+                  {i18n.language === 'fr' 
+                    ? (profileData?.availabilityStatusFr || profileData?.availabilityStatus || 'Loading...')
+                    : (profileData?.availabilityStatus || 'Loading...')}
                 </p>
               </div>
             </motion.div>
@@ -197,9 +238,16 @@ export const ContactSection = () => {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="contact-form">
-                {error && (
+                {displayError && (
                   <div className="form-error">
-                    {error}
+                    <div>{displayError}</div>
+                    {errorType === 'rate_limit_error' && (
+                      <div style={{ marginTop: '0.5rem', fontSize: '0.85rem', opacity: 0.9 }}>
+                        {i18n.language === 'fr' 
+                          ? `Réessayez dans ${retryAfterSeconds || 1200}s` 
+                          : `Try again in ${retryAfterSeconds || 1200}s`}
+                      </div>
+                    )}
                   </div>
                 )}
                 

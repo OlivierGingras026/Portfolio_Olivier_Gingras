@@ -3,12 +3,14 @@ import axios, { AxiosError } from 'axios';
 export class APIError extends Error {
   statusCode?: number;
   backendMessage?: string;
+  retryAfterSeconds?: number;
 
-  constructor(message: string, statusCode?: number, backendMessage?: string) {
+  constructor(message: string, statusCode?: number, backendMessage?: string, retryAfterSeconds?: number) {
     super(message);
     this.name = 'APIError';
     this.statusCode = statusCode;
     this.backendMessage = backendMessage;
+    this.retryAfterSeconds = retryAfterSeconds;
   }
 }
 
@@ -48,6 +50,22 @@ export function handleAPIError(error: unknown): APIError {
       'You do not have permission to perform this action.',
       403,
       'Permission denied'
+    );
+  }
+
+  // Handle 429 Too Many Requests
+  if (statusCode === 429) {
+    let retryAfterSeconds = 0;
+    // Try to get retry-after from response body
+    if (typeof responseData === 'object' && responseData !== null) {
+      const data = responseData as Record<string, unknown>;
+      retryAfterSeconds = (data.retryAfterSeconds as number) || 0;
+    }
+    return new APIError(
+      'rate_limit_error',
+      429,
+      'Too many requests',
+      retryAfterSeconds
     );
   }
 

@@ -12,6 +12,8 @@ import java.time.Instant;
 public class GlobalExceptionHandler {
 
     record ApiError(Instant timestamp, int status, String error, String message) {}
+    
+    record RateLimitError(Instant timestamp, int status, String error, String message, long retryAfterSeconds) {}
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(NotFoundException ex) {
@@ -23,5 +25,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleCVNotFound(CVNotFoundException ex) {
         ApiError body = new ApiError(Instant.now(), 404, "Not Found", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<?> handleRateLimitExceeded(RateLimitExceededException ex) {
+        long retryAfterSeconds = ex.getRetryAfterSeconds();
+        RateLimitError body = new RateLimitError(Instant.now(), 429, "Too Many Requests", ex.getMessage(), retryAfterSeconds);
+        return ResponseEntity
+            .status(HttpStatus.TOO_MANY_REQUESTS)
+            .header("Retry-After", String.valueOf(retryAfterSeconds))
+            .body(body);
     }
 }

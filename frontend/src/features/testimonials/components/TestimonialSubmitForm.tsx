@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { testimonialAPI, type TestimonialRequest } from '../api/testimonialAPI';
+import { APIError } from '../../../shared/api/errorHandler';
 import './TestimonialSubmitForm.css';
 import React from 'react';
 
@@ -10,7 +11,7 @@ interface TestimonialSubmitFormProps {
 }
 
 export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitFormProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const MAX_CHARACTERS = 1000;
   
   const [formData, setFormData] = useState<TestimonialRequest>({
@@ -22,8 +23,18 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorType, setErrorType] = useState<string | null>(null);
   const [charCount, setCharCount] = useState(0);
+  const [retryAfterSeconds, setRetryAfterSeconds] = useState<number>(0);
+
+  // Compute the displayed error message based on error type and current language
+  const displayError = useMemo(() => {
+    return errorType ? (
+      errorType === 'rate_limit_error' 
+        ? t('contactsubdomain.rateLimitError')
+        : errorType
+    ) : null;
+  }, [errorType, i18n.language, t]);
 
   // Prevent body scroll when modal is open
   React.useEffect(() => {
@@ -32,6 +43,23 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
       document.body.style.overflow = 'unset';
     };
   }, []);
+
+  // Countdown timer for rate limit
+  useEffect(() => {
+    if (retryAfterSeconds <= 0) return;
+
+    const timer = setInterval(() => {
+      setRetryAfterSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [retryAfterSeconds]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -56,7 +84,7 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setErrorType(null);
 
     try {
       // Validation
@@ -113,8 +141,22 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
         onSuccess?.();
         onClose?.();
       }, 2000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit testimonial');
+    } catch (err: unknown) {
+      let errorKey = 'Failed to submit testimonial';
+      let retryAfter = 0;
+      
+      if (err instanceof APIError) {
+        if (err.message === 'rate_limit_error') {
+          errorKey = 'rate_limit_error';
+          retryAfter = err.retryAfterSeconds || 0;
+          setRetryAfterSeconds(retryAfter);
+        } else {
+          errorKey = err.message;
+        }
+      } else if (err instanceof Error) {
+        errorKey = err.message;
+      }
+      setErrorType(errorKey);
     } finally {
       setLoading(false);
     }
@@ -136,7 +178,18 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            {error && <div className="error-message">{error}</div>}
+            {displayError && (
+              <div className="error-message">
+                <div>{displayError}</div>
+                {errorType === 'rate_limit_error' && (
+                  <div style={{ marginTop: '0.5rem', fontSize: '0.85rem', opacity: 0.9 }}>
+                    {i18n.language === 'fr' 
+                      ? `Réessayez dans ${retryAfterSeconds || 1200}s` 
+                      : `Try again in ${retryAfterSeconds || 1200}s`}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="form-group">
               <label htmlFor="name">{t('testimonialsubdomain.yourName')} *</label>
