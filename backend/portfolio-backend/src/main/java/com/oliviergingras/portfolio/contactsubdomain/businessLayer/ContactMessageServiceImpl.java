@@ -1,6 +1,7 @@
 package com.oliviergingras.portfolio.contactsubdomain.businessLayer;
 
 import com.oliviergingras.portfolio.common.RateLimitExceededException;
+import com.oliviergingras.portfolio.common.RateLimitService;
 import com.oliviergingras.portfolio.contactsubdomain.dataAccessLayer.ContactMessage;
 import com.oliviergingras.portfolio.contactsubdomain.dataAccessLayer.ContactMessageRepository;
 import com.oliviergingras.portfolio.contactsubdomain.mappingLayer.ContactMessageRequestMapper;
@@ -8,7 +9,6 @@ import com.oliviergingras.portfolio.contactsubdomain.mappingLayer.ContactMessage
 import com.oliviergingras.portfolio.contactsubdomain.presentationLayer.ContactMessageRequestModel;
 import com.oliviergingras.portfolio.contactsubdomain.presentationLayer.ContactMessageResponseModel;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,40 +18,30 @@ public class ContactMessageServiceImpl implements ContactMessageService {
     private final ContactMessageRepository contactMessageRepository;
     private final ContactMessageRequestMapper requestMapper;
     private final ContactMessageResponseMapper responseMapper;
-    
-
-    private static final int MAX_MESSAGES = 5;
-    private static final long TIME_WINDOW_MINUTES = 20;
+    private final RateLimitService rateLimitService;
     
     public ContactMessageServiceImpl(
         ContactMessageRepository contactMessageRepository,
         ContactMessageRequestMapper requestMapper,
-        ContactMessageResponseMapper responseMapper
+        ContactMessageResponseMapper responseMapper,
+        RateLimitService rateLimitService
     ) {
         this.contactMessageRepository = contactMessageRepository;
         this.requestMapper = requestMapper;
         this.responseMapper = responseMapper;
+        this.rateLimitService = rateLimitService;
     }
     
     @Override
-    public ContactMessageResponseModel sendMessage(ContactMessageRequestModel requestModel) {
-        // Rate limiting check
-        LocalDateTime timeWindowStart = LocalDateTime.now().minusMinutes(TIME_WINDOW_MINUTES);
-        List<ContactMessage> recentMessages = contactMessageRepository.findByCreatedAtAfter(timeWindowStart);
-        
-        if (recentMessages.size() >= MAX_MESSAGES) {
-            // Calculate retry-after time (in seconds until the oldest message is no longer within the window)
-            LocalDateTime oldestMessageTime = recentMessages.stream()
-                .map(ContactMessage::getCreatedAt)
-                .min(LocalDateTime::compareTo)
-                .orElse(LocalDateTime.now());
-            
-            LocalDateTime retryAt = oldestMessageTime.plusMinutes(TIME_WINDOW_MINUTES);
-            long retryAfterSeconds = java.time.temporal.ChronoUnit.SECONDS.between(LocalDateTime.now(), retryAt);
-            retryAfterSeconds = Math.max(1, retryAfterSeconds); // Ensure at least 1 second
-            
-            throw new RateLimitExceededException("Too many messages. Please try again later.", retryAfterSeconds);
+    public ContactMessageResponseModel sendMessage(ContactMessageRequestModel requestModel, String clientIp) {
+        // IP-based rate limiting check
+        if (rateLimitService.isRateLimitExceeded(clientIp)) {
+            long retryAfterSeconds = rateLimitService.getRetryAfterSeconds(clientIp);
+            throw new RateLimitExceededException("Too many messages from your IP. Please try again later.", retryAfterSeconds);
         }
+        
+        // Record this request for rate limiting
+        rateLimitService.recordRequest(clientIp);
         
         // Sanitize inputs
         ContactMessage message = requestMapper.toEntity(requestModel);

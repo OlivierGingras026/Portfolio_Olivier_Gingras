@@ -1,6 +1,8 @@
 package com.oliviergingras.portfolio.testimonialsubdomain.presentationLayer;
 
 import com.oliviergingras.portfolio.testimonialsubdomain.businessLayer.TestimonialService;
+import com.oliviergingras.portfolio.common.IpAddressExtractor;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -8,14 +10,23 @@ import java.util.List;
 @RequestMapping("/api/v1/testimonials")
 public class TestimonialController {
     private final TestimonialService testimonialService;
+    private final IpAddressExtractor ipAddressExtractor;
 
-    public TestimonialController(TestimonialService testimonialService) {
+    public TestimonialController(
+        TestimonialService testimonialService,
+        IpAddressExtractor ipAddressExtractor
+    ) {
         this.testimonialService = testimonialService;
+        this.ipAddressExtractor = ipAddressExtractor;
     }
 
     @PostMapping("/submit")
-    public TestimonialResponseModel submitTestimonial(@RequestBody TestimonialRequestModel request) {
-        return testimonialService.submitTestimonial(request);
+    public TestimonialResponseModel submitTestimonial(
+        @RequestBody TestimonialRequestModel request,
+        HttpServletRequest httpRequest
+    ) {
+        String clientIp = ipAddressExtractor.extractClientIp(httpRequest);
+        return testimonialService.submitTestimonial(request, clientIp);
     }
 
     @GetMapping("/approved")

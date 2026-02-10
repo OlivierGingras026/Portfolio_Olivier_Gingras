@@ -1,6 +1,8 @@
 package com.oliviergingras.portfolio.contactsubdomain.presentationLayer;
 
 import com.oliviergingras.portfolio.contactsubdomain.businessLayer.ContactMessageService;
+import com.oliviergingras.portfolio.common.IpAddressExtractor;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +14,23 @@ import java.util.List;
 public class ContactMessageController {
     
     private final ContactMessageService contactMessageService;
+    private final IpAddressExtractor ipAddressExtractor;
     
-    public ContactMessageController(ContactMessageService contactMessageService) {
+    public ContactMessageController(
+        ContactMessageService contactMessageService,
+        IpAddressExtractor ipAddressExtractor
+    ) {
         this.contactMessageService = contactMessageService;
+        this.ipAddressExtractor = ipAddressExtractor;
     }
     
     @PostMapping("/send")
-    public ResponseEntity<ContactMessageResponseModel> sendMessage(@RequestBody ContactMessageRequestModel requestModel) {
-        ContactMessageResponseModel response = contactMessageService.sendMessage(requestModel);
+    public ResponseEntity<ContactMessageResponseModel> sendMessage(
+        @RequestBody ContactMessageRequestModel requestModel,
+        HttpServletRequest request
+    ) {
+        String clientIp = ipAddressExtractor.extractClientIp(request);
+        ContactMessageResponseModel response = contactMessageService.sendMessage(requestModel, clientIp);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     

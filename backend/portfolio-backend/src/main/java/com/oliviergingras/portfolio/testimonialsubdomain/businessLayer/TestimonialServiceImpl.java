@@ -1,6 +1,7 @@
 package com.oliviergingras.portfolio.testimonialsubdomain.businessLayer;
 
 import com.oliviergingras.portfolio.common.RateLimitExceededException;
+import com.oliviergingras.portfolio.common.RateLimitService;
 import com.oliviergingras.portfolio.testimonialsubdomain.dataAccessLayer.Testimonial;
 import com.oliviergingras.portfolio.testimonialsubdomain.dataAccessLayer.TestimonialRepository;
 import com.oliviergingras.portfolio.testimonialsubdomain.mapperLayer.TestimonialRequestMapper;
@@ -10,46 +11,36 @@ import com.oliviergingras.portfolio.testimonialsubdomain.presentationLayer.Testi
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.time.LocalDateTime;
 
 @Service
 public class TestimonialServiceImpl implements TestimonialService {
     private final TestimonialRepository testimonialRepository;
     private final TestimonialRequestMapper requestMapper;
     private final TestimonialResponseMapper responseMapper;
-    
+    private final RateLimitService rateLimitService;
 
-    private static final int MAX_TESTIMONIALS = 5;
-    private static final long TIME_WINDOW_MINUTES = 20;
-
-    public TestimonialServiceImpl(TestimonialRepository testimonialRepository, TestimonialRequestMapper requestMapper, TestimonialResponseMapper responseMapper) {
+    public TestimonialServiceImpl(
+        TestimonialRepository testimonialRepository,
+        TestimonialRequestMapper requestMapper,
+        TestimonialResponseMapper responseMapper,
+        RateLimitService rateLimitService
+    ) {
         this.testimonialRepository = testimonialRepository;
         this.requestMapper = requestMapper;
         this.responseMapper = responseMapper;
+        this.rateLimitService = rateLimitService;
     }
 
     @Override
-    public TestimonialResponseModel submitTestimonial(TestimonialRequestModel request) {
-        // Rate limiting check (global)
-        LocalDateTime timeWindowStart = LocalDateTime.now().minusMinutes(TIME_WINDOW_MINUTES);
-        java.util.List<Testimonial> recentTestimonials = testimonialRepository.findAllByOrderByCreatedAtDesc()
-            .stream()
-            .filter(t -> t.getCreatedAt() != null && t.getCreatedAt().isAfter(timeWindowStart))
-            .toList();
-        
-        if (recentTestimonials.size() >= MAX_TESTIMONIALS) {
-            // Calculate retry-after time (in seconds until the oldest testimonial is no longer within the window)
-            LocalDateTime oldestTestimonialTime = recentTestimonials.stream()
-                .map(Testimonial::getCreatedAt)
-                .min(LocalDateTime::compareTo)
-                .orElse(LocalDateTime.now());
-            
-            LocalDateTime retryAt = oldestTestimonialTime.plusMinutes(TIME_WINDOW_MINUTES);
-            long retryAfterSeconds = java.time.temporal.ChronoUnit.SECONDS.between(LocalDateTime.now(), retryAt);
-            retryAfterSeconds = Math.max(1, retryAfterSeconds); // Ensure at least 1 second
-            
-            throw new RateLimitExceededException("Too many testimonials submitted. Please try again later.", retryAfterSeconds);
+    public TestimonialResponseModel submitTestimonial(TestimonialRequestModel request, String clientIp) {
+        // IP-based rate limiting check
+        if (rateLimitService.isRateLimitExceeded(clientIp)) {
+            long retryAfterSeconds = rateLimitService.getRetryAfterSeconds(clientIp);
+            throw new RateLimitExceededException("Too many testimonials from your IP. Please try again later.", retryAfterSeconds);
         }
+        
+        // Record this request for rate limiting
+        rateLimitService.recordRequest(clientIp);
         
         // Input validation and sanitization
         validateTestimonialRequest(request);
