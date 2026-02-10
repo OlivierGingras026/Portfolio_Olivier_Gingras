@@ -20,9 +20,9 @@ export const SkillsSection = () => {
   };
 
   const categoryConfigs = [
-    { type: 'frontend', title: 'Frontend', skills: frontendSkills, color: 'frontend' },
-    { type: 'backend', title: 'Backend', skills: backendSkills, color: 'backend' },
-    { type: 'other', title: 'Other', skills: otherSkills, color: 'other' },
+    { type: 'frontend', title: t('skillsubdomain.frontend'), skills: frontendSkills, color: 'frontend' },
+    { type: 'backend', title: t('skillsubdomain.backend'), skills: backendSkills, color: 'backend' },
+    { type: 'other', title: t('skillsubdomain.other'), skills: otherSkills, color: 'other' },
   ];
 
   return (
