@@ -25,6 +25,9 @@ let cachedData: PortfolioData | null = null;
 let cacheTimestamp: number = 0;
 const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
+// Cache invalidation listeners
+const cacheInvalidationListeners = new Set<() => void>();
+
 export const portfolioAPI = {
   /**
    * Fetch all portfolio data in parallel
@@ -70,6 +73,14 @@ export const portfolioAPI = {
   invalidateCache(): void {
     cachedData = null;
     cacheTimestamp = 0;
+    // Notify all listeners that cache was invalidated
+    cacheInvalidationListeners.forEach(listener => {
+      try {
+        listener();
+      } catch (err) {
+        console.error('Error in cache invalidation listener:', err);
+      }
+    });
   },
 
   /**
@@ -79,4 +90,13 @@ export const portfolioAPI = {
     this.invalidateCache();
     return this.getAllPortfolioData();
   },
+
+  /**
+   * Subscribe to cache invalidation events
+   */
+  onCacheInvalidated(callback: () => void): () => void {
+    cacheInvalidationListeners.add(callback);
+    return () => {
+      cacheInvalidationListeners.delete(callback);
+    };  },
 };

@@ -11,6 +11,7 @@ export interface Testimonial {
   message: string;
   messageFr?: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  isFeatured?: boolean;
   createdAt: string;
 }
 
@@ -33,6 +34,11 @@ export const testimonialAPI = {
     return response.data;
   },
 
+  getFeaturedTestimonials: async (): Promise<Testimonial[]> => {
+    const response = await axiosInstance.get('/api/v1/testimonials/featured');
+    return response.data;
+  },
+
   getAllTestimonials: async (): Promise<Testimonial[]> => {
     const response = await axiosInstance.get('/api/v1/testimonials');
     return response.data;
@@ -49,6 +55,10 @@ export const testimonialAPI = {
 
   rejectTestimonial: async (testimonialId: string): Promise<void> => {
     await axiosInstance.put(`/api/v1/testimonials/${testimonialId}/reject`);
+  },
+
+  toggleFeaturedTestimonial: async (testimonialId: string, isFeatured: boolean): Promise<void> => {
+    await axiosInstance.put(`/api/v1/testimonials/${testimonialId}/featured`, { isFeatured });
   },
 
   deleteTestimonial: async (testimonialId: string): Promise<void> => {

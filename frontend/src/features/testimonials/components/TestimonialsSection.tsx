@@ -10,7 +10,8 @@ import './TestimonialsSection.css';
 export const TestimonialsSection = () => {
   const { data, refetch } = usePortfolioData();
   const { i18n, t } = useTranslation();
-  const testimonials = (data?.testimonials || []) as Testimonial[];
+  // Only show featured testimonials, max 5
+  const testimonials = (data?.testimonials || []).filter(t => t.isFeatured).slice(0, 5) as Testimonial[];
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showSubmitForm, setShowSubmitForm] = useState(false);

@@ -87,7 +87,8 @@
     "allTestimonials": "All Testimonials",
     "noTestimonials": "No testimonials yet",
     "approve": "Approve",
-    "reject": "Reject"
+    "reject": "Reject",
+    "maxFeaturedTestimonials": "You can only feature a maximum of 5 testimonials. Please uncheck one first."
   },
   "projectsubdomain": {
     "title": "Projects",

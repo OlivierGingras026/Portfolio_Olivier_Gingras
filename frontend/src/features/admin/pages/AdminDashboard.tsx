@@ -541,6 +541,24 @@ export const AdminDashboard = () => {
     }
   };
 
+  const handleToggleFeaturedTestimonial = async (id: string, currentFeatured: boolean) => {
+    const approvedTestimonials = testimonials.filter(t => t.status === 'APPROVED');
+    const currentFeaturedCount = approvedTestimonials.filter(t => t.isFeatured).length;
+    
+    // If trying to add and already at 5, show warning
+    if (!currentFeatured && currentFeaturedCount >= 5) {
+      alert(t('testimonialsubdomain.maxFeaturedTestimonials'));
+      return;
+    }
+
+    try {
+      await testimonialAPI.toggleFeaturedTestimonial(id, !currentFeatured);
+      fetchAllData();
+    } catch (err) {
+      console.error("Failed to toggle featured testimonial", err);
+    }
+  };
+
   return (
     <div className="admin-container">
       {/* Sidebar */}
@@ -1245,6 +1263,52 @@ export const AdminDashboard = () => {
                                         {pendingTestimonials.length > 0 && <div style={{ gridColumn: '1 / -1', margin: '1.5rem 0', borderTop: '1px solid #334155' }} />}
                                         <div style={{ gridColumn: '1 / -1' }}>
                                             {pendingTestimonials.length > 0 && <h3 style={{ color: '#fff', marginBottom: '1rem', fontSize: '1rem', marginTop: '1.5rem' }}>{t('testimonialsubdomain.allTestimonials')}</h3>}
+                                            {/* Featured testimonials section */}
+                                            {(() => {
+                                              const approvedTestimonials = testimonials.filter(t => t.status === 'APPROVED');
+                                              const featuredTestimonials = approvedTestimonials.filter(t => t.isFeatured);
+                                              return (
+                                                <div style={{ gridColumn: '1 / -1', marginBottom: '2rem', padding: '1.5rem', backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '0.5rem' }}>
+                                                  <h4 style={{ color: '#fff', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                    ⭐ Featured Testimonials ({featuredTestimonials.length}/5)
+                                                  </h4>
+                                                  <p style={{ color: '#94a3b8', fontSize: '0.875rem', marginBottom: '1rem' }}>Select up to 5 approved testimonials to display on your portfolio homepage</p>
+                                                  {approvedTestimonials.length === 0 ? (
+                                                    <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>No approved testimonials yet</p>
+                                                  ) : (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                                      {approvedTestimonials.map(testimonial => (
+                                                        <div key={testimonial.testimonialId} style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '0.75rem', backgroundColor: '#0f172a', borderRadius: '0.25rem', border: '1px solid #334155' }}>
+                                                          <input
+                                                            type="checkbox"
+                                                            id={`featured-${testimonial.testimonialId}`}
+                                                            checked={testimonial.isFeatured || false}
+                                                            onChange={() => handleToggleFeaturedTestimonial(testimonial.testimonialId, testimonial.isFeatured || false)}
+                                                            style={{
+                                                              marginTop: '0.25rem',
+                                                              width: '18px',
+                                                              height: '18px',
+                                                              accentColor: '#3b82f6',
+                                                              cursor: 'pointer',
+                                                              flexShrink: 0
+                                                            }}
+                                                          />
+                                                          <div style={{ flex: 1, minWidth: 0 }}>
+                                                            <label htmlFor={`featured-${testimonial.testimonialId}`} style={{ cursor: 'pointer', display: 'block' }}>
+                                                              <p style={{ color: '#fff', margin: '0 0 0.25rem 0', fontWeight: '500' }}>{testimonial.name}</p>
+                                                              <p style={{ color: '#94a3b8', margin: '0 0 0.25rem 0', fontSize: '0.875rem' }}>
+                                                                {getTestimonialTitle(testimonial)} {getTestimonialCompany(testimonial) && `at ${getTestimonialCompany(testimonial)}`}
+                                                              </p>
+                                                              <p style={{ color: '#cbd5e1', margin: '0', fontSize: '0.875rem' }}>"{getTestimonialMessage(testimonial).substring(0, 80)}..."</p>
+                                                            </label>
+                                                          </div>
+                                                        </div>
+                                                      ))}
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              );
+                                            })()}
                                             {testimonials.map(testimonial => (
                                                 <div key={testimonial.testimonialId} className="card" style={{ gridColumn: '1 / -1', marginBottom: '1rem' }}>
                                                     <div className="card-header">
@@ -1254,6 +1318,7 @@ export const AdminDashboard = () => {
                                                             <span style={{ marginLeft: '1rem', fontSize: '0.75rem', color: testimonial.status === 'APPROVED' ? '#22c55e' : testimonial.status === 'REJECTED' ? '#ef4444' : '#f59e0b' }}>
                                                                 {testimonial.status === 'APPROVED' ? t('admin.approvedStatus') : testimonial.status === 'REJECTED' ? t('admin.rejectedStatus') : t('admin.pendingStatus')}
                                                             </span>
+                                                            {testimonial.isFeatured && <span style={{ marginLeft: '1rem', fontSize: '0.75rem', color: '#fbbf24' }}>⭐ Featured</span>}
                                                         </div>
                                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                             {[...Array(testimonial.rating)].map((_, i) => (

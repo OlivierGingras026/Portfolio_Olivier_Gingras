@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { portfolioAPI, type PortfolioData } from '../api/portfolioAPI';
 
@@ -33,7 +33,7 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
     fetchData();
   }, []);
 
-  const refetch = async () => {
+  const refetch = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -44,7 +44,17 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Listen for cache invalidation events from admin dashboard
+  useEffect(() => {
+    const unsubscribe = portfolioAPI.onCacheInvalidated(() => {
+      // Refetch data when cache is invalidated by admin operations
+      refetch().catch(console.error);
+    });
+
+    return unsubscribe;
+  }, [refetch]);
 
   return (
     <PortfolioContext.Provider value={{ data, loading, error, refetch }}>
@@ -55,3 +65,4 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
 
 export default PortfolioContext;
 export type { PortfolioContextType };
+

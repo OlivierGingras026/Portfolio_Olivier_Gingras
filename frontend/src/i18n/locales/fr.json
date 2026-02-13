@@ -87,7 +87,8 @@
     "allTestimonials": "Tous les Témoignages",
     "noTestimonials": "Aucun témoignage pour le moment",
     "approve": "Approuver",
-    "reject": "Rejeter"
+    "reject": "Rejeter",
+    "maxFeaturedTestimonials": "Vous pouvez présenter un maximum de 5 témoignages. Veuillez en désélectionner un d'abord."
   },
   "projectsubdomain": {
     "title": "Projets",
