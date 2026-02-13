@@ -245,180 +245,133 @@ export const AdminDashboard = () => {
 
   // Optimistic update callbacks - close modal immediately, refresh data in background
   const handleProjectModalSuccess = async (newProject?: Project) => {
-    portfolioAPI.invalidateCache();
-    
     if (newProject) {
       setProjects([...projects, newProject]);
     }
-    
     handleCloseModal();
-    projectsAPI.getAllProjects().then(setProjects).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleEditProjectModalSuccess = async (updatedProject?: Project) => {
-    portfolioAPI.invalidateCache();
-    
     if (updatedProject) {
       setProjects(projects.map(p => p.projectId === updatedProject.projectId ? updatedProject : p));
     }
-    
     handleCloseModal();
-    projectsAPI.getAllProjects().then(setProjects).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleDeleteProjectModalSuccess = async (deletedId?: string) => {
-    portfolioAPI.invalidateCache();
-    
     if (deletedId) {
       setProjects(projects.filter(p => p.projectId !== deletedId));
     }
-    
     handleCloseModal();
-    projectsAPI.getAllProjects().then(setProjects).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleSkillModalSuccess = async (newSkill?: Skill) => {
-    portfolioAPI.invalidateCache();
-    
     if (newSkill) {
       setSkills([...skills, newSkill]);
     }
-    
     handleCloseModal();
-    skillsAPI.getAllSkills().then(setSkills).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleEditSkillModalSuccess = async (updatedSkill?: Skill) => {
-    portfolioAPI.invalidateCache();
-    
     if (updatedSkill) {
       setSkills(skills.map(s => s.skillId === updatedSkill.skillId ? updatedSkill : s));
     }
-    
     handleCloseModal();
-    skillsAPI.getAllSkills().then(setSkills).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleDeleteSkillModalSuccess = async (deletedId?: string) => {
-    portfolioAPI.invalidateCache();
-    
     if (deletedId) {
       setSkills(skills.filter(s => s.skillId !== deletedId));
     }
-    
     handleCloseModal();
-    skillsAPI.getAllSkills().then(setSkills).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleWorkModalSuccess = async (newWork?: WorkExperience) => {
-    portfolioAPI.invalidateCache();
-    
     if (newWork) {
       setWork([...work, newWork]);
     }
-    
     handleCloseModal();
-    workExperienceAPI.getAllWorkExperiences().then(setWork).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleEditWorkModalSuccess = async (updatedWork?: WorkExperience) => {
-    portfolioAPI.invalidateCache();
-    
     if (updatedWork) {
       setWork(work.map(w => w.workExperienceId === updatedWork.workExperienceId ? updatedWork : w));
     }
-    
     handleCloseModal();
-    workExperienceAPI.getAllWorkExperiences().then(setWork).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleDeleteWorkModalSuccess = async (deletedId?: string) => {
-    portfolioAPI.invalidateCache();
-    
     if (deletedId) {
       setWork(work.filter(w => w.workExperienceId !== deletedId));
     }
-    
     handleCloseModal();
-    workExperienceAPI.getAllWorkExperiences().then(setWork).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleEducationModalSuccess = async (newEducation?: Education) => {
-    portfolioAPI.invalidateCache();
-    
     if (newEducation) {
       setEducation([...education, newEducation]);
     }
-    
     handleCloseModal();
-    educationAPI.getAllEducation().then(setEducation).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleEditEducationModalSuccess = async (updatedEducation?: Education) => {
-    portfolioAPI.invalidateCache();
-    
     if (updatedEducation) {
       setEducation(education.map(e => e.educationId === updatedEducation.educationId ? updatedEducation : e));
     }
-    
     handleCloseModal();
-    educationAPI.getAllEducation().then(setEducation).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleDeleteEducationModalSuccess = async (deletedId?: string) => {
-    portfolioAPI.invalidateCache();
-    
     if (deletedId) {
       setEducation(education.filter(e => e.educationId !== deletedId));
     }
-    
     handleCloseModal();
-    educationAPI.getAllEducation().then(setEducation).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleHobbyModalSuccess = async (newHobby?: Hobby) => {
-    portfolioAPI.invalidateCache();
-    
     if (newHobby) {
       setHobbies([...hobbies, newHobby]);
     }
-    
     handleCloseModal();
-    hobbiesAPI.getAllHobbies().then(setHobbies).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleEditHobbyModalSuccess = async (updatedHobby?: Hobby) => {
-    portfolioAPI.invalidateCache();
-    
     if (updatedHobby) {
       setHobbies(hobbies.map(h => h.hobbyId === updatedHobby.hobbyId ? updatedHobby : h));
     }
-    
     handleCloseModal();
-    hobbiesAPI.getAllHobbies().then(setHobbies).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleDeleteHobbyModalSuccess = async (deletedId?: string) => {
-    portfolioAPI.invalidateCache();
-    
     if (deletedId) {
       setHobbies(hobbies.filter(h => h.hobbyId !== deletedId));
     }
-    
     handleCloseModal();
-    hobbiesAPI.getAllHobbies().then(setHobbies).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleEditCVModalSuccess = async () => {
-    portfolioAPI.invalidateCache();
     handleCloseModal();
-    cvAPI.getAllCVs().then(setAllCVs).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const handleDeleteCVModalSuccess = async () => {
-    portfolioAPI.invalidateCache();
     handleCloseModal();
-    cvAPI.getAllCVs().then(setAllCVs).catch(console.error);
+    portfolioAPI.invalidateCache();
   };
 
   const tabs = [

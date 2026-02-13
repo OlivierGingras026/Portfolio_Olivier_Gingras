@@ -37,7 +37,7 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
     try {
       setLoading(true);
       setError(null);
-      const portfolioData = await portfolioAPI.refreshCache();
+      const portfolioData = await portfolioAPI.getAllPortfolioData();
       setData(portfolioData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch portfolio data');

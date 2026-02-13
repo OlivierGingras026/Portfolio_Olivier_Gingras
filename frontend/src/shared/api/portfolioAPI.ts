@@ -28,6 +28,10 @@ const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 // Cache invalidation listeners
 const cacheInvalidationListeners = new Set<() => void>();
 
+// Prevent infinite refresh loops with debounce
+let isRefreshing = false;
+let refreshTimeout: ReturnType<typeof setTimeout> | null = null;
+
 export const portfolioAPI = {
   /**
    * Fetch all portfolio data in parallel
@@ -69,26 +73,40 @@ export const portfolioAPI = {
 
   /**
    * Invalidate the cache (call this after mutations)
+   * This triggers background refresh with debounce
    */
   invalidateCache(): void {
     cachedData = null;
     cacheTimestamp = 0;
-    // Notify all listeners that cache was invalidated
-    cacheInvalidationListeners.forEach(listener => {
-      try {
-        listener();
-      } catch (err) {
-        console.error('Error in cache invalidation listener:', err);
-      }
-    });
-  },
 
-  /**
-   * Force refresh the cache
-   */
-  async refreshCache(): Promise<PortfolioData> {
-    this.invalidateCache();
-    return this.getAllPortfolioData();
+    // Clear pending refresh
+    if (refreshTimeout) {
+      clearTimeout(refreshTimeout);
+    }
+
+    // Debounce the refresh to avoid cascade
+    refreshTimeout = setTimeout(() => {
+      if (!isRefreshing) {
+        isRefreshing = true;
+        this.getAllPortfolioData()
+          .then(() => {
+            // Notify listeners only after successful refresh
+            cacheInvalidationListeners.forEach(listener => {
+              try {
+                listener();
+              } catch (err) {
+                console.error('Error in cache invalidation listener:', err);
+              }
+            });
+          })
+          .catch(err => {
+            console.error('Failed to refresh cache:', err);
+          })
+          .finally(() => {
+            isRefreshing = false;
+          });
+      }
+    }, 300); // 300ms debounce
   },
 
   /**
@@ -98,5 +116,6 @@ export const portfolioAPI = {
     cacheInvalidationListeners.add(callback);
     return () => {
       cacheInvalidationListeners.delete(callback);
-    };  },
+    };
+  },
 };
