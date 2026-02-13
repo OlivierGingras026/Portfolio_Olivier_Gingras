@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { workExperienceAPI } from '../api/workExperienceAPI';
+import { showToast } from '../../../shared/components/Toast';
 import type { CreateWorkExperienceRequest } from '../../../shared/models';
+import type { WorkExperience } from '../types';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface AddWorkExperienceModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (newWork?: WorkExperience) => Promise<void> | void;
 }
 
 export const AddWorkExperienceModal = ({ onClose, onSuccess }: AddWorkExperienceModalProps) => {
@@ -52,12 +54,15 @@ export const AddWorkExperienceModal = ({ onClose, onSuccess }: AddWorkExperience
         ...formData,
         endDate: formData.isCurrent ? undefined : formData.endDate
       };
-      await workExperienceAPI.createWorkExperience(dataToSend);
-      await Promise.resolve(onSuccess());
+      const newWork = await workExperienceAPI.createWorkExperience(dataToSend);
+      showToast('Work experience added successfully!', 'success');
+      await Promise.resolve(onSuccess(newWork));
       onClose();
     } catch (err) {
       console.error('Failed to create work experience:', err);
-      setErrors({ submit: 'Failed to create work experience' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to create work experience';
+      showToast(errorMsg, 'error');
+      setErrors({ submit: errorMsg });
     } finally {
       setLoading(false);
     }

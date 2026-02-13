@@ -243,12 +243,182 @@ export const AdminDashboard = () => {
     setModalType('add');
   };
 
-  const handleModalSuccess = async () => {
-    console.log('[AdminDashboard] Modal success - starting data refresh');
+  // Optimistic update callbacks - close modal immediately, refresh data in background
+  const handleProjectModalSuccess = async (newProject?: Project) => {
     portfolioAPI.invalidateCache();
-    await fetchAllData();
-    console.log('[AdminDashboard] Data refresh complete - closing modal');
+    
+    if (newProject) {
+      setProjects([...projects, newProject]);
+    }
+    
     handleCloseModal();
+    projectsAPI.getAllProjects().then(setProjects).catch(console.error);
+  };
+
+  const handleEditProjectModalSuccess = async (updatedProject?: Project) => {
+    portfolioAPI.invalidateCache();
+    
+    if (updatedProject) {
+      setProjects(projects.map(p => p.projectId === updatedProject.projectId ? updatedProject : p));
+    }
+    
+    handleCloseModal();
+    projectsAPI.getAllProjects().then(setProjects).catch(console.error);
+  };
+
+  const handleDeleteProjectModalSuccess = async (deletedId?: string) => {
+    portfolioAPI.invalidateCache();
+    
+    if (deletedId) {
+      setProjects(projects.filter(p => p.projectId !== deletedId));
+    }
+    
+    handleCloseModal();
+    projectsAPI.getAllProjects().then(setProjects).catch(console.error);
+  };
+
+  const handleSkillModalSuccess = async (newSkill?: Skill) => {
+    portfolioAPI.invalidateCache();
+    
+    if (newSkill) {
+      setSkills([...skills, newSkill]);
+    }
+    
+    handleCloseModal();
+    skillsAPI.getAllSkills().then(setSkills).catch(console.error);
+  };
+
+  const handleEditSkillModalSuccess = async (updatedSkill?: Skill) => {
+    portfolioAPI.invalidateCache();
+    
+    if (updatedSkill) {
+      setSkills(skills.map(s => s.skillId === updatedSkill.skillId ? updatedSkill : s));
+    }
+    
+    handleCloseModal();
+    skillsAPI.getAllSkills().then(setSkills).catch(console.error);
+  };
+
+  const handleDeleteSkillModalSuccess = async (deletedId?: string) => {
+    portfolioAPI.invalidateCache();
+    
+    if (deletedId) {
+      setSkills(skills.filter(s => s.skillId !== deletedId));
+    }
+    
+    handleCloseModal();
+    skillsAPI.getAllSkills().then(setSkills).catch(console.error);
+  };
+
+  const handleWorkModalSuccess = async (newWork?: WorkExperience) => {
+    portfolioAPI.invalidateCache();
+    
+    if (newWork) {
+      setWork([...work, newWork]);
+    }
+    
+    handleCloseModal();
+    workExperienceAPI.getAllWorkExperiences().then(setWork).catch(console.error);
+  };
+
+  const handleEditWorkModalSuccess = async (updatedWork?: WorkExperience) => {
+    portfolioAPI.invalidateCache();
+    
+    if (updatedWork) {
+      setWork(work.map(w => w.workExperienceId === updatedWork.workExperienceId ? updatedWork : w));
+    }
+    
+    handleCloseModal();
+    workExperienceAPI.getAllWorkExperiences().then(setWork).catch(console.error);
+  };
+
+  const handleDeleteWorkModalSuccess = async (deletedId?: string) => {
+    portfolioAPI.invalidateCache();
+    
+    if (deletedId) {
+      setWork(work.filter(w => w.workExperienceId !== deletedId));
+    }
+    
+    handleCloseModal();
+    workExperienceAPI.getAllWorkExperiences().then(setWork).catch(console.error);
+  };
+
+  const handleEducationModalSuccess = async (newEducation?: Education) => {
+    portfolioAPI.invalidateCache();
+    
+    if (newEducation) {
+      setEducation([...education, newEducation]);
+    }
+    
+    handleCloseModal();
+    educationAPI.getAllEducation().then(setEducation).catch(console.error);
+  };
+
+  const handleEditEducationModalSuccess = async (updatedEducation?: Education) => {
+    portfolioAPI.invalidateCache();
+    
+    if (updatedEducation) {
+      setEducation(education.map(e => e.educationId === updatedEducation.educationId ? updatedEducation : e));
+    }
+    
+    handleCloseModal();
+    educationAPI.getAllEducation().then(setEducation).catch(console.error);
+  };
+
+  const handleDeleteEducationModalSuccess = async (deletedId?: string) => {
+    portfolioAPI.invalidateCache();
+    
+    if (deletedId) {
+      setEducation(education.filter(e => e.educationId !== deletedId));
+    }
+    
+    handleCloseModal();
+    educationAPI.getAllEducation().then(setEducation).catch(console.error);
+  };
+
+  const handleHobbyModalSuccess = async (newHobby?: Hobby) => {
+    portfolioAPI.invalidateCache();
+    
+    if (newHobby) {
+      setHobbies([...hobbies, newHobby]);
+    }
+    
+    handleCloseModal();
+    hobbiesAPI.getAllHobbies().then(setHobbies).catch(console.error);
+  };
+
+  const handleEditHobbyModalSuccess = async (updatedHobby?: Hobby) => {
+    portfolioAPI.invalidateCache();
+    
+    if (updatedHobby) {
+      setHobbies(hobbies.map(h => h.hobbyId === updatedHobby.hobbyId ? updatedHobby : h));
+    }
+    
+    handleCloseModal();
+    hobbiesAPI.getAllHobbies().then(setHobbies).catch(console.error);
+  };
+
+  const handleDeleteHobbyModalSuccess = async (deletedId?: string) => {
+    portfolioAPI.invalidateCache();
+    
+    if (deletedId) {
+      setHobbies(hobbies.filter(h => h.hobbyId !== deletedId));
+    }
+    
+    handleCloseModal();
+    hobbiesAPI.getAllHobbies().then(setHobbies).catch(console.error);
+  };
+
+  const handleEditCVModalSuccess = async () => {
+    portfolioAPI.invalidateCache();
+    handleCloseModal();
+    cvAPI.getAllCVs().then(setAllCVs).catch(console.error);
+  };
+
+  const handleDeleteCVModalSuccess = async () => {
+    portfolioAPI.invalidateCache();
+    handleCloseModal();
+    cvAPI.getAllCVs().then(setAllCVs).catch(console.error);
   };
 
   const tabs = [
@@ -1119,13 +1289,13 @@ export const AdminDashboard = () => {
       {showModal && activeTab === 'projects' && modalType === 'add' && (
         <AddProjectModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleProjectModalSuccess}
         />
       )}
       {showModal && activeTab === 'projects' && modalType === 'edit' && (
         <EditProjectModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleEditProjectModalSuccess}
           editingId={editingId}
           existingData={editingData}
         />
@@ -1133,7 +1303,7 @@ export const AdminDashboard = () => {
       {showModal && activeTab === 'projects' && modalType === 'delete' && (
         <DeleteProjectModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleDeleteProjectModalSuccess}
           deletingId={deletingId}
           deletingTitle={deletingTitle}
         />
@@ -1143,13 +1313,13 @@ export const AdminDashboard = () => {
       {showModal && activeTab === 'skills' && modalType === 'add' && (
         <AddSkillModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleSkillModalSuccess}
         />
       )}
       {showModal && activeTab === 'skills' && modalType === 'edit' && (
         <EditSkillModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleEditSkillModalSuccess}
           editingId={editingId}
           existingData={editingData}
         />
@@ -1157,7 +1327,7 @@ export const AdminDashboard = () => {
       {showModal && activeTab === 'skills' && modalType === 'delete' && (
         <DeleteSkillModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleDeleteSkillModalSuccess}
           deletingId={deletingId}
           deletingTitle={deletingTitle}
         />
@@ -1167,13 +1337,13 @@ export const AdminDashboard = () => {
       {showModal && activeTab === 'work' && modalType === 'add' && (
         <AddWorkExperienceModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleWorkModalSuccess}
         />
       )}
       {showModal && activeTab === 'work' && modalType === 'edit' && (
         <EditWorkExperienceModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleEditWorkModalSuccess}
           editingId={editingId}
           existingData={editingData}
         />
@@ -1181,7 +1351,7 @@ export const AdminDashboard = () => {
       {showModal && activeTab === 'work' && modalType === 'delete' && (
         <DeleteWorkExperienceModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleDeleteWorkModalSuccess}
           deletingId={deletingId}
           deletingTitle={deletingTitle}
         />
@@ -1191,13 +1361,13 @@ export const AdminDashboard = () => {
       {showModal && activeTab === 'education' && modalType === 'add' && (
         <AddEducationModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleEducationModalSuccess}
         />
       )}
       {showModal && activeTab === 'education' && modalType === 'edit' && (
         <EditEducationModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleEditEducationModalSuccess}
           editingId={editingId}
           existingData={editingData}
         />
@@ -1205,7 +1375,7 @@ export const AdminDashboard = () => {
       {showModal && activeTab === 'education' && modalType === 'delete' && (
         <DeleteEducationModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleDeleteEducationModalSuccess}
           deletingId={deletingId}
           deletingTitle={deletingTitle}
         />
@@ -1215,13 +1385,13 @@ export const AdminDashboard = () => {
       {showModal && activeTab === 'hobbies' && modalType === 'add' && (
         <AddHobbyModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleHobbyModalSuccess}
         />
       )}
       {showModal && activeTab === 'hobbies' && modalType === 'edit' && (
         <EditHobbyModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleEditHobbyModalSuccess}
           editingId={editingId}
           existingData={editingData}
         />
@@ -1229,7 +1399,7 @@ export const AdminDashboard = () => {
       {showModal && activeTab === 'hobbies' && modalType === 'delete' && (
         <DeleteHobbyModal 
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleDeleteHobbyModalSuccess}
           deletingId={deletingId}
           deletingTitle={deletingTitle}
         />
@@ -1237,13 +1407,13 @@ export const AdminDashboard = () => {
       {showModal && activeTab === 'cv' && modalType === 'edit' && (
         <EditCVModal
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleEditCVModalSuccess}
         />
       )}
       {showModal && activeTab === 'cv' && modalType === 'delete' && (
         <DeleteCVModal
           onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onSuccess={handleDeleteCVModalSuccess}
           fileName={allCVs.find(cv => cv.cvId === editingId)?.fileName || ''}
           cvId={editingId || ''}
         />

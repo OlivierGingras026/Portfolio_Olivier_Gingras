@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { educationAPI } from '../api/educationAPI';
-import type { CreateEducationRequest } from '../../../shared/models';
-import '../../../features/admin/pages/AdminDashboard.css';
+import { showToast } from '../../../shared/components/Toast';
+import type { CreateEducationRequest } from '../../../shared/models';import type { Education } from '../types';import '../../../features/admin/pages/AdminDashboard.css';
 
 interface EditEducationModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (updatedEducation?: Education) => Promise<void> | void;
   editingId: string | null;
   existingData?: Record<string, unknown>;
 }
@@ -53,12 +53,15 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
         ...formData,
         endDate: formData.isCurrentlyStudying ? undefined : formData.endDate
       };
-      await educationAPI.updateEducation(editingId, dataToSend);
-      await Promise.resolve(onSuccess());
+      const updatedEducation = await educationAPI.updateEducation(editingId, dataToSend);
+      showToast('Education updated successfully!', 'success');
+      await Promise.resolve(onSuccess(updatedEducation));
       onClose();
     } catch (err) {
       console.error('Failed to update education:', err);
-      setErrors({ submit: 'Failed to update education' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to update education';
+      showToast(errorMsg, 'error');
+      setErrors({ submit: errorMsg });
     } finally {
       setLoading(false);
     }

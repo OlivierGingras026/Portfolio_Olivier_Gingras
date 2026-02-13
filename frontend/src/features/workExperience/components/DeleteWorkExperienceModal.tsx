@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { workExperienceAPI } from '../api/workExperienceAPI';
+import { showToast } from '../../../shared/components/Toast';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface DeleteWorkExperienceModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (deletedId?: string) => Promise<void> | void;
   deletingId: string | null;
   deletingTitle: string;
 }
@@ -19,11 +20,14 @@ export const DeleteWorkExperienceModal = ({ onClose, onSuccess, deletingId, dele
     setLoading(true);
     try {
       await workExperienceAPI.deleteWorkExperience(deletingId);
-      await Promise.resolve(onSuccess());
+      showToast('Work experience deleted successfully!', 'success');
+      await Promise.resolve(onSuccess(deletingId));
       onClose();
     } catch (err) {
       console.error('Failed to delete work experience:', err);
-      setError('Failed to delete work experience');
+      const errorMsg = err instanceof Error ? err.message : 'Failed to delete work experience';
+      showToast(errorMsg, 'error');
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

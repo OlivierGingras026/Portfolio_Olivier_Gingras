@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { workExperienceAPI } from '../api/workExperienceAPI';
-import type { CreateWorkExperienceRequest } from '../../../shared/models';
-import '../../../features/admin/pages/AdminDashboard.css';
+import { showToast } from '../../../shared/components/Toast';
+import type { CreateWorkExperienceRequest } from '../../../shared/models';import type { WorkExperience } from '../types';import '../../../features/admin/pages/AdminDashboard.css';
 
 interface EditWorkExperienceModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (updatedWork?: WorkExperience) => Promise<void> | void;
   editingId: string | null;
   existingData?: Record<string, unknown>;
 }
@@ -53,12 +53,15 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
         ...formData,
         endDate: formData.isCurrent ? undefined : formData.endDate
       };
-      await workExperienceAPI.updateWorkExperience(editingId, dataToSend);
-      await Promise.resolve(onSuccess());
+      const updatedWork = await workExperienceAPI.updateWorkExperience(editingId, dataToSend);
+      showToast('Work experience updated successfully!', 'success');
+      await Promise.resolve(onSuccess(updatedWork));
       onClose();
     } catch (err) {
       console.error('Failed to update work experience:', err);
-      setErrors({ submit: 'Failed to update work experience' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to update work experience';
+      showToast(errorMsg, 'error');
+      setErrors({ submit: errorMsg });
     } finally {
       setLoading(false);
     }

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { hobbiesAPI } from '../api/hobbiesAPI';
+import { showToast } from '../../../shared/components/Toast';
 import type { CreateHobbyRequest } from '../../../shared/models';
+import type { Hobby } from '../types';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface AddHobbyModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (newHobby?: Hobby) => Promise<void> | void;
 }
 
 export const AddHobbyModal = ({ onClose, onSuccess }: AddHobbyModalProps) => {
@@ -55,12 +57,15 @@ export const AddHobbyModal = ({ onClose, onSuccess }: AddHobbyModalProps) => {
     
     setLoading(true);
     try {
-      await hobbiesAPI.createHobby(formData);
-      await Promise.resolve(onSuccess());
+      const newHobby = await hobbiesAPI.createHobby(formData);
+      showToast('Hobby added successfully!', 'success');
+      await Promise.resolve(onSuccess(newHobby));
       onClose();
     } catch (err) {
       console.error('Failed to create hobby:', err);
-      setErrors({ submit: 'Failed to create hobby' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to create hobby';
+      showToast(errorMsg, 'error');
+      setErrors({ submit: errorMsg });
     } finally {
       setLoading(false);
     }

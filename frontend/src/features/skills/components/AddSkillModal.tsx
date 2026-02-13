@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { skillsAPI } from '../api/skillsAPI';
+import { showToast } from '../../../shared/components/Toast';
 import type { CreateSkillRequest } from '../../../shared/models';
+import type { Skill } from '../types';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface AddSkillModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (newSkill?: Skill) => Promise<void> | void;
 }
 
 export const AddSkillModal = ({ onClose, onSuccess }: AddSkillModalProps) => {
@@ -42,12 +44,15 @@ export const AddSkillModal = ({ onClose, onSuccess }: AddSkillModalProps) => {
     
     setLoading(true);
     try {
-      await skillsAPI.createSkill(formData);
-      await Promise.resolve(onSuccess());
+      const newSkill = await skillsAPI.createSkill(formData);
+      showToast('Skill created successfully!', 'success');
+      await Promise.resolve(onSuccess(newSkill));
       onClose();
     } catch (err) {
       console.error('Failed to create skill:', err);
-      setErrors({ submit: 'Failed to create skill' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to create skill';
+      showToast(errorMsg, 'error');
+      setErrors({ submit: errorMsg });
     } finally {
       setLoading(false);
     }

@@ -21,12 +21,17 @@ export const showToast = (message: string, type: ToastType = 'info') => {
 export const Toast = () => {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
+
   useEffect(() => {
     const handleToast = (toast: ToastMessage) => {
       setToasts(prev => [...prev, toast]);
-      setTimeout(() => {
-        setToasts(prev => prev.filter(t => t.id !== toast.id));
+      const timer = setTimeout(() => {
+        removeToast(toast.id);
       }, 4000);
+      return () => clearTimeout(timer);
     };
 
     toastListeners.add(handleToast);
@@ -35,11 +40,30 @@ export const Toast = () => {
     };
   }, []);
 
+  const getIcon = (type: ToastType) => {
+    switch (type) {
+      case 'success':
+        return '✓';
+      case 'error':
+        return '✕';
+      case 'info':
+        return 'ℹ';
+    }
+  };
+
   return (
     <div className="toast-container">
       {toasts.map(toast => (
         <div key={toast.id} className={`toast toast-${toast.type}`}>
-          {toast.message}
+          <span className="toast-icon">{getIcon(toast.type)}</span>
+          <span className="toast-message">{toast.message}</span>
+          <button 
+            className="toast-close"
+            onClick={() => removeToast(toast.id)}
+            aria-label="Close notification"
+          >
+            ×
+          </button>
         </div>
       ))}
     </div>

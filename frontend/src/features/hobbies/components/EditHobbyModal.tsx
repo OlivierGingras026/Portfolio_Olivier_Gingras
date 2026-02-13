@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { hobbiesAPI } from '../api/hobbiesAPI';
-import type { CreateHobbyRequest } from '../../../shared/models';
-import '../../../features/admin/pages/AdminDashboard.css';
+import { showToast } from '../../../shared/components/Toast';
+import type { CreateHobbyRequest } from '../../../shared/models';import type { Hobby } from '../types';import '../../../features/admin/pages/AdminDashboard.css';
 
 interface EditHobbyModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (updatedHobby?: Hobby) => Promise<void> | void;
   editingId: string | null;
   existingData?: Record<string, unknown>;
 }
@@ -57,12 +57,15 @@ export const EditHobbyModal = ({ onClose, onSuccess, editingId, existingData }: 
     
     setLoading(true);
     try {
-      await hobbiesAPI.updateHobby(editingId, formData);
-      await Promise.resolve(onSuccess());
+      const updatedHobby = await hobbiesAPI.updateHobby(editingId, formData);
+      showToast('Hobby updated successfully!', 'success');
+      await Promise.resolve(onSuccess(updatedHobby));
       onClose();
     } catch (err) {
       console.error('Failed to update hobby:', err);
-      setErrors({ submit: 'Failed to update hobby' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to update hobby';
+      showToast(errorMsg, 'error');
+      setErrors({ submit: errorMsg });
     } finally {
       setLoading(false);
     }

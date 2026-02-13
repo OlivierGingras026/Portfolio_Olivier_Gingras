@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { hobbiesAPI } from '../api/hobbiesAPI';
+import { showToast } from '../../../shared/components/Toast';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface DeleteHobbyModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (deletedId?: string) => Promise<void> | void;
   deletingId: string | null;
   deletingTitle: string;
 }
@@ -19,11 +20,14 @@ export const DeleteHobbyModal = ({ onClose, onSuccess, deletingId, deletingTitle
     setLoading(true);
     try {
       await hobbiesAPI.deleteHobby(deletingId);
-      await Promise.resolve(onSuccess());
+      showToast('Hobby deleted successfully!', 'success');
+      await Promise.resolve(onSuccess(deletingId));
       onClose();
     } catch (err) {
       console.error('Failed to delete hobby:', err);
-      setError('Failed to delete hobby');
+      const errorMsg = err instanceof Error ? err.message : 'Failed to delete hobby';
+      showToast(errorMsg, 'error');
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

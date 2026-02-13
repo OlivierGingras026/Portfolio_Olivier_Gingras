@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { educationAPI } from '../api/educationAPI';
+import { showToast } from '../../../shared/components/Toast';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface DeleteEducationModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (deletedId?: string) => Promise<void> | void;
   deletingId: string | null;
   deletingTitle: string;
 }
@@ -19,11 +20,14 @@ export const DeleteEducationModal = ({ onClose, onSuccess, deletingId, deletingT
     setLoading(true);
     try {
       await educationAPI.deleteEducation(deletingId);
-      await Promise.resolve(onSuccess());
+      showToast('Education deleted successfully!', 'success');
+      await Promise.resolve(onSuccess(deletingId));
       onClose();
     } catch (err) {
       console.error('Failed to delete education:', err);
-      setError('Failed to delete education');
+      const errorMsg = err instanceof Error ? err.message : 'Failed to delete education';
+      showToast(errorMsg, 'error');
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

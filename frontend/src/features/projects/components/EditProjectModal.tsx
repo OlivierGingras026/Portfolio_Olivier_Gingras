@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { projectsAPI } from '../api/projectsAPI';
+import { showToast } from '../../../shared/components/Toast';
 import type { CreateProjectRequest } from '../../../shared/models';
+import type { Project } from '../types';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface EditProjectModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (updatedProject?: Project) => Promise<void> | void;
   editingId: string | null;
   existingData?: Record<string, unknown>;
 }
@@ -78,12 +80,15 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
     
     setLoading(true);
     try {
-      await projectsAPI.updateProject(editingId, formData);
-      await Promise.resolve(onSuccess());
+      const updatedProject = await projectsAPI.updateProject(editingId, formData);
+      showToast('Project updated successfully!', 'success');
+      await Promise.resolve(onSuccess(updatedProject));
       onClose();
     } catch (err) {
       console.error('Failed to update project:', err);
-      setErrors({ submit: 'Failed to update project' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to update project';
+      showToast(errorMsg, 'error');
+      setErrors({ submit: errorMsg });
     } finally {
       setLoading(false);
     }

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { skillsAPI } from '../api/skillsAPI';
+import { showToast } from '../../../shared/components/Toast';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface DeleteSkillModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (deletedId?: string) => Promise<void> | void;
   deletingId: string | null;
   deletingTitle: string;
 }
@@ -19,11 +20,14 @@ export const DeleteSkillModal = ({ onClose, onSuccess, deletingId, deletingTitle
     setLoading(true);
     try {
       await skillsAPI.deleteSkill(deletingId);
-      await Promise.resolve(onSuccess());
+      showToast('Skill deleted successfully!', 'success');
+      await Promise.resolve(onSuccess(deletingId));
       onClose();
     } catch (err) {
       console.error('Failed to delete skill:', err);
-      setError('Failed to delete skill');
+      const errorMsg = err instanceof Error ? err.message : 'Failed to delete skill';
+      showToast(errorMsg, 'error');
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

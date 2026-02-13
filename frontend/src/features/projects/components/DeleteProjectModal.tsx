@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { projectsAPI } from '../api/projectsAPI';
+import { showToast } from '../../../shared/components/Toast';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface DeleteProjectModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (deletedId?: string) => Promise<void> | void;
   deletingId: string | null;
   deletingTitle: string;
 }
@@ -18,11 +19,14 @@ export const DeleteProjectModal = ({ onClose, onSuccess, deletingId, deletingTit
     setLoading(true);
     try {
       await projectsAPI.deleteProject(deletingId);
-      await Promise.resolve(onSuccess());
+      showToast('Project deleted successfully!', 'success');
+      await Promise.resolve(onSuccess(deletingId));
       onClose();
     } catch (err) {
       console.error('Failed to delete project:', err);
-      setError('Failed to delete project');
+      const errorMsg = err instanceof Error ? err.message : 'Failed to delete project';
+      showToast(errorMsg, 'error');
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

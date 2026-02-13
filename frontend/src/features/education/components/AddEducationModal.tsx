@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { educationAPI } from '../api/educationAPI';
+import { showToast } from '../../../shared/components/Toast';
 import type { CreateEducationRequest } from '../../../shared/models';
+import type { Education } from '../types';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface AddEducationModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (newEducation?: Education) => Promise<void> | void;
 }
 
 export const AddEducationModal = ({ onClose, onSuccess }: AddEducationModalProps) => {
@@ -52,12 +54,15 @@ export const AddEducationModal = ({ onClose, onSuccess }: AddEducationModalProps
         ...formData,
         endDate: formData.isCurrentlyStudying ? undefined : formData.endDate
       };
-      await educationAPI.createEducation(dataToSend);
-      await Promise.resolve(onSuccess());
+      const newEducation = await educationAPI.createEducation(dataToSend);
+      showToast('Education added successfully!', 'success');
+      await Promise.resolve(onSuccess(newEducation));
       onClose();
     } catch (err) {
       console.error('Failed to create education:', err);
-      setErrors({ submit: 'Failed to create education' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to create education';
+      showToast(errorMsg, 'error');
+      setErrors({ submit: errorMsg });
     } finally {
       setLoading(false);
     }

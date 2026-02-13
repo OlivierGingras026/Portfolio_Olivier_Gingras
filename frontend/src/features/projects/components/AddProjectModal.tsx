@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { projectsAPI } from '../api/projectsAPI';
 import { showToast } from '../../../shared/components/Toast';
 import type { CreateProjectRequest } from '../../../shared/models';
+import type { Project } from '../types';
 import '../../../features/admin/pages/AdminDashboard.css';
 
 interface AddProjectModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (newProject?: Project) => Promise<void> | void;
 }
 
 export const AddProjectModal = ({ onClose, onSuccess }: AddProjectModalProps) => {
@@ -77,9 +78,9 @@ export const AddProjectModal = ({ onClose, onSuccess }: AddProjectModalProps) =>
     
     setLoading(true);
     try {
-      await projectsAPI.createProject(formData);
+      const newProject = await projectsAPI.createProject(formData);
       showToast('Project created successfully!', 'success');
-      await Promise.resolve(onSuccess());
+      await Promise.resolve(onSuccess(newProject));
       onClose();
     } catch (err) {
       console.error('Failed to create project:', err);

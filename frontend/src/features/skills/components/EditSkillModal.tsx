@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { skillsAPI } from '../api/skillsAPI';
-import type { CreateSkillRequest } from '../../../shared/models';
-import '../../../features/admin/pages/AdminDashboard.css';
+import { showToast } from '../../../shared/components/Toast';
+import type { CreateSkillRequest } from '../../../shared/models';import type { Skill } from '../types';import '../../../features/admin/pages/AdminDashboard.css';
 
 interface EditSkillModalProps {
   onClose: () => void;
-  onSuccess: () => Promise<void> | void;
+  onSuccess: (updatedSkill?: Skill) => Promise<void> | void;
   editingId: string | null;
   existingData?: Record<string, unknown>;
 }
@@ -44,12 +44,15 @@ export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: 
     
     setLoading(true);
     try {
-      await skillsAPI.updateSkill(editingId, formData);
-      await Promise.resolve(onSuccess());
+      const updatedSkill = await skillsAPI.updateSkill(editingId, formData);
+      showToast('Skill updated successfully!', 'success');
+      await Promise.resolve(onSuccess(updatedSkill));
       onClose();
     } catch (err) {
       console.error('Failed to update skill:', err);
-      setErrors({ submit: 'Failed to update skill' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to update skill';
+      showToast(errorMsg, 'error');
+      setErrors({ submit: errorMsg });
     } finally {
       setLoading(false);
     }
