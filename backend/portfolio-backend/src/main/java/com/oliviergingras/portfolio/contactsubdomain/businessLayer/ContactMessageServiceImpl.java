@@ -34,13 +34,14 @@ public class ContactMessageServiceImpl implements ContactMessageService {
     
     @Override
     public ContactMessageResponseModel sendMessage(ContactMessageRequestModel requestModel, String clientIp) {
-        // IP-based rate limiting check
+        // IP-based rate limiting check (BEFORE recording to prevent checking already-recorded request)
         if (rateLimitService.isRateLimitExceeded(clientIp)) {
             long retryAfterSeconds = rateLimitService.getRetryAfterSeconds(clientIp);
             throw new RateLimitExceededException("Too many messages from your IP. Please try again later.", retryAfterSeconds);
         }
         
-        // Record this request for rate limiting
+        // Record this request for rate limiting immediately after checking
+        // This records the attempt even if sent to DB fails
         rateLimitService.recordRequest(clientIp);
         
         // Sanitize inputs
