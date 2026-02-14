@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuthStore from '../../authentication/store/authStore';
 import { LanguageSwitcher } from '../../../shared/components/LanguageSwitcher';
+import { showToast } from '../../../shared/components/Toast';
 import './AdminDashboard.css';
 
 // Modal Components - Add
@@ -500,7 +501,7 @@ export const AdminDashboard = () => {
     
     // If trying to add and already at 5, show warning
     if (!currentFeatured && currentFeaturedCount >= 5) {
-      alert(t('testimonialsubdomain.maxFeaturedTestimonials'));
+      showToast(t('testimonialsubdomain.maxFeaturedTestimonials'), 'info');
       return;
     }
 
