@@ -141,6 +141,19 @@ public class TestimonialServiceImpl implements TestimonialService {
     }
 
     @Override
+    public void updateTestimonial(String testimonialId, TestimonialRequestModel request) {
+        Testimonial testimonial = testimonialRepository.findById(testimonialId)
+            .orElseThrow(() -> new RuntimeException("Testimonial not found"));
+        
+        // Update only the isFeatured field if present in the request
+        if (request.getIsFeatured() != null) {
+            testimonial.setIsFeatured(request.getIsFeatured());
+        }
+        
+        testimonialRepository.save(testimonial);
+    }
+
+    @Override
     public void deleteTestimonial(String testimonialId) {
         testimonialRepository.deleteById(testimonialId);
     }

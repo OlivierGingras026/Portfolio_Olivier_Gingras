@@ -11,6 +11,7 @@ public class TestimonialResponseModel {
     public String message;
     public String messageFr;
     public String status;
+    public Boolean isFeatured;
     public String createdAt;
 
     public TestimonialResponseModel() {}
@@ -46,6 +47,9 @@ public class TestimonialResponseModel {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public Boolean getIsFeatured() { return isFeatured; }
+    public void setIsFeatured(Boolean isFeatured) { this.isFeatured = isFeatured; }
 
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }

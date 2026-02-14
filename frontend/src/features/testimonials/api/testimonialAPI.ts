@@ -58,7 +58,7 @@ export const testimonialAPI = {
   },
 
   toggleFeaturedTestimonial: async (testimonialId: string, isFeatured: boolean): Promise<void> => {
-    await axiosInstance.put(`/api/v1/testimonials/${testimonialId}/featured`, { isFeatured });
+    await axiosInstance.patch(`/api/v1/testimonials/${testimonialId}`, { isFeatured });
   },
 
   deleteTestimonial: async (testimonialId: string): Promise<void> => {

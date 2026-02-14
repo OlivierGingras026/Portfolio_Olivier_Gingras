@@ -504,11 +504,22 @@ export const AdminDashboard = () => {
       return;
     }
 
+    // Optimistic update - update UI immediately
+    const updatedTestimonials = testimonials.map(t => 
+      t.testimonialId === id ? { ...t, isFeatured: !currentFeatured } : t
+    );
+    setTestimonials(updatedTestimonials);
+
     try {
+      // Save to backend
       await testimonialAPI.toggleFeaturedTestimonial(id, !currentFeatured);
-      fetchAllData();
+      
+      // Invalidate cache so home page updates
+      portfolioAPI.invalidateCache();
     } catch (err) {
-      console.error("Failed to toggle featured testimonial", err);
+      console.error("Failed to save featured testimonial", err);
+      // Revert on error
+      setTestimonials(testimonials);
     }
   };
 
@@ -626,7 +637,7 @@ export const AdminDashboard = () => {
             </div>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
               <LanguageSwitcher />
-              {activeTab !== 'contact' && activeTab !== 'reachme' && activeTab !== 'cv' && activeTab !== 'testimonials' && (
+              {activeTab !== 'contact' && activeTab !== 'reachme' && activeTab !== 'cv' && (
                   <button 
                     onClick={() => handleOpenModal()}
                     className="add-new-btn"
@@ -1235,15 +1246,16 @@ export const AdminDashboard = () => {
                                                           <input
                                                             type="checkbox"
                                                             id={`featured-${testimonial.testimonialId}`}
-                                                            checked={testimonial.isFeatured || false}
-                                                            onChange={() => handleToggleFeaturedTestimonial(testimonial.testimonialId, testimonial.isFeatured || false)}
+                                                            checked={testimonial.isFeatured === true}
+                                                            onChange={(e) => handleToggleFeaturedTestimonial(testimonial.testimonialId, e.target.checked ? false : true)}
                                                             style={{
                                                               marginTop: '0.25rem',
                                                               width: '18px',
                                                               height: '18px',
                                                               accentColor: '#3b82f6',
                                                               cursor: 'pointer',
-                                                              flexShrink: 0
+                                                              flexShrink: 0,
+                                                              pointerEvents: 'auto'
                                                             }}
                                                           />
                                                           <div style={{ flex: 1, minWidth: 0 }}>

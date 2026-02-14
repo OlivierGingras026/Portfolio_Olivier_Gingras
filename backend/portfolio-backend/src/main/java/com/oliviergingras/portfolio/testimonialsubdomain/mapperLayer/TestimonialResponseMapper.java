@@ -23,6 +23,7 @@ public class TestimonialResponseMapper {
         model.titleFr = entity.getTitleFr();
         model.companyFr = entity.getCompanyFr();
         model.messageFr = entity.getMessageFr();
+        model.isFeatured = entity.getIsFeatured();
         return model;
     }
 }

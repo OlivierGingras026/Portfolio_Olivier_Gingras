@@ -9,6 +9,7 @@ public class TestimonialRequestModel {
     public Integer rating;
     public String message;
     public String messageFr;
+    public Boolean isFeatured;
 
     // Validation constants
     public static final int MAX_MESSAGE_CHARACTERS = 1000;
@@ -40,4 +41,7 @@ public class TestimonialRequestModel {
 
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
+
+    public Boolean getIsFeatured() { return isFeatured; }
+    public void setIsFeatured(Boolean isFeatured) { this.isFeatured = isFeatured; }
 }

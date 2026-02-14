@@ -49,7 +49,51 @@ export const TestimonialsSection = () => {
     setTimeout(() => setAutoPlayActive(true), 10000);
   };
 
-  if (testimonials.length === 0) return null;
+  if (testimonials.length === 0) {
+    return (
+      <section id="testimonials" className="testimonials-section">
+        <div className="testimonials-container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            className="testimonials-header"
+          >
+            <h2 className="testimonials-title">{t('testimonialsubdomain.sectionTitleMain')} <span className="testimonials-title-highlight">{t('testimonialsubdomain.sectionTitleHighlight')}</span></h2>
+            <p className="testimonials-subtitle">{t('testimonialsubdomain.subtitle')}</p>
+          </motion.div>
+
+          <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#cbd5e1' }}>
+            <p style={{ fontSize: '1.125rem', marginBottom: '2rem' }}>{t('testimonialsubdomain.noTestimonials')}</p>
+          </div>
+
+          <div className="testimonials-cta">
+            <button 
+              onClick={() => {
+                document.body.style.overflow = 'hidden';
+                setShowSubmitForm(true);
+              }}
+              className="submit-testimonial-btn"
+            >
+              {t('testimonialsubdomain.shareYourFeedback')}
+            </button>
+          </div>
+        </div>
+
+        {showSubmitForm && (
+          <TestimonialSubmitForm 
+            onClose={() => {
+              document.body.style.overflow = 'auto';
+              setShowSubmitForm(false);
+            }}
+            onSuccess={() => {
+              refetch();
+            }}
+          />
+        )}
+      </section>
+    );
+  }
 
   const current = testimonials[currentIndex];
 

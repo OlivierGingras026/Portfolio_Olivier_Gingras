@@ -54,6 +54,14 @@ public class TestimonialController {
         testimonialService.rejectTestimonial(testimonialId);
     }
 
+    @PatchMapping("/{testimonialId}")
+    public void updateTestimonial(
+        @PathVariable String testimonialId,
+        @RequestBody TestimonialRequestModel request
+    ) {
+        testimonialService.updateTestimonial(testimonialId, request);
+    }
+
     @DeleteMapping("/{testimonialId}")
     public void deleteTestimonial(@PathVariable String testimonialId) {
         testimonialService.deleteTestimonial(testimonialId);

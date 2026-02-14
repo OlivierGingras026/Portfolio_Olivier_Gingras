@@ -11,5 +11,6 @@ public interface TestimonialService {
     List<TestimonialResponseModel> getPendingTestimonials();
     void approveTestimonial(String testimonialId);
     void rejectTestimonial(String testimonialId);
+    void updateTestimonial(String testimonialId, TestimonialRequestModel request);
     void deleteTestimonial(String testimonialId);
 }
