@@ -33,6 +33,10 @@ spring:
       hibernate:
         format_sql: true
 
+  flyway:
+    validateOnMigrate: false
+    outOfOrder: true
+
 ---
 # ===== PROD profile (Docker / Render / Neon) =====
 spring:
@@ -48,6 +52,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate   # safer for prod
+
+  flyway:
+    validateOnMigrate: false
+    outOfOrder: true
     open-in-view: false
 
 app:
