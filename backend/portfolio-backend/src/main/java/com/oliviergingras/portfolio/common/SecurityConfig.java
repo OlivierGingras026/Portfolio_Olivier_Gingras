@@ -75,7 +75,9 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
                 "http://localhost:3000",
-                "https://portfolio-frontend-8pdc.onrender.com"
+                "https://portfolio-frontend-8pdc.onrender.com",
+                "https://oliviergingrasportfolio.live",
+                "https://www.oliviergingrasportfolio.live"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
