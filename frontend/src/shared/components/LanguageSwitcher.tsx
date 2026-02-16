@@ -14,6 +14,8 @@ export function LanguageSwitcher() {
     localStorage.setItem('i18nextLng', newLang);
   };
 
+  const nextLang = currentLang === 'en' ? 'fr' : 'en';
+
   return (
     <button
       onClick={toggleLanguage}
@@ -23,7 +25,7 @@ export function LanguageSwitcher() {
     >
       <Globe size={18} />
       <span className="language-code">
-        {currentLang.toUpperCase()}
+        {nextLang.toUpperCase()}
       </span>
     </button>
   );

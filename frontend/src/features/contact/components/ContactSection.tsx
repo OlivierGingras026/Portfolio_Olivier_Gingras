@@ -105,6 +105,12 @@ export const ContactSection = () => {
     }));
   };
 
+  const handleEmailClick = () => {
+    if (profileData?.email) {
+      window.location.href = `mailto:${profileData.email}`;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -192,6 +198,8 @@ export const ContactSection = () => {
             <motion.div
               whileHover={{ y: -4 }}
               className="contact-card"
+              onClick={handleEmailClick}
+              style={{ cursor: 'pointer' }}
             >
               <div className="contact-card-icon">
                 <Mail size={20} />
