@@ -4,5 +4,5 @@
 
 UPDATE admins
 SET password = '$2a$10$dXJ3SW6G7P50eS3lUZtVO.cF0FGxGX7w5PoY2J6xYGcV7iUWlDvxu'
-WHERE email = 'admin@portfolio.com';
+WHERE email = 'OG@Admin';
 
