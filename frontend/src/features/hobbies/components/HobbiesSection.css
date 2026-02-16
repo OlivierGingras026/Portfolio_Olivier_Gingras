@@ -33,7 +33,10 @@
 .hobby-card {
   position: relative;
   padding: 40px;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: local;
   border: 1px solid rgba(59, 130, 246, 0.15);
   border-radius: 20px;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -42,11 +45,33 @@
   flex-direction: column;
   justify-content: center;
   backdrop-filter: blur(10px);
+  will-change: box-shadow, border-color;
+  contain: layout style paint;
   min-height: 250px; /* Ensure uniform height */
 }
 
-/* Decorative Border matching .education-item::before */
+/* Background overlay layer */
 .hobby-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.3) 0%, rgba(10, 15, 30, 0.4) 100%);
+  backdrop-filter: blur(0px);
+  transition: backdrop-filter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 1;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hobby-card:hover::before {
+  backdrop-filter: blur(8px);
+}
+
+/* Decorative accent border on hover */
+.hobby-card::after { 
   content: '';
   position: absolute;
   top: 0;
@@ -54,40 +79,18 @@
   width: 4px;
   height: 100%;
   background: linear-gradient(180deg, #3b82f6 0%, #a855f7 100%);
-  opacity: 0.6;
-  transition: all 0.3s ease;
+  opacity: 0;
+  transition: opacity 0.4s ease;
   z-index: 2;
 }
 
-.hobby-card:hover::before {
-  width: 6px;
-  opacity: 1;
-}
-
-/* Badge Watermark matching .education-item::after */
-.hobby-card::after { 
-  content: '';
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 100px;
-  height: 100px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-  transition: transform 0.5s ease;
-  z-index: 0;
+.hobby-card:hover::after {
+  opacity: 0.8;
 }
 
 .hobby-card:hover {
-  transform: translateY(-8px);
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
   border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-}
-
-.hobby-card:hover::after {
-  transform: scale(1.5);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 .hobby-name {
@@ -97,17 +100,31 @@
   margin-bottom: 20px;
   letter-spacing: -0.5px;
   position: relative;
-  z-index: 1;
+  z-index: 3;
   text-align: center;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 0, 0, 0.4);
+  opacity: 1;
+  transition: text-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hobby-card:hover .hobby-name {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.6);
 }
 
 .hobby-description {
   font-size: 15px;
-  color: #94a3b8;
+  color: #e2e8f0;
   line-height: 1.6;
   position: relative;
-  z-index: 1;
+  z-index: 3;
   text-align: center;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 0, 0, 0.4);
+  opacity: 1;
+  transition: text-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hobby-card:hover .hobby-description {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.6);
 }
 
 @media (max-width: 768px) {

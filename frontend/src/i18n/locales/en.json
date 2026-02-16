@@ -22,6 +22,7 @@
   "auth": {
     "adminAccess": "Admin Access",
     "managePortfolio": "Manage your portfolio with secure authentication",
+    "username": "Username",
     "emailAddress": "Email Address",
     "password": "Password",
     "login": "Login",

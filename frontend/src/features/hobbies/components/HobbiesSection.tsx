@@ -1,6 +1,7 @@
 import { usePortfolioData } from '../../../shared/context/usePortfolioData';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 import './HobbiesSection.css';
 import type { Hobby } from '../types';
 
@@ -12,6 +13,16 @@ export const HobbiesSection = () => {
   const hobbies = (data?.hobbies || [])
     .filter(h => !['efef', 'scscs'].includes(h.title))
     .slice(0, 3) as Hobby[];
+
+  // Preload images for better caching and performance
+  useEffect(() => {
+    hobbies.forEach(hobby => {
+      if (hobby.imageUrl) {
+        const img = new Image();
+        img.src = hobby.imageUrl;
+      }
+    });
+  }, [hobbies]);
 
   const getHobbyTitle = (hobby: Hobby): string => {
     return i18n.language === 'fr' ? (hobby.titleFr || hobby.title) : hobby.title;
@@ -42,6 +53,11 @@ export const HobbiesSection = () => {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               className="hobby-card"
+              style={{
+                backgroundImage: hobby.imageUrl ? `url(${hobby.imageUrl})` : 'none',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
             >
               <h3 className="hobby-name">{getHobbyTitle(hobby)}</h3>
               <p className="hobby-description">{getHobbyDescription(hobby)}</p>
