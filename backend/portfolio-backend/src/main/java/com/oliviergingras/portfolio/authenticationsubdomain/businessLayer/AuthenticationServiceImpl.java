@@ -1,11 +1,7 @@
 package com.oliviergingras.portfolio.authenticationsubdomain.businessLayer;
 
-
-import com.oliviergingras.portfolio.authenticationsubdomain.dataAccessLayer.Admin;
-import com.oliviergingras.portfolio.authenticationsubdomain.dataAccessLayer.AdminRepository;
 import com.oliviergingras.portfolio.authenticationsubdomain.presentationLayer.AdminLoginRequest;
 import com.oliviergingras.portfolio.authenticationsubdomain.presentationLayer.AdminLoginResponse;
-import com.oliviergingras.portfolio.common.NotFoundException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -13,55 +9,51 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
 @Service
-@Transactional
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final AdminRepository adminRepository;
-    private final PasswordEncoder passwordEncoder;
     private final String jwtSecret;
     private final long jwtExpirationMs;
     private final long refreshTokenExpirationMs;
+    private final String adminEmail;
+    private final String adminPasswordHash;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationServiceImpl(AdminRepository adminRepository,
-                                    PasswordEncoder passwordEncoder,
-                                    @Value("${app.jwt.secret}") String jwtSecret,
-                                    @Value("${app.jwt.expiration-ms:900000}") long jwtExpirationMs,
-                                    @Value("${app.jwt.refresh-expiration-ms:604800000}") long refreshTokenExpirationMs) {
-        this.adminRepository = adminRepository;
-        this.passwordEncoder = passwordEncoder;
+    public AuthenticationServiceImpl(@Value("${app.jwt.secret}") String jwtSecret,
+                                    @Value("${app.jwt.expiration-ms}") long jwtExpirationMs,
+                                    @Value("${app.jwt.refresh-expiration-ms}") long refreshTokenExpirationMs,
+                                    @Value("${app.admin.email}") String adminEmail,
+                                    @Value("${app.admin.password}") String adminPassword,
+                                    PasswordEncoder passwordEncoder) {
         this.jwtSecret = jwtSecret;
         this.jwtExpirationMs = jwtExpirationMs;
         this.refreshTokenExpirationMs = refreshTokenExpirationMs;
+        this.adminEmail = adminEmail;
+        this.passwordEncoder = passwordEncoder;
+        // Hash the admin password once on initialization
+        this.adminPasswordHash = passwordEncoder.encode(adminPassword);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public AdminLoginResponse login(AdminLoginRequest request) {
-        Admin admin = adminRepository.findAdminByEmail(request.getEmail())
-                .orElseThrow(() -> new NotFoundException("Admin not found: " + request.getEmail()));
-
-        if (!admin.getIsActive()) {
-            throw new IllegalStateException("Admin account is inactive");
-        }
-
-        if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
+        // Validate email and password using BCrypt for secure comparison
+        if (!request.getEmail().equals(adminEmail) || !passwordEncoder.matches(request.getPassword(), adminPasswordHash)) {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
-        String token = generateToken(admin);
-        String refreshToken = generateRefreshToken(admin);
+        // Generate JWT tokens
+        String token = generateToken(request.getEmail());
+        String refreshToken = generateRefreshToken(request.getEmail());
 
         return AdminLoginResponse.builder()
                 .token(token)
                 .refreshToken(refreshToken)
-                .adminId(admin.getAdminIdentifier().getAdminId())
-                .email(admin.getEmail())
-                .fullName(admin.getFullName())
+                .adminId("admin-01")
+                .email(request.getEmail())
+                .fullName("Portfolio Admin")
                 .expiresIn(jwtExpirationMs / 1000)
                 .build();
     }
@@ -71,7 +63,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public AdminLoginResponse refreshToken(String refreshToken) {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
@@ -87,19 +78,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 throw new IllegalArgumentException("Invalid token type");
             }
 
-            String adminId = claims.getSubject();
-            Admin admin = adminRepository.findById(Integer.parseInt(adminId))
-                    .orElseThrow(() -> new NotFoundException("Admin not found: " + adminId));
-
-            String newAccessToken = generateToken(admin);
-            String newRefreshToken = generateRefreshToken(admin);
+            String email = claims.getSubject();
+            String newAccessToken = generateToken(email);
+            String newRefreshToken = generateRefreshToken(email);
 
             return AdminLoginResponse.builder()
                     .token(newAccessToken)
                     .refreshToken(newRefreshToken)
-                    .adminId(admin.getAdminIdentifier().getAdminId())
-                    .email(admin.getEmail())
-                    .fullName(admin.getFullName())
+                    .adminId("admin-01")
+                    .email(email)
+                    .fullName("Portfolio Admin")
                     .expiresIn(jwtExpirationMs / 1000)
                     .build();
         } catch (Exception e) {
@@ -108,7 +96,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean verifyToken(String token) {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
@@ -123,7 +110,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public String extractAdminIdFromToken(String token) {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
@@ -139,15 +125,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private String generateToken(Admin admin) {
+    private String generateToken(String email) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
         return Jwts.builder()
-                .subject(admin.getAdminIdentifier().getAdminId())
-                .claim("email", admin.getEmail())
-                .claim("fullName", admin.getFullName())
+                .subject(email)
+                .claim("email", email)
+                .claim("fullName", "Portfolio Admin")
                 .claim("type", "access")
                 .issuedAt(now)
                 .expiration(expiryDate)
@@ -155,13 +141,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .compact();
     }
 
-    private String generateRefreshToken(Admin admin) {
+    private String generateRefreshToken(String email) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpirationMs);
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
         return Jwts.builder()
-                .subject(admin.getAdminIdentifier().getAdminId())
+                .subject(email)
                 .claim("type", "refresh")
                 .issuedAt(now)
                 .expiration(expiryDate)

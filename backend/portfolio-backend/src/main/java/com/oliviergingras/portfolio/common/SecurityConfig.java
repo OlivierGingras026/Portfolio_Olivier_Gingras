@@ -32,7 +32,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
-                // Add JWT filter BEFORE BasicAuthenticationFilter to ensure it runs early
                 .addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -47,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/testimonials/submit").permitAll()
                         .requestMatchers("/api/v1/testimonials/approved").permitAll()
                         .requestMatchers("/api/admin/auth/login").permitAll()
+                        .requestMatchers("/api/admin/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // All other admin endpoints require authentication
