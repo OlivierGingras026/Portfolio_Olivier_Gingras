@@ -30,4 +30,10 @@ i18n
     },
   });
 
+// Set language to just language code (en, fr) not full locale (en-US, fr-CA)
+const currentLang = i18n.language?.split('-')[0];
+if (currentLang && currentLang !== i18n.language) {
+  i18n.changeLanguage(currentLang);
+}
+
 export default i18n;

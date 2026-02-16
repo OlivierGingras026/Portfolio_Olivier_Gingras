@@ -4,9 +4,12 @@ import './LanguageSwitcher.css';
 
 export function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
+  
+  // Normalize language to just language code (en, fr) not full locale (en-US)
+  const currentLang = i18n.language?.split('-')[0] || 'en';
 
   const toggleLanguage = () => {
-    const newLang = i18n.language === 'en' ? 'fr' : 'en';
+    const newLang = currentLang === 'en' ? 'fr' : 'en';
     i18n.changeLanguage(newLang);
     localStorage.setItem('i18nextLng', newLang);
   };
@@ -20,7 +23,7 @@ export function LanguageSwitcher() {
     >
       <Globe size={18} />
       <span className="language-code">
-        {i18n.language.toUpperCase()}
+        {currentLang.toUpperCase()}
       </span>
     </button>
   );
