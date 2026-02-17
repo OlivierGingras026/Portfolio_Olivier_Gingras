@@ -1,5 +1,12 @@
 import axiosInstance from "../../../shared/api/axiosInstance";
 
+export interface RateLimitStatus {
+  currentCount: number;
+  maxLimit: number;
+  secondsUntilReset: number;
+  isLimited: boolean;
+}
+
 export interface Testimonial {
   testimonialId: string;
   name: string;
@@ -26,6 +33,11 @@ export interface TestimonialRequest {
 export const testimonialAPI = {
   submitTestimonial: async (data: TestimonialRequest): Promise<Testimonial> => {
     const response = await axiosInstance.post('/api/v1/testimonials/submit', data);
+    return response.data;
+  },
+
+  getRateLimitStatus: async (): Promise<RateLimitStatus> => {
+    const response = await axiosInstance.get('/api/v1/testimonials/rate-limit');
     return response.data;
   },
 

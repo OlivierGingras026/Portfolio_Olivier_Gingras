@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { usePortfolioData } from '../../../shared/context/usePortfolioData';
 import type { Testimonial } from '../api/testimonialAPI';
+import { testimonialAPI } from '../api/testimonialAPI';
 import { TestimonialSubmitForm } from './TestimonialSubmitForm';
 import './TestimonialsSection.css';
 
@@ -36,6 +37,20 @@ export const TestimonialsSection = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, [testimonials.length, autoPlayActive]);
+
+  // Fetch rate limit status when form opens
+  useEffect(() => {
+    if (!showSubmitForm) return;
+    const fetchRateLimit = async () => {
+      try {
+        await testimonialAPI.getRateLimitStatus();
+        // Just fetch to verify status, the form will handle display
+      } catch (err) {
+        console.error('Failed to fetch rate limit status:', err);
+      }
+    };
+    fetchRateLimit();
+  }, [showSubmitForm]);
 
   const handlePrev = () => {
     setAutoPlayActive(false);

@@ -138,7 +138,11 @@
     "availableForWork": "Available for work",
     "workDescription": "Currently accepting new projects. Typical response time: < 24 hours.",
     "getInTouch": "Get in touch",
-    "tellMeAboutProject": "Tell me about your project..."
+    "tellMeAboutProject": "Tell me about your project...",
+    "maxRequestsObtained": "Max Requests Obtained",
+    "resetsIn": "Resets in",
+    "dailyLimit": "Daily Limit Reached",
+    "tooManyRequests": "Too many requests for today"
   },
   "navigation": {
     "home": "Home",

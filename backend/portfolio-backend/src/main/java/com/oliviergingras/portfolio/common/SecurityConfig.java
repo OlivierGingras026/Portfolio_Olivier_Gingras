@@ -42,12 +42,14 @@ public class SecurityConfig {
                         // Contact form - public endpoint
                         .requestMatchers(HttpMethod.POST, "/api/v1/contact/send").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/contact").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/contact/rate-limit").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/reachme").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/cv").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/cv/download/**").permitAll()
                         // Testimonials - public submission
                         .requestMatchers(HttpMethod.POST, "/api/v1/testimonials/submit").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/testimonials/approved").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/testimonials/rate-limit").permitAll()
                         // Auth endpoints
                         .requestMatchers("/api/admin/auth/login").permitAll()
                         .requestMatchers("/api/admin/auth/refresh").permitAll()

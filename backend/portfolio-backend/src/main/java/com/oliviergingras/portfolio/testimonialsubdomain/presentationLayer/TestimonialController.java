@@ -1,32 +1,65 @@
 package com.oliviergingras.portfolio.testimonialsubdomain.presentationLayer;
 
 import com.oliviergingras.portfolio.testimonialsubdomain.businessLayer.TestimonialService;
-import com.oliviergingras.portfolio.common.IpAddressExtractor;
-import jakarta.servlet.http.HttpServletRequest;
+import com.oliviergingras.portfolio.common.RateLimitService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/testimonials")
 public class TestimonialController {
     private final TestimonialService testimonialService;
-    private final IpAddressExtractor ipAddressExtractor;
+    private final RateLimitService rateLimitService;
 
     public TestimonialController(
         TestimonialService testimonialService,
-        IpAddressExtractor ipAddressExtractor
+        RateLimitService rateLimitService
     ) {
         this.testimonialService = testimonialService;
-        this.ipAddressExtractor = ipAddressExtractor;
+        this.rateLimitService = rateLimitService;
     }
 
     @PostMapping("/submit")
-    public TestimonialResponseModel submitTestimonial(
-        @RequestBody TestimonialRequestModel request,
-        HttpServletRequest httpRequest
+    public ResponseEntity<?> submitTestimonial(
+        @RequestBody TestimonialRequestModel request
     ) {
-        String clientIp = ipAddressExtractor.extractClientIp(httpRequest);
-        return testimonialService.submitTestimonial(request, clientIp);
+        try {
+            // Check if testimonial submission is rate limited
+            if (rateLimitService.isTestimonialLimited()) {
+                long secondsRemaining = rateLimitService.getTestimonialSecondsRemaining();
+                return ResponseEntity.status(429).body(
+                    Map.of(
+                        "error", "Rate limit exceeded",
+                        "currentCount", rateLimitService.getTestimonialCount(),
+                        "maxLimit", 100,
+                        "secondsUntilReset", secondsRemaining,
+                        "isLimited", true
+                    )
+                );
+            }
+            
+            TestimonialResponseModel response = testimonialService.submitTestimonial(request);
+            
+            // Increment counter after successful submission
+            rateLimitService.incrementTestimonialCount();
+            
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to submit testimonial: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/rate-limit")
+    public ResponseEntity<Map<String, Object>> getRateLimit() {
+        return ResponseEntity.ok(Map.of(
+            "currentCount", rateLimitService.getTestimonialCount(),
+            "maxLimit", 100,
+            "secondsUntilReset", rateLimitService.getTestimonialSecondsRemaining(),
+            "isLimited", rateLimitService.isTestimonialLimited()
+        ));
     }
 
     @GetMapping("/approved")

@@ -1,12 +1,13 @@
 package com.oliviergingras.portfolio.contactsubdomain.presentationLayer;
 
 import com.oliviergingras.portfolio.contactsubdomain.businessLayer.ContactMessageService;
-import com.oliviergingras.portfolio.common.IpAddressExtractor;
+import com.oliviergingras.portfolio.common.RateLimitService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/contact")
@@ -14,24 +15,57 @@ import java.util.List;
 public class ContactMessageController {
     
     private final ContactMessageService contactMessageService;
-    private final IpAddressExtractor ipAddressExtractor;
+    private final RateLimitService rateLimitService;
     
     public ContactMessageController(
         ContactMessageService contactMessageService,
-        IpAddressExtractor ipAddressExtractor
+        RateLimitService rateLimitService
     ) {
         this.contactMessageService = contactMessageService;
-        this.ipAddressExtractor = ipAddressExtractor;
+        this.rateLimitService = rateLimitService;
     }
     
     @PostMapping("/send")
-    public ResponseEntity<ContactMessageResponseModel> sendMessage(
-        @RequestBody ContactMessageRequestModel requestModel,
-        HttpServletRequest request
+    public ResponseEntity<?> sendMessage(
+        @RequestBody ContactMessageRequestModel requestModel
     ) {
-        String clientIp = ipAddressExtractor.extractClientIp(request);
-        ContactMessageResponseModel response = contactMessageService.sendMessage(requestModel, clientIp);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        // Check rate limit
+        if (rateLimitService.isContactLimited()) {
+            long secondsRemaining = rateLimitService.getContactSecondsRemaining();
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(Map.of(
+                    "error", "Rate limit exceeded. Please try again in " + secondsRemaining + " seconds.",
+                    "secondsRemaining", secondsRemaining
+                ));
+        }
+        
+        try {
+            // Send message
+            ContactMessageResponseModel response = contactMessageService.sendMessage(requestModel);
+            
+            // Increment counter after successful send
+            rateLimitService.incrementContactCount();
+            
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/rate-limit")
+    public ResponseEntity<Map<String, Object>> getRateLimit() {
+        int currentCount = rateLimitService.getContactCount();
+        int maxLimit = 20;
+        long secondsRemaining = rateLimitService.getContactSecondsRemaining();
+        boolean isLimited = rateLimitService.isContactLimited();
+        
+        return ResponseEntity.ok(Map.of(
+            "currentCount", currentCount,
+            "maxLimit", maxLimit,
+            "secondsUntilReset", secondsRemaining,
+            "isLimited", isLimited
+        ));
     }
     
     @GetMapping

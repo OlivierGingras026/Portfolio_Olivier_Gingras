@@ -1,5 +1,11 @@
 import axiosInstance from "../../../shared/api/axiosInstance";
 
+export interface RateLimitStatus {
+  currentCount: number;
+  maxLimit: number;
+  secondsUntilReset: number;
+  isLimited: boolean;
+}
 
 export interface ContactMessage {
   messageId: string;
@@ -28,6 +34,12 @@ export const contactAPI = {
   // Submit contact message
   sendMessage: async (data: ContactMessageRequest): Promise<ContactMessage> => {
     const response = await axiosInstance.post('/api/v1/contact/send', data);
+    return response.data;
+  },
+
+  // Get rate limit status
+  getRateLimitStatus: async (): Promise<RateLimitStatus> => {
+    const response = await axiosInstance.get('/api/v1/contact/rate-limit');
     return response.data;
   },
 

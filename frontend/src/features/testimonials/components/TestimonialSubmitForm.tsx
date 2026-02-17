@@ -13,19 +13,6 @@ interface TestimonialSubmitFormProps {
 export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitFormProps) => {
   const { t, i18n } = useTranslation();
   const MAX_CHARACTERS = 1000;
-  const STORAGE_KEY = 'testimonial_rate_limit_expiry';
-  
-  // Initialize retryAfterSeconds from localStorage
-  const initializeRetryTime = () => {
-    const expiry = localStorage.getItem(STORAGE_KEY);
-    if (expiry) {
-      const expiryTime = parseInt(expiry);
-      const now = Date.now();
-      const remaining = Math.ceil((expiryTime - now) / 1000);
-      return remaining > 0 ? remaining : 0;
-    }
-    return 0;
-  };
   
   const [formData, setFormData] = useState<TestimonialRequest>({
     name: '',
@@ -38,7 +25,9 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
   const [success, setSuccess] = useState(false);
   const [errorType, setErrorType] = useState<string | null>(null);
   const [charCount, setCharCount] = useState(0);
-  const [retryAfterSeconds, setRetryAfterSeconds] = useState<number>(initializeRetryTime);
+  const [retryAfterSeconds, setRetryAfterSeconds] = useState<number>(0);
+  const [rateLimitError, setRateLimitError] = useState(false);
+  const [rateLimitFetched, setRateLimitFetched] = useState(false);
 
   // Compute the displayed error message based on error type and current language
   const displayError = useMemo(() => {
@@ -57,30 +46,40 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
     };
   }, []);
 
-  // Countdown timer for rate limit
+  // Fetch rate limit status on mount
   useEffect(() => {
-    if (retryAfterSeconds <= 0) {
-      localStorage.removeItem(STORAGE_KEY);
-      return;
-    }
+    const fetchRateLimit = async () => {
+      try {
+        const status = await testimonialAPI.getRateLimitStatus();
+        if (status.isLimited) {
+          setRateLimitError(true);
+          setRetryAfterSeconds(status.secondsUntilReset);
+        }
+      } catch (err) {
+        console.error('Failed to fetch rate limit status:', err);
+      } finally {
+        setRateLimitFetched(true);
+      }
+    };
+    fetchRateLimit();
+  }, []);
+
+  // Countdown timer for rate limit - stable version
+  useEffect(() => {
+    if (!rateLimitError) return;
 
     const timer = setInterval(() => {
-      setRetryAfterSeconds((prev) => {
-        const newValue = prev - 1;
-        if (newValue <= 0) {
-          clearInterval(timer);
-          localStorage.removeItem(STORAGE_KEY);
-          return 0;
+      setRetryAfterSeconds(prev => {
+        const newValue = Math.max(0, prev - 1);
+        if (newValue === 0) {
+          setRateLimitError(false);
         }
-        // Update localStorage with new expiry time
-        const newExpiry = Date.now() + newValue * 1000;
-        localStorage.setItem(STORAGE_KEY, newExpiry.toString());
         return newValue;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [retryAfterSeconds, STORAGE_KEY]);
+  }, [rateLimitError]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -163,24 +162,26 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
         onClose?.();
       }, 2000);
     } catch (err: unknown) {
-      let errorKey = 'Failed to submit testimonial';
-      let retryAfter = 0;
-      
       if (err instanceof APIError) {
-        if (err.message === 'rate_limit_error') {
-          errorKey = 'rate_limit_error';
-          retryAfter = err.retryAfterSeconds || 0;
-          setRetryAfterSeconds(retryAfter);
-          // Save expiry time to localStorage
-          const expiryTime = Date.now() + retryAfter * 1000;
-          localStorage.setItem(STORAGE_KEY, expiryTime.toString());
+        if (err.statusCode === 429) {
+          setRateLimitError(true);
+          // Fetch the actual remaining time from backend instead of using error default
+          try {
+            const status = await testimonialAPI.getRateLimitStatus();
+            setRetryAfterSeconds(status.secondsUntilReset);
+          } catch (statusErr) {
+            // Fallback to error's value if fetch fails
+            setRetryAfterSeconds(err.retryAfterSeconds || 60);
+          }
+          setErrorType(null);
         } else {
-          errorKey = err.message;
+          setErrorType(err.message);
+          setRateLimitError(false);
         }
       } else if (err instanceof Error) {
-        errorKey = err.message;
+        setErrorType(err.message);
+        setRateLimitError(false);
       }
-      setErrorType(errorKey);
     } finally {
       setLoading(false);
     }
@@ -202,16 +203,17 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
+            {rateLimitError && (
+              <div className="error-message" style={{ backgroundColor: '#7f1d1d', borderColor: '#dc2626' }}>
+                <div>{i18n.language === 'fr' ? 'Limite atteinte: 100 témoignages par 12 heures' : 'Limit reached: 100 testimonials per 12 hours'}</div>
+                <div style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>
+                  {i18n.language === 'fr' ? 'Réessayez dans' : 'Try again in'} {retryAfterSeconds}s
+                </div>
+              </div>
+            )}
             {displayError && (
               <div className="error-message">
                 <div>{displayError}</div>
-                {errorType === 'rate_limit_error' && (
-                  <div style={{ marginTop: '0.5rem', fontSize: '0.85rem', opacity: 0.9 }}>
-                    {i18n.language === 'fr' 
-                      ? `Réessayez dans ${retryAfterSeconds || 1200}s` 
-                      : `Try again in ${retryAfterSeconds || 1200}s`}
-                  </div>
-                )}
               </div>
             )}
 
@@ -304,8 +306,12 @@ export const TestimonialSubmitForm = ({ onSuccess, onClose }: TestimonialSubmitF
             </div>
 
             <div className="form-actions">
-              <button type="submit" disabled={loading || retryAfterSeconds > 0} className="submit-btn">
-                {loading ? t('testimonialsubdomain.submitting') || 'Submitting...' : retryAfterSeconds > 0 ? (
+              <button type="submit" disabled={loading || retryAfterSeconds > 0 || rateLimitError || !rateLimitFetched} className="submit-btn">
+                {!rateLimitFetched ? (
+                  i18n.language === 'fr' ? 'Vérification...' : 'Checking...'
+                ) : loading ? (
+                  t('testimonialsubdomain.submitting') || 'Submitting...'
+                ) : retryAfterSeconds > 0 ? (
                   <>
                     {i18n.language === 'fr' ? 'Réessayez dans' : 'Try again in'} {retryAfterSeconds}s
                   </>

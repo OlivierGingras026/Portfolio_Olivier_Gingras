@@ -1,8 +1,6 @@
 package com.oliviergingras.portfolio.contactsubdomain.businessLayer;
 
 import com.oliviergingras.portfolio.common.EmailService;
-import com.oliviergingras.portfolio.common.DailyContactLimitService;
-import com.oliviergingras.portfolio.contactsubdomain.dataAccessLayer.ContactMessage;
 import com.oliviergingras.portfolio.contactsubdomain.presentationLayer.ContactMessageRequestModel;
 import com.oliviergingras.portfolio.contactsubdomain.presentationLayer.ContactMessageResponseModel;
 import org.springframework.stereotype.Service;
@@ -12,21 +10,13 @@ import java.util.List;
 public class ContactMessageServiceImpl implements ContactMessageService {
     
     private final EmailService emailService;
-    private final DailyContactLimitService dailyLimitService;
     
-    public ContactMessageServiceImpl(EmailService emailService, DailyContactLimitService dailyLimitService) {
+    public ContactMessageServiceImpl(EmailService emailService) {
         this.emailService = emailService;
-        this.dailyLimitService = dailyLimitService;
     }
     
     @Override
-    public ContactMessageResponseModel sendMessage(ContactMessageRequestModel requestModel, String clientIp) {
-        // Check daily limit (max 20 messages per day)
-        if (dailyLimitService.isDailyLimitExceeded()) {
-            int currentCount = dailyLimitService.getTodayCount();
-            throw new RuntimeException("Daily contact message limit (20) has been reached. Current count: " + currentCount + ". Please try again tomorrow.");
-        }
-        
+    public ContactMessageResponseModel sendMessage(ContactMessageRequestModel requestModel) {
         // Sanitize inputs
         String sanitizedName = sanitizeInput(requestModel.getName());
         String sanitizedEmail = sanitizeInput(requestModel.getEmail());
@@ -37,9 +27,6 @@ public class ContactMessageServiceImpl implements ContactMessageService {
         
         // Send email directly to admin's Gmail inbox
         emailService.sendContactMessage(sanitizedName, sanitizedEmail, sanitizedMessage);
-        
-        // Increment daily counter
-        dailyLimitService.incrementDailyCount();
         
         // Return a simple response confirming the message was sent (not stored)
         ContactMessageResponseModel response = new ContactMessageResponseModel();

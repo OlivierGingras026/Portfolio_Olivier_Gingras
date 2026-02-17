@@ -1,6 +1,5 @@
 package com.oliviergingras.portfolio.testimonialsubdomain.businessLayer;
 
-import com.oliviergingras.portfolio.common.DailyTestimonialCountService;
 import com.oliviergingras.portfolio.testimonialsubdomain.dataAccessLayer.Testimonial;
 import com.oliviergingras.portfolio.testimonialsubdomain.dataAccessLayer.TestimonialRepository;
 import com.oliviergingras.portfolio.testimonialsubdomain.mapperLayer.TestimonialRequestMapper;
@@ -16,28 +15,19 @@ public class TestimonialServiceImpl implements TestimonialService {
     private final TestimonialRepository testimonialRepository;
     private final TestimonialRequestMapper requestMapper;
     private final TestimonialResponseMapper responseMapper;
-    private final DailyTestimonialCountService dailyCountService;
 
     public TestimonialServiceImpl(
         TestimonialRepository testimonialRepository,
         TestimonialRequestMapper requestMapper,
-        TestimonialResponseMapper responseMapper,
-        DailyTestimonialCountService dailyCountService
+        TestimonialResponseMapper responseMapper
     ) {
         this.testimonialRepository = testimonialRepository;
         this.requestMapper = requestMapper;
         this.responseMapper = responseMapper;
-        this.dailyCountService = dailyCountService;
     }
 
     @Override
-    public TestimonialResponseModel submitTestimonial(TestimonialRequestModel request, String clientIp) {
-        // Check daily limit (max 100 testimonials per day)
-        if (dailyCountService.isDailyLimitExceeded()) {
-            int currentCount = dailyCountService.getTodayCount();
-            throw new RuntimeException("Daily testimonial limit (100) has been reached. Current count: " + currentCount + ". Please try again tomorrow.");
-        }
-        
+    public TestimonialResponseModel submitTestimonial(TestimonialRequestModel request) {
         // Input validation and sanitization
         validateTestimonialRequest(request);
         
@@ -49,9 +39,6 @@ public class TestimonialServiceImpl implements TestimonialService {
         
         Testimonial testimonial = requestMapper.toEntity(request);
         Testimonial saved = testimonialRepository.save(testimonial);
-        
-        // Increment daily counter
-        dailyCountService.incrementDailyCount();
         
         return responseMapper.toModel(saved);
     }

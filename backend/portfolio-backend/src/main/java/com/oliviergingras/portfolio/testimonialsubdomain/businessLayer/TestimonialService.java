@@ -5,7 +5,7 @@ import com.oliviergingras.portfolio.testimonialsubdomain.presentationLayer.Testi
 import java.util.List;
 
 public interface TestimonialService {
-    TestimonialResponseModel submitTestimonial(TestimonialRequestModel request, String clientIp);
+    TestimonialResponseModel submitTestimonial(TestimonialRequestModel request);
     List<TestimonialResponseModel> getApprovedTestimonials();
     List<TestimonialResponseModel> getAllTestimonials();
     List<TestimonialResponseModel> getPendingTestimonials();

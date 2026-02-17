@@ -56,13 +56,17 @@ export function handleAPIError(error: unknown): APIError {
   // Handle 429 Too Many Requests
   if (statusCode === 429) {
     let retryAfterSeconds = 0;
-    // Try to get retry-after from response body
+    let rateLimitMessage = 'Too many requests. Please try again later.';
+    
+    // Try to get error details from response body
     if (typeof responseData === 'object' && responseData !== null) {
       const data = responseData as Record<string, unknown>;
       retryAfterSeconds = (data.retryAfterSeconds as number) || 0;
+      // Extract the actual error message which contains count info
+      rateLimitMessage = (data.error as string) || rateLimitMessage;
     }
     return new APIError(
-      'rate_limit_error',
+      rateLimitMessage,
       429,
       'Too many requests',
       retryAfterSeconds

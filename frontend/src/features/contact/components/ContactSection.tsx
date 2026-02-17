@@ -28,11 +28,12 @@ export const ContactSection = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorType, setErrorType] = useState<string | null>(null);
+  const [rateLimitError, setRateLimitError] = useState(false);
+  const [retryAfterSeconds, setRetryAfterSeconds] = useState(0);
+  const [rateLimitFetched, setRateLimitFetched] = useState(false);
 
   // Compute the displayed error message based on error type and current language
-  const displayError = errorType ? 
-    errorType 
-    : null;
+  const displayError = errorType ? errorType : null;
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -45,6 +46,42 @@ export const ContactSection = () => {
     };
     fetchProfile();
   }, []);
+
+  // Fetch rate limit status on mount
+  useEffect(() => {
+    const fetchRateLimit = async () => {
+      try {
+        const status = await contactAPI.getRateLimitStatus();
+        if (status.isLimited) {
+          setRateLimitError(true);
+          setRetryAfterSeconds(status.secondsUntilReset);
+        }
+      } catch (err) {
+        console.error('Failed to fetch rate limit status:', err);
+      } finally {
+        setRateLimitFetched(true);
+      }
+    };
+    fetchRateLimit();
+  }, []);
+
+  // Countdown timer for rate limit
+  // Countdown timer for rate limit - stable version
+  useEffect(() => {
+    if (!rateLimitError) return;
+
+    const timer = setInterval(() => {
+      setRetryAfterSeconds(prev => {
+        const newValue = Math.max(0, prev - 1);
+        if (newValue === 0) {
+          setRateLimitError(false);
+        }
+        return newValue;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [rateLimitError]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -102,14 +139,26 @@ export const ContactSection = () => {
       setTimeout(() => setIsSubmitted(false), 3000);
     } catch (err: unknown) {
       console.error('Failed to send message:', err);
-      let errorKey = 'Failed to send message. Please try again.';
-      
       if (err instanceof APIError) {
-        errorKey = err.message;
+        if (err.statusCode === 429) {
+          setRateLimitError(true);
+          // Fetch the actual remaining time from backend instead of using error default
+          try {
+            const status = await contactAPI.getRateLimitStatus();
+            setRetryAfterSeconds(status.secondsUntilReset);
+          } catch (statusErr) {
+            // Fallback to error's value if fetch fails
+            setRetryAfterSeconds(err.retryAfterSeconds || 60);
+          }
+          setErrorType(null);
+        } else {
+          setErrorType(err.message);
+          setRateLimitError(false);
+        }
       } else if (err instanceof Error) {
-        errorKey = err.message;
+        setErrorType(err.message);
+        setRateLimitError(false);
       }
-      setErrorType(errorKey);
     } finally {
       setIsLoading(false);
     }
@@ -219,6 +268,14 @@ export const ContactSection = () => {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="contact-form">
+                {rateLimitError && (
+                  <div className="form-error" style={{ backgroundColor: '#7f1d1d', borderColor: '#dc2626' }}>
+                    <div>{i18n.language === 'fr' ? 'Limite atteinte: 20 demandes par 12 heures' : 'Limit reached: 20 requests per 12 hours'}</div>
+                    <div style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>
+                      {i18n.language === 'fr' ? 'Réessayez dans' : 'Try again in'} {retryAfterSeconds}s
+                    </div>
+                  </div>
+                )}
                 {displayError && (
                   <div className="form-error">
                     <div>{displayError}</div>
@@ -303,13 +360,22 @@ export const ContactSection = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || retryAfterSeconds > 0 || rateLimitError || !rateLimitFetched}
                   className="contact-submit"
                 >
-                  {isLoading ? (
+                  {!rateLimitFetched ? (
+                    <>
+                      <span className="spinner"></span>
+                      {i18n.language === 'fr' ? 'Vérification...' : 'Checking...'}
+                    </>
+                  ) : isLoading ? (
                     <>
                       <span className="spinner"></span>
                       {t('contactsubdomain.sending')}
+                    </>
+                  ) : retryAfterSeconds > 0 ? (
+                    <>
+                      {i18n.language === 'fr' ? 'Réessayez dans' : 'Try again in'} {retryAfterSeconds}s
                     </>
                   ) : (
                     <>

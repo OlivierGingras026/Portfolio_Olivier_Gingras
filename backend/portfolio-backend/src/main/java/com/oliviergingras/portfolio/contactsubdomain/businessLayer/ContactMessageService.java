@@ -5,7 +5,7 @@ import com.oliviergingras.portfolio.contactsubdomain.presentationLayer.ContactMe
 import java.util.List;
 
 public interface ContactMessageService {
-    ContactMessageResponseModel sendMessage(ContactMessageRequestModel requestModel, String clientIp);
+    ContactMessageResponseModel sendMessage(ContactMessageRequestModel requestModel);
     List<ContactMessageResponseModel> getAllMessages();
     ContactMessageResponseModel getMessageById(String messageId);
     void deleteMessage(String messageId);

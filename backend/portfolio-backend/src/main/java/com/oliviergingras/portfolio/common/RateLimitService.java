@@ -1,177 +1,197 @@
 package com.oliviergingras.portfolio.common;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Service to handle IP-based rate limiting using in-memory cache with improved thread safety
- * 
- * IMPROVEMENTS:
- * - Thread-safe list operations to prevent race conditions
- * - Synchronized blocks to ensure atomicity of check-then-record operations
- * - Better memory cleanup based on TIME_WINDOW instead of 1 hour
- * - Prevents unbounded list growth for blocked IPs
- * - Uses synchronized list for thread-safe iteration
+ * Rate limiting service with 12-hour rolling windows
+ * Contact: max 20 requests per 12 hours, 1-hour ban on limit
+ * Testimonial: max 100 requests per 12 hours, 1-hour ban on limit
  */
 @Service
 public class RateLimitService {
-
-    private static final int MAX_REQUESTS = 5;
-    private static final long TIME_WINDOW_MINUTES = 20;
-    private static final long CLEANUP_INTERVAL_MS = 600000; // 10 minutes instead of 1 hour
     
-    // Key: IP address, Value: synchronized list of request timestamps
-    private final ConcurrentHashMap<String, List<LocalDateTime>> requestTracker = new ConcurrentHashMap<>();
-
-    /**
-     * Checks if an IP address has exceeded the rate limit
-     * Thread-safe: synchronizes on the IP's request list
-     * 
-     * @param ipAddress the client IP address
-     * @return true if rate limit is exceeded, false otherwise
-     */
-    public boolean isRateLimitExceeded(String ipAddress) {
-        if (!isValidIpAddress(ipAddress)) {
-            return false;
+    // Contact limits
+    private static final int MAX_CONTACT_REQUESTS = 20;
+    private static final long CONTACT_WINDOW_SECONDS = 12 * 60 * 60; // 12 hours
+    private static final long CONTACT_BAN_SECONDS = 60 * 60; // 1 hour
+    
+    // Testimonial limits
+    private static final int MAX_TESTIMONIAL_REQUESTS = 100;
+    private static final long TESTIMONIAL_WINDOW_SECONDS = 12 * 60 * 60; // 12 hours
+    private static final long TESTIMONIAL_BAN_SECONDS = 60 * 60; // 1 hour
+    
+    // Contact limit tracking
+    private AtomicInteger contactCount = new AtomicInteger(0);
+    private AtomicLong contactWindowStart = new AtomicLong(System.currentTimeMillis());
+    private AtomicLong contactLimitHitTime = new AtomicLong(0);
+    
+    // Testimonial limit tracking
+    private AtomicInteger testimonialCount = new AtomicInteger(0);
+    private AtomicLong testimonialWindowStart = new AtomicLong(System.currentTimeMillis());
+    private AtomicLong testimonialLimitHitTime = new AtomicLong(0);
+    
+    // ==================== CONTACT METHODS ====================
+    
+    public void incrementContactCount() {
+        checkAndResetContactWindow();
+        int newCount = contactCount.incrementAndGet();
+        
+        // Record when limit is hit
+        if (newCount == MAX_CONTACT_REQUESTS) {
+            contactLimitHitTime.set(System.currentTimeMillis());
         }
-        
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime windowStart = now.minusMinutes(TIME_WINDOW_MINUTES);
-        
-        // Get or create request list for this IP
-        List<LocalDateTime> requests = requestTracker.computeIfAbsent(ipAddress, k -> Collections.synchronizedList(new ArrayList<>()));
-        
-        // Synchronize to prevent race condition between removeIf and size check
-        synchronized (requests) {
-            // Remove requests outside the time window
-            requests.removeIf(timestamp -> timestamp.isBefore(windowStart));
-            
-            // Return true if we've already hit the limit
-            return requests.size() >= MAX_REQUESTS;
-        }
-    }
-
-    /**
-     * Records a request from an IP address
-     * Thread-safe: synchronizes on the IP's request list
-     * Only call this AFTER checking isRateLimitExceeded
-     * 
-     * @param ipAddress the client IP address
-     */
-    public void recordRequest(String ipAddress) {
-        if (!isValidIpAddress(ipAddress)) {
-            return;
-        }
-        
-        LocalDateTime now = LocalDateTime.now();
-        List<LocalDateTime> requests = requestTracker.computeIfAbsent(ipAddress, k -> Collections.synchronizedList(new ArrayList<>()));
-        
-        synchronized (requests) {
-            // Clean old requests before adding new one
-            LocalDateTime windowStart = now.minusMinutes(TIME_WINDOW_MINUTES);
-            requests.removeIf(timestamp -> timestamp.isBefore(windowStart));
-            
-            // Add new request
-            requests.add(now);
-        }
-    }
-
-    /**
-     * Gets the retry-after time in seconds for an IP that exceeded the rate limit
-     * 
-     * @param ipAddress the client IP address
-     * @return seconds to wait before retry (minimum 1 second)
-     */
-    public long getRetryAfterSeconds(String ipAddress) {
-        if (!isValidIpAddress(ipAddress)) {
-            return 1;
-        }
-        
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime windowStart = now.minusMinutes(TIME_WINDOW_MINUTES);
-        
-        List<LocalDateTime> requests = requestTracker.getOrDefault(ipAddress, Collections.synchronizedList(new ArrayList<>()));
-        
-        LocalDateTime oldestRequest;
-        synchronized (requests) {
-            oldestRequest = requests.stream()
-                .filter(timestamp -> timestamp.isAfter(windowStart))
-                .min(LocalDateTime::compareTo)
-                .orElse(now);
-        }
-        
-        LocalDateTime retryAt = oldestRequest.plusMinutes(TIME_WINDOW_MINUTES);
-        long retryAfterSeconds = java.time.temporal.ChronoUnit.SECONDS.between(now, retryAt);
-        
-        return Math.max(1, retryAfterSeconds);
-    }
-
-    /**
-     * Cleans up old IP entries from the tracker to prevent memory bloat
-     * Runs every 10 minutes (more frequent than before)
-     */
-    @Scheduled(fixedDelay = CLEANUP_INTERVAL_MS)
-    public void cleanupOldEntries() {
-        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(TIME_WINDOW_MINUTES);
-        
-        requestTracker.forEach((ip, requests) -> {
-            synchronized (requests) {
-                // Remove all requests outside the window
-                requests.removeIf(timestamp -> timestamp.isBefore(cutoff));
-            }
-        });
-        
-        // Remove IPs with no recent requests (thread-safe)
-        requestTracker.entrySet().removeIf(entry -> {
-            List<LocalDateTime> requests = entry.getValue();
-            synchronized (requests) {
-                return requests.isEmpty();
-            }
-        });
     }
     
-    /**
-     * Validates IP address format to prevent malformed or spoofed IPs
-     * 
-     * @param ipAddress the IP address to validate
-     * @return true if IP appears valid, false otherwise
-     */
-    private boolean isValidIpAddress(String ipAddress) {
-        if (ipAddress == null || ipAddress.isEmpty()) {
+    public boolean isContactLimited() {
+        checkAndResetContactWindow();
+        
+        if (contactCount.get() < MAX_CONTACT_REQUESTS) {
             return false;
         }
         
-        // Reject if contains spaces (common in spoofed headers)
-        if (ipAddress.contains(" ")) {
+        // Limit is hit, check if ban period has expired
+        long limitHitTime = contactLimitHitTime.get();
+        if (limitHitTime == 0) {
+            // Just hit limit
+            contactLimitHitTime.set(System.currentTimeMillis());
+            limitHitTime = contactLimitHitTime.get();
+        }
+        
+        long elapsedSinceHit = System.currentTimeMillis() - limitHitTime;
+        long banMs = CONTACT_BAN_SECONDS * 1000;
+        
+        if (elapsedSinceHit >= banMs) {
+            // Ban expired, reset and allow
+            contactCount.set(0);
+            contactLimitHitTime.set(0);
+            contactWindowStart.set(System.currentTimeMillis());
             return false;
         }
         
-        // Basic IPv4 validation
-        if (ipAddress.matches("^\\d+\\.\\d+\\.\\d+\\.\\d+$")) {
-            String[] parts = ipAddress.split("\\.");
-            for (String part : parts) {
-                try {
-                    int num = Integer.parseInt(part);
-                    if (num < 0 || num > 255) {
-                        return false;
-                    }
-                } catch (NumberFormatException e) {
-                    return false;
-                }
-            }
-            return true;
+        return true;
+    }
+    
+    public long getContactSecondsRemaining() {
+        checkAndResetContactWindow();
+        
+        if (contactCount.get() < MAX_CONTACT_REQUESTS) {
+            return 0;
         }
         
-        // Accept IPv6 format (simplified check)
-        if (ipAddress.contains(":")) {
-            return ipAddress.matches("^[0-9a-fA-F:]+$");
+        long limitHitTime = contactLimitHitTime.get();
+        if (limitHitTime == 0) {
+            return 0;
         }
         
-        return false;
+        long elapsedSinceHit = System.currentTimeMillis() - limitHitTime;
+        long banMs = CONTACT_BAN_SECONDS * 1000;
+        
+        if (elapsedSinceHit >= banMs) {
+            return 0;
+        }
+        
+        return (banMs - elapsedSinceHit) / 1000;
+    }
+    
+    public int getContactCount() {
+        checkAndResetContactWindow();
+        return contactCount.get();
+    }
+    
+    private synchronized void checkAndResetContactWindow() {
+        long now = System.currentTimeMillis();
+        long windowStart = contactWindowStart.get();
+        long windowMs = CONTACT_WINDOW_SECONDS * 1000;
+        
+        if (now - windowStart >= windowMs) {
+            // Window expired, reset everything
+            contactWindowStart.set(now);
+            contactCount.set(0);
+            contactLimitHitTime.set(0);
+        }
+    }
+    
+    // ==================== TESTIMONIAL METHODS ====================
+    
+    public void incrementTestimonialCount() {
+        checkAndResetTestimonialWindow();
+        int newCount = testimonialCount.incrementAndGet();
+        
+        // Record when limit is hit
+        if (newCount == MAX_TESTIMONIAL_REQUESTS) {
+            testimonialLimitHitTime.set(System.currentTimeMillis());
+        }
+    }
+    
+    public boolean isTestimonialLimited() {
+        checkAndResetTestimonialWindow();
+        
+        if (testimonialCount.get() < MAX_TESTIMONIAL_REQUESTS) {
+            return false;
+        }
+        
+        // Limit is hit, check if ban period has expired
+        long limitHitTime = testimonialLimitHitTime.get();
+        if (limitHitTime == 0) {
+            // Just hit limit
+            testimonialLimitHitTime.set(System.currentTimeMillis());
+            limitHitTime = testimonialLimitHitTime.get();
+        }
+        
+        long elapsedSinceHit = System.currentTimeMillis() - limitHitTime;
+        long banMs = TESTIMONIAL_BAN_SECONDS * 1000;
+        
+        if (elapsedSinceHit >= banMs) {
+            // Ban expired, reset and allow
+            testimonialCount.set(0);
+            testimonialLimitHitTime.set(0);
+            testimonialWindowStart.set(System.currentTimeMillis());
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public long getTestimonialSecondsRemaining() {
+        checkAndResetTestimonialWindow();
+        
+        if (testimonialCount.get() < MAX_TESTIMONIAL_REQUESTS) {
+            return 0;
+        }
+        
+        long limitHitTime = testimonialLimitHitTime.get();
+        if (limitHitTime == 0) {
+            return 0;
+        }
+        
+        long elapsedSinceHit = System.currentTimeMillis() - limitHitTime;
+        long banMs = TESTIMONIAL_BAN_SECONDS * 1000;
+        
+        if (elapsedSinceHit >= banMs) {
+            return 0;
+        }
+        
+        return (banMs - elapsedSinceHit) / 1000;
+    }
+    
+    public int getTestimonialCount() {
+        checkAndResetTestimonialWindow();
+        return testimonialCount.get();
+    }
+    
+    private synchronized void checkAndResetTestimonialWindow() {
+        long now = System.currentTimeMillis();
+        long windowStart = testimonialWindowStart.get();
+        long windowMs = TESTIMONIAL_WINDOW_SECONDS * 1000;
+        
+        if (now - windowStart >= windowMs) {
+            // Window expired, reset everything
+            testimonialWindowStart.set(now);
+            testimonialCount.set(0);
+            testimonialLimitHitTime.set(0);
+        }
     }
 }
+
