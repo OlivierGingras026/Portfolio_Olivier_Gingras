@@ -58,7 +58,7 @@ export const AddHobbyModal = ({ onClose, onSuccess }: AddHobbyModalProps) => {
     setLoading(true);
     try {
       const newHobby = await hobbiesAPI.createHobby(formData);
-      showToast('Hobby added successfully!', 'success');
+      showToast(t('toasts.hobbyAdded'), 'success');
       await Promise.resolve(onSuccess(newHobby));
       onClose();
     } catch (err) {

@@ -22,29 +22,54 @@ const axiosInstance = axios.create({
   withCredentials: false,
 });
 
+// Flag to prevent multiple refresh requests
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+const onRefreshed = (token: string) => {
+  refreshSubscribers.forEach(callback => callback(token));
+  refreshSubscribers = [];
+};
+
+const addRefreshSubscriber = (callback: (token: string) => void) => {
+  refreshSubscribers.push(callback);
+};
+
+const refreshAccessToken = async () => {
+  try {
+    const refreshToken = sessionStorage.getItem('refreshToken');
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    const response = await axios.post(`${backendUrl}/api/admin/auth/refresh`, {}, {
+      headers: {
+        'Authorization': `Bearer ${refreshToken}`
+      }
+    });
+
+    const { token, refreshToken: newRefreshToken, expiresIn } = response.data;
+    
+    sessionStorage.setItem('authToken', token);
+    sessionStorage.setItem('refreshToken', newRefreshToken);
+    sessionStorage.setItem('tokenExpiration', (Date.now() + expiresIn * 1000).toString());
+    
+    return token;
+  } catch (error) {
+    console.error('Token refresh failed:', error);
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('tokenExpiration');
+    window.location.href = '/admin/login?reason=session_expired';
+    throw error;
+  }
+};
 
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Don't add token for login endpoint
+    // Don't add token for login and refresh endpoints
     if (config.url && !config.url.includes('/auth/login') && !config.url.includes('/auth/refresh')) {
       const token = sessionStorage.getItem('authToken');
-      const tokenExpiration = sessionStorage.getItem('tokenExpiration');
-      
-      // Check if token is about to expire (within 5 minutes) and refresh it
-      if (token && tokenExpiration) {
-        const expirationTime = parseInt(tokenExpiration, 10);
-        const timeUntilExpiration = expirationTime - Date.now();
-        
-        if (timeUntilExpiration < 5 * 60 * 1000) { // 5 minutes
-          const refreshToken = sessionStorage.getItem('refreshToken');
-          if (refreshToken) {
-            // Attempt to refresh token (this will be handled asynchronously)
-            // For now, we'll continue with the current token
-            console.warn('⚠️ Token expiring soon, consider refreshing');
-          }
-        }
-      }
-      
       if (token) {
         config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${token}`;
@@ -57,20 +82,41 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-      console.warn('Session expired - redirecting to login');
-      sessionStorage.removeItem('authToken');
-      sessionStorage.removeItem('adminUser');
+    // Handle 401 - token expired or invalid
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      try {
+        originalRequest._retry = true;
 
-      // Redirect to login
-      window.location.href = '/admin/login?reason=session_expired';
-    } else if (error.response?.status === 403) {
-      // 403 Forbidden - permission denied
+        if (isRefreshing) {
+          // If already refreshing, queue this request
+          return new Promise((resolve) => {
+            addRefreshSubscriber((token: string) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(axiosInstance(originalRequest));
+            });
+          });
+        }
+
+        isRefreshing = true;
+
+        return refreshAccessToken().then((token) => {
+          isRefreshing = false;
+          onRefreshed(token);
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return axiosInstance(originalRequest);
+        });
+      } catch (refreshError) {
+        isRefreshing = false;
+        return Promise.reject(refreshError);
+      }
+    }
+
+    if (error.response?.status === 403) {
       console.warn('Permission denied', error.response.data);
     }
 

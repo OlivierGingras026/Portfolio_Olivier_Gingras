@@ -45,7 +45,7 @@ export const AddSkillModal = ({ onClose, onSuccess }: AddSkillModalProps) => {
     setLoading(true);
     try {
       const newSkill = await skillsAPI.createSkill(formData);
-      showToast('Skill created successfully!', 'success');
+      showToast(t('toasts.skillCreated'), 'success');
       await Promise.resolve(onSuccess(newSkill));
       onClose();
     } catch (err) {

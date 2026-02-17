@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { skillsAPI } from '../api/skillsAPI';
 import { showToast } from '../../../shared/components/Toast';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -11,6 +12,7 @@ interface DeleteSkillModalProps {
 }
 
 export const DeleteSkillModal = ({ onClose, onSuccess, deletingId, deletingTitle }: DeleteSkillModalProps) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -20,7 +22,7 @@ export const DeleteSkillModal = ({ onClose, onSuccess, deletingId, deletingTitle
     setLoading(true);
     try {
       await skillsAPI.deleteSkill(deletingId);
-      showToast('Skill deleted successfully!', 'success');
+      showToast(t('toasts.skillDeleted'), 'success');
       await Promise.resolve(onSuccess(deletingId));
       onClose();
     } catch (err) {

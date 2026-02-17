@@ -55,7 +55,7 @@ export const AddEducationModal = ({ onClose, onSuccess }: AddEducationModalProps
         endDate: formData.isCurrentlyStudying ? undefined : formData.endDate
       };
       const newEducation = await educationAPI.createEducation(dataToSend);
-      showToast('Education added successfully!', 'success');
+      showToast(t('toasts.educationAdded'), 'success');
       await Promise.resolve(onSuccess(newEducation));
       onClose();
     } catch (err) {

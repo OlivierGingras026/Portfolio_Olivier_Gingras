@@ -45,7 +45,7 @@ export const EditSkillModal = ({ onClose, onSuccess, editingId, existingData }: 
     setLoading(true);
     try {
       const updatedSkill = await skillsAPI.updateSkill(editingId, formData);
-      showToast('Skill updated successfully!', 'success');
+      showToast(t('toasts.skillUpdated'), 'success');
       await Promise.resolve(onSuccess(updatedSkill));
       onClose();
     } catch (err) {

@@ -55,7 +55,7 @@ export const AddWorkExperienceModal = ({ onClose, onSuccess }: AddWorkExperience
         endDate: formData.isCurrent ? undefined : formData.endDate
       };
       const newWork = await workExperienceAPI.createWorkExperience(dataToSend);
-      showToast('Work experience added successfully!', 'success');
+      showToast(t('toasts.workAdded'), 'success');
       await Promise.resolve(onSuccess(newWork));
       onClose();
     } catch (err) {

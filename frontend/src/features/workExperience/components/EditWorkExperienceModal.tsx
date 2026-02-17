@@ -54,7 +54,7 @@ export const EditWorkExperienceModal = ({ onClose, onSuccess, editingId, existin
         endDate: formData.isCurrent ? undefined : formData.endDate
       };
       const updatedWork = await workExperienceAPI.updateWorkExperience(editingId, dataToSend);
-      showToast('Work experience updated successfully!', 'success');
+      showToast(t('toasts.workUpdated'), 'success');
       await Promise.resolve(onSuccess(updatedWork));
       onClose();
     } catch (err) {

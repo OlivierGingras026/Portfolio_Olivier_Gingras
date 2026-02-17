@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { projectsAPI } from '../api/projectsAPI';
 import { showToast } from '../../../shared/components/Toast';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -11,6 +12,7 @@ interface DeleteProjectModalProps {
 }
 
 export const DeleteProjectModal = ({ onClose, onSuccess, deletingId, deletingTitle }: DeleteProjectModalProps) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -19,7 +21,7 @@ export const DeleteProjectModal = ({ onClose, onSuccess, deletingId, deletingTit
     setLoading(true);
     try {
       await projectsAPI.deleteProject(deletingId);
-      showToast('Project deleted successfully!', 'success');
+      showToast(t('toasts.projectDeleted'), 'success');
       await Promise.resolve(onSuccess(deletingId));
       onClose();
     } catch (err) {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { hobbiesAPI } from '../api/hobbiesAPI';
 import { showToast } from '../../../shared/components/Toast';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -11,6 +12,7 @@ interface DeleteHobbyModalProps {
 }
 
 export const DeleteHobbyModal = ({ onClose, onSuccess, deletingId, deletingTitle }: DeleteHobbyModalProps) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -20,7 +22,7 @@ export const DeleteHobbyModal = ({ onClose, onSuccess, deletingId, deletingTitle
     setLoading(true);
     try {
       await hobbiesAPI.deleteHobby(deletingId);
-      showToast('Hobby deleted successfully!', 'success');
+      showToast(t('toasts.hobbyDeleted'), 'success');
       await Promise.resolve(onSuccess(deletingId));
       onClose();
     } catch (err) {

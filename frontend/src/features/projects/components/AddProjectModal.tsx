@@ -79,7 +79,7 @@ export const AddProjectModal = ({ onClose, onSuccess }: AddProjectModalProps) =>
     setLoading(true);
     try {
       const newProject = await projectsAPI.createProject(formData);
-      showToast('Project created successfully!', 'success');
+      showToast(t('toasts.projectCreated'), 'success');
       await Promise.resolve(onSuccess(newProject));
       onClose();
     } catch (err) {

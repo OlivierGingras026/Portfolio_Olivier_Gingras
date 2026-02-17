@@ -1,10 +1,18 @@
 server:
   port: ${PORT:${BACKEND_PORT:8080}}
   forward-headers-strategy: framework
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
 spring:
   application:
     name: portfolio-backend
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
   security:
     user:

@@ -230,6 +230,43 @@
     "messages": "Messages",
     "profileTab": "Profile",
     "cvTab": "CV",
-    "noActiveCvUploaded": "No active CV uploaded yet."
+    "noActiveCvUploaded": "No active CV uploaded yet.",
+    "maxCVsReached": "Maximum number of CVs reached. You can only upload up to 2 CVs."
+  },
+  "cvOperations": {
+    "uploaded": "CV uploaded successfully!",
+    "updated": "CV updated successfully!",
+    "deleted": "CV deleted successfully!"
+  },
+  "testimonialOperations": {
+    "approved": "Testimonial approved successfully!",
+    "rejected": "Testimonial rejected successfully!",
+    "deleted": "Testimonial deleted successfully!",
+    "featured": "Testimonial featured successfully!",
+    "unfeatured": "Testimonial removed from featured successfully!"
+  },
+  "contactOperations": {
+    "messageDeleted": "Message deleted successfully!",
+    "messageMarkedAsRead": "Message marked as read successfully!"
+  },
+  "profileOperations": {
+    "updated": "Profile updated successfully!"
+  },
+  "toasts": {
+    "projectCreated": "Project created successfully!",
+    "projectUpdated": "Project updated successfully!",
+    "projectDeleted": "Project deleted successfully!",
+    "skillCreated": "Skill created successfully!",
+    "skillUpdated": "Skill updated successfully!",
+    "skillDeleted": "Skill deleted successfully!",
+    "workAdded": "Work experience added successfully!",
+    "workUpdated": "Work experience updated successfully!",
+    "workDeleted": "Work experience deleted successfully!",
+    "educationAdded": "Education added successfully!",
+    "educationUpdated": "Education updated successfully!",
+    "educationDeleted": "Education deleted successfully!",
+    "hobbyAdded": "Hobby added successfully!",
+    "hobbyUpdated": "Hobby updated successfully!",
+    "hobbyDeleted": "Hobby deleted successfully!"
   }
 }

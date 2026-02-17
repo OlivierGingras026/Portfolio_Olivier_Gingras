@@ -71,6 +71,7 @@ const useAuthStore = create<AuthStore>((set) => ({
       try {
         const user = JSON.parse(userStr);
         const expiration = parseInt(expirationStr, 10);
+        
         set({
           adminUser: user,
           token,

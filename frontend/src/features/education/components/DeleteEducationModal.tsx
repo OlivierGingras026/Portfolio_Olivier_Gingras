@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { educationAPI } from '../api/educationAPI';
 import { showToast } from '../../../shared/components/Toast';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -11,6 +12,7 @@ interface DeleteEducationModalProps {
 }
 
 export const DeleteEducationModal = ({ onClose, onSuccess, deletingId, deletingTitle }: DeleteEducationModalProps) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -20,7 +22,7 @@ export const DeleteEducationModal = ({ onClose, onSuccess, deletingId, deletingT
     setLoading(true);
     try {
       await educationAPI.deleteEducation(deletingId);
-      showToast('Education deleted successfully!', 'success');
+      showToast(t('toasts.educationDeleted'), 'success');
       await Promise.resolve(onSuccess(deletingId));
       onClose();
     } catch (err) {

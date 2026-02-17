@@ -81,7 +81,7 @@ export const EditProjectModal = ({ onClose, onSuccess, editingId, existingData }
     setLoading(true);
     try {
       const updatedProject = await projectsAPI.updateProject(editingId, formData);
-      showToast('Project updated successfully!', 'success');
+      showToast(t('toasts.projectUpdated'), 'success');
       await Promise.resolve(onSuccess(updatedProject));
       onClose();
     } catch (err) {

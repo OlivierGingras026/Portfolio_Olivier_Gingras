@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuthStore from '../../authentication/store/authStore';
+import { useTokenRefresh } from '../../authentication/hooks/useTokenRefresh';
 import { LanguageSwitcher } from '../../../shared/components/LanguageSwitcher';
 import { showToast } from '../../../shared/components/Toast';
 import './AdminDashboard.css';
@@ -50,6 +51,10 @@ export const AdminDashboard = () => {
   const { logout } = useAuthStore();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  
+  // Proactive token refresh - refreshes 1 minute before expiration
+  useTokenRefresh();
+  
   const [activeTab, setActiveTab] = useState<'projects' | 'work' | 'education' | 'skills' | 'hobbies' | 'contact' | 'reachme' | 'cv' | 'testimonials'>('projects');
   const [showModal, setShowModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -73,6 +78,8 @@ export const AdminDashboard = () => {
   const [editingCVId, setEditingCVId] = useState<string | null>(null);
   const [editingCVLanguage, setEditingCVLanguage] = useState(false);
   const [editingCVFile, setEditingCVFile] = useState<File | null>(null);
+  const [editingCVLoading, setEditingCVLoading] = useState(false);
+  const [editingCVError, setEditingCVError] = useState<string | null>(null);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [pendingTestimonials, setPendingTestimonials] = useState<Testimonial[]>([]);
   const [cvFileInput, setCvFileInput] = useState<File | null>(null);
@@ -367,12 +374,16 @@ export const AdminDashboard = () => {
 
   const handleEditCVModalSuccess = async () => {
     handleCloseModal();
+    await fetchAllData();
     portfolioAPI.invalidateCache();
+    showToast(t('cvOperations.updated'), 'success');
   };
 
   const handleDeleteCVModalSuccess = async () => {
     handleCloseModal();
+    await fetchAllData();
     portfolioAPI.invalidateCache();
+    showToast(t('cvOperations.deleted'), 'success');
   };
 
   const tabs = [
@@ -427,6 +438,7 @@ export const AdminDashboard = () => {
     try {
       await contactAPI.deleteMessage(id);
       setMessages(messages.filter(m => m.messageId !== id));
+      showToast(t('contactOperations.messageDeleted'), 'success');
     } catch (err) {
       console.error("Failed to delete message", err);
     }
@@ -436,6 +448,7 @@ export const AdminDashboard = () => {
     try {
       await contactAPI.markAsRead(id);
       setMessages(messages.map(m => m.messageId === id ? { ...m, isRead: true } : m));
+      showToast(t('contactOperations.messageMarkedAsRead'), 'success');
     } catch (err) {
       console.error("Failed to mark message as read", err);
     }
@@ -450,6 +463,7 @@ export const AdminDashboard = () => {
         availabilityStatusFr: reachmeEditForm.availabilityStatusFr
       });
       setIsEditingReachme(false);
+      showToast(t('profileOperations.updated'), 'success');
       fetchAllData();
     } catch (err) {
       console.error("Failed to update profile", err);
@@ -463,6 +477,7 @@ export const AdminDashboard = () => {
       setCvFileInput(null);
       setCvFileInputIsFrench(false);
       fetchAllData();
+      showToast(t('cvOperations.uploaded'), 'success');
     } catch (err) {
       console.error("Failed to upload CV", err);
     }
@@ -472,6 +487,7 @@ export const AdminDashboard = () => {
     try {
       await testimonialAPI.approveTestimonial(id);
       fetchAllData();
+      showToast(t('testimonialOperations.approved'), 'success');
     } catch (err) {
       console.error("Failed to approve testimonial", err);
     }
@@ -481,6 +497,7 @@ export const AdminDashboard = () => {
     try {
       await testimonialAPI.rejectTestimonial(id);
       fetchAllData();
+      showToast(t('testimonialOperations.rejected'), 'success');
     } catch (err) {
       console.error("Failed to reject testimonial", err);
     }
@@ -490,6 +507,7 @@ export const AdminDashboard = () => {
     try {
       await testimonialAPI.deleteTestimonial(id);
       fetchAllData();
+      showToast(t('testimonialOperations.deleted'), 'success');
     } catch (err) {
       console.error("Failed to delete testimonial", err);
     }
@@ -517,6 +535,10 @@ export const AdminDashboard = () => {
       
       // Invalidate cache so home page updates
       portfolioAPI.invalidateCache();
+      
+      // Show success message
+      const message = !currentFeatured ? t('testimonialOperations.featured') : t('testimonialOperations.unfeatured');
+      showToast(message, 'success');
     } catch (err) {
       console.error("Failed to save featured testimonial", err);
       // Revert on error
@@ -1014,48 +1036,67 @@ export const AdminDashboard = () => {
 
                                 {/* Upload New CV Section */}
                                 <div style={{ marginTop: '2rem', borderTop: '1px solid #334155', paddingTop: '1.5rem' }}>
-                                    <h4 style={{ color: '#fff', marginBottom: '1rem' }}>{t('admin.uploadNewCv')}</h4>
-                                    <div style={{ marginBottom: '1rem' }}>
-                                        <input 
-                                            type="file"
-                                            accept=".pdf,.doc,.docx"
-                                            onChange={(e) => setCvFileInput(e.target.files?.[0] || null)}
-                                            style={{ width: '100%', padding: '0.5rem', backgroundColor: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '0.5rem' }}
-                                        />
-                                    </div>
-                                    <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center' }}>
-                                        <input
-                                            type="checkbox"
-                                            id="cvFileInputIsFrench"
-                                            checked={cvFileInputIsFrench}
-                                            onChange={(e) => setCvFileInputIsFrench(e.target.checked)}
-                                            style={{
-                                                marginRight: '0.75rem',
-                                                width: '18px',
-                                                height: '18px',
-                                                accentColor: '#3b82f6',
-                                                cursor: 'pointer'
-                                            }}
-                                        />
-                                        <label htmlFor="cvFileInputIsFrench" style={{ color: '#94a3b8', cursor: 'pointer', userSelect: 'none' }}>
-                                            {t('admin.frenchVersion')}
-                                        </label>
-                                    </div>
-                                    <button 
-                                        onClick={handleUploadCV}
-                                        disabled={!cvFileInput}
-                                        className="btn-secondary"
-                                        style={{ 
-                                            width: '100%',
-                                            padding: '0.5rem 1rem', 
-                                            fontSize: '0.875rem',
-                                            backgroundColor: cvFileInput ? '#22c55e' : '#64748b',
-                                            color: cvFileInput ? '#000' : '#94a3b8',
-                                            cursor: cvFileInput ? 'pointer' : 'not-allowed'
-                                        }}
-                                    >
-                                        Upload
-                                    </button>
+                                    {allCVs.length < 2 ? (
+                                        <>
+                                            <h4 style={{ color: '#fff', marginBottom: '1rem' }}>{t('admin.uploadNewCv')}</h4>
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <input 
+                                                    type="file"
+                                                    accept=".pdf,.doc,.docx"
+                                                    onChange={(e) => setCvFileInput(e.target.files?.[0] || null)}
+                                                    style={{ width: '100%', padding: '0.5rem', backgroundColor: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '0.5rem' }}
+                                                />
+                                            </div>
+                                            <div style={{ marginBottom: '1.5rem' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        id="cvFileInputIsFrench"
+                                                        checked={cvFileInputIsFrench}
+                                                        onChange={(e) => setCvFileInputIsFrench(e.target.checked)}
+                                                        style={{
+                                                            marginRight: '0.75rem',
+                                                            width: '18px',
+                                                            height: '18px',
+                                                            accentColor: '#3b82f6',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    />
+                                                    <label htmlFor="cvFileInputIsFrench" style={{ color: '#94a3b8', cursor: 'pointer', userSelect: 'none' }}>
+                                                        {t('admin.frenchVersion')}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <button 
+                                                onClick={handleUploadCV}
+                                                disabled={!cvFileInput}
+                                                className="btn-secondary"
+                                                style={{ 
+                                                    width: '100%',
+                                                    padding: '0.5rem 1rem', 
+                                                    fontSize: '0.875rem',
+                                                    backgroundColor: cvFileInput ? '#22c55e' : '#64748b',
+                                                    color: cvFileInput ? '#000' : '#94a3b8',
+                                                    cursor: cvFileInput ? 'pointer' : 'not-allowed'
+                                                }}
+                                            >
+                                                Upload
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div style={{ 
+                                            padding: '1rem', 
+                                            backgroundColor: '#7f1d1d', 
+                                            color: '#fecaca', 
+                                            borderRadius: '0.5rem', 
+                                            border: '1px solid #f87171',
+                                            textAlign: 'center',
+                                            fontSize: '1rem',
+                                            fontWeight: '600'
+                                        }}>
+                                            {t('admin.maxCVsReached')}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Edit CV Modal */}
@@ -1124,40 +1165,63 @@ export const AdminDashboard = () => {
                                                     Mark as French Version
                                                 </label>
                                             </div>
+                                            {editingCVError && (
+                                                <div style={{
+                                                    marginBottom: '1rem',
+                                                    padding: '0.75rem',
+                                                    backgroundColor: '#7f1d1d',
+                                                    color: '#fecaca',
+                                                    borderRadius: '0.25rem',
+                                                    fontSize: '0.875rem',
+                                                    border: '1px solid #f87171'
+                                                }}>
+                                                    {editingCVError}
+                                                </div>
+                                            )}
                                             <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                 <button
                                                     onClick={async () => {
+                                                        setEditingCVLoading(true);
+                                                        setEditingCVError(null);
                                                         try {
                                                             if (editingCVFile) {
-                                                                await cvAPI.updateCVFile(editingCVId, editingCVFile, editingCVLanguage);
+                                                                await cvAPI.updateCVFile(editingCVId!, editingCVFile, editingCVLanguage);
                                                             } else {
-                                                                await cvAPI.updateCVLanguage(editingCVId, editingCVLanguage);
+                                                                await cvAPI.updateCVLanguage(editingCVId!, editingCVLanguage);
                                                             }
                                                             setEditingCVId(null);
                                                             setEditingCVFile(null);
-                                                            fetchAllData();
-                                                        } catch (err) {
+                                                            setEditingCVLoading(false);
+                                                            await fetchAllData();
+                                                        } catch (err: any) {
                                                             console.error('Failed to update CV:', err);
+                                                            const errorMessage = err?.response?.data?.message || err?.message || 'Failed to update CV. Please check file size.';
+                                                            setEditingCVError(errorMessage);
+                                                            setEditingCVLoading(false);
                                                         }
                                                     }}
+                                                    disabled={editingCVLoading}
                                                     style={{
                                                         flex: 1,
                                                         padding: '0.5rem 1rem',
-                                                        backgroundColor: '#22c55e',
+                                                        backgroundColor: editingCVLoading ? '#64748b' : '#22c55e',
                                                         color: '#000',
                                                         border: 'none',
                                                         borderRadius: '0.25rem',
-                                                        cursor: 'pointer',
-                                                        fontWeight: '600'
+                                                        cursor: editingCVLoading ? 'not-allowed' : 'pointer',
+                                                        fontWeight: '600',
+                                                        opacity: editingCVLoading ? 0.7 : 1
                                                     }}
                                                 >
-                                                    Save
+                                                    {editingCVLoading ? 'Saving...' : 'Save'}
                                                 </button>
                                                 <button
                                                     onClick={() => {
                                                         setEditingCVId(null);
                                                         setEditingCVFile(null);
+                                                        setEditingCVError(null);
                                                     }}
+                                                    disabled={editingCVLoading}
                                                     style={{
                                                         flex: 1,
                                                         padding: '0.5rem 1rem',
@@ -1165,7 +1229,7 @@ export const AdminDashboard = () => {
                                                         color: '#fff',
                                                         border: 'none',
                                                         borderRadius: '0.25rem',
-                                                        cursor: 'pointer',
+                                                        cursor: editingCVLoading ? 'not-allowed' : 'pointer',
                                                         fontWeight: '600'
                                                     }}
                                                 >
@@ -1439,6 +1503,7 @@ export const AdminDashboard = () => {
         <EditCVModal
           onClose={handleCloseModal}
           onSuccess={handleEditCVModalSuccess}
+          cvId={editingId || undefined}
         />
       )}
       {showModal && activeTab === 'cv' && modalType === 'delete' && (

@@ -1,6 +1,7 @@
 package com.oliviergingras.portfolio.cvsubdomain.businessLayer;
 
 import com.oliviergingras.portfolio.cvsubdomain.CVNotFoundException;
+import com.oliviergingras.portfolio.cvsubdomain.FrenchCVAlreadyExistsException;
 import com.oliviergingras.portfolio.cvsubdomain.dataAccessLayer.CVFile;
 import com.oliviergingras.portfolio.cvsubdomain.dataAccessLayer.CVFileRepository;
 import com.oliviergingras.portfolio.cvsubdomain.mapperLayer.CVFileRequestMapper;
@@ -25,6 +26,14 @@ public class CVFileServiceImpl implements CVFileService {
 
     @Override
     public CVFileResponseModel uploadCV(CVFileRequestModel request) {
+        // If uploading a French CV, mark any existing French CV as English
+        if (request.getIsFrench()) {
+            cvFileRepository.findFirstByIsFrench(true).ifPresent(cv -> {
+                cv.setIsFrench(false);
+                cvFileRepository.save(cv);
+            });
+        }
+        
         // Deactivate previous CV for the specific language
         cvFileRepository.findFirstByIsActiveAndIsFrenchOrderByUploadedAtDesc(true, request.getIsFrench()).ifPresent(cv -> {
             cv.setIsActive(false);
@@ -97,6 +106,30 @@ public class CVFileServiceImpl implements CVFileService {
     public CVFileResponseModel updateCVLanguage(String cvId, Boolean isFrench) {
         CVFile cv = cvFileRepository.findById(cvId)
             .orElseThrow(() -> new RuntimeException("CV file not found"));
+        
+        Boolean wasFrench = cv.getIsFrench();
+        
+        // If marking this CV as French, automatically mark the other CV as English
+        if (isFrench && !wasFrench) {
+            cvFileRepository.findAll().stream()
+                .filter(otherCv -> !otherCv.getCvId().equals(cvId) && otherCv.getIsFrench())
+                .findFirst()
+                .ifPresent(otherCv -> {
+                    otherCv.setIsFrench(false);
+                    cvFileRepository.save(otherCv);
+                });
+        }
+        // If unmarking this CV as French, automatically mark the other CV as French
+        else if (!isFrench && wasFrench) {
+            cvFileRepository.findAll().stream()
+                .filter(otherCv -> !otherCv.getCvId().equals(cvId) && !otherCv.getIsFrench())
+                .findFirst()
+                .ifPresent(otherCv -> {
+                    otherCv.setIsFrench(true);
+                    cvFileRepository.save(otherCv);
+                });
+        }
+        
         cv.setIsFrench(isFrench);
         CVFile saved = cvFileRepository.save(cv);
         return responseMapper.toModel(saved);
@@ -106,11 +139,36 @@ public class CVFileServiceImpl implements CVFileService {
     public CVFileResponseModel updateCVFile(String cvId, byte[] fileData, String fileName, long fileSize, Boolean isFrench) {
         CVFile cv = cvFileRepository.findById(cvId)
             .orElseThrow(() -> new RuntimeException("CV file not found"));
+        
+        Boolean wasFrench = cv.getIsFrench();
+        
         cv.setFileData(fileData);
         cv.setFileName(fileName);
         cv.setFileSize(fileSize);
         cv.setIsFrench(isFrench);
         CVFile saved = cvFileRepository.save(cv);
+        
+        // If marking this CV as French, automatically mark the other CV as English
+        if (isFrench && !wasFrench) {
+            cvFileRepository.findAll().stream()
+                .filter(otherCv -> !otherCv.getCvId().equals(cvId) && otherCv.getIsFrench())
+                .findFirst()
+                .ifPresent(otherCv -> {
+                    otherCv.setIsFrench(false);
+                    cvFileRepository.save(otherCv);
+                });
+        }
+        // If unmarking this CV as French, automatically mark the other CV as French
+        else if (!isFrench && wasFrench) {
+            cvFileRepository.findAll().stream()
+                .filter(otherCv -> !otherCv.getCvId().equals(cvId) && !otherCv.getIsFrench())
+                .findFirst()
+                .ifPresent(otherCv -> {
+                    otherCv.setIsFrench(true);
+                    cvFileRepository.save(otherCv);
+                });
+        }
+        
         return responseMapper.toModel(saved);
     }
 }

@@ -58,7 +58,7 @@ export const EditHobbyModal = ({ onClose, onSuccess, editingId, existingData }: 
     setLoading(true);
     try {
       const updatedHobby = await hobbiesAPI.updateHobby(editingId, formData);
-      showToast('Hobby updated successfully!', 'success');
+      showToast(t('toasts.hobbyUpdated'), 'success');
       await Promise.resolve(onSuccess(updatedHobby));
       onClose();
     } catch (err) {

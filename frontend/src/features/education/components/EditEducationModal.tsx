@@ -54,7 +54,7 @@ export const EditEducationModal = ({ onClose, onSuccess, editingId, existingData
         endDate: formData.isCurrentlyStudying ? undefined : formData.endDate
       };
       const updatedEducation = await educationAPI.updateEducation(editingId, dataToSend);
-      showToast('Education updated successfully!', 'success');
+      showToast(t('toasts.educationUpdated'), 'success');
       await Promise.resolve(onSuccess(updatedEducation));
       onClose();
     } catch (err) {

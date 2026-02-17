@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { workExperienceAPI } from '../api/workExperienceAPI';
 import { showToast } from '../../../shared/components/Toast';
 import '../../../features/admin/pages/AdminDashboard.css';
@@ -11,6 +12,7 @@ interface DeleteWorkExperienceModalProps {
 }
 
 export const DeleteWorkExperienceModal = ({ onClose, onSuccess, deletingId, deletingTitle }: DeleteWorkExperienceModalProps) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -20,7 +22,7 @@ export const DeleteWorkExperienceModal = ({ onClose, onSuccess, deletingId, dele
     setLoading(true);
     try {
       await workExperienceAPI.deleteWorkExperience(deletingId);
-      showToast('Work experience deleted successfully!', 'success');
+      showToast(t('toasts.workDeleted'), 'success');
       await Promise.resolve(onSuccess(deletingId));
       onClose();
     } catch (err) {

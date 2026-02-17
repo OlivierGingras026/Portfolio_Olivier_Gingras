@@ -6,9 +6,10 @@ import '../../../features/admin/pages/AdminDashboard.css';
 interface EditCVModalProps {
   onClose: () => void;
   onSuccess: () => Promise<void> | void;
+  cvId?: string;
 }
 
-export const EditCVModal = ({ onClose, onSuccess }: EditCVModalProps) => {
+export const EditCVModal = ({ onClose, onSuccess, cvId }: EditCVModalProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isFrench, setIsFrench] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,14 +22,24 @@ export const EditCVModal = ({ onClose, onSuccess }: EditCVModalProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFile) return;
+    if (!selectedFile && !cvId) return;
 
     setLoading(true);
     try {
-      await cvAPI.uploadCV(selectedFile, isFrench);
+      if (cvId) {
+        // Edit existing CV
+        if (selectedFile) {
+          await cvAPI.updateCVFile(cvId, selectedFile, isFrench);
+        } else {
+          await cvAPI.updateCVLanguage(cvId, isFrench);
+        }
+      } else {
+        // Upload new CV
+        await cvAPI.uploadCV(selectedFile!, isFrench);
+      }
       await Promise.resolve(onSuccess());
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update CV:', error);
       setLoading(false);
     }
@@ -43,18 +54,18 @@ export const EditCVModal = ({ onClose, onSuccess }: EditCVModalProps) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
       >
-        <h2 className="modal-title">Edit CV</h2>
+        <h2 className="modal-title">{cvId ? 'Edit CV' : 'Upload CV'}</h2>
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', color: '#94a3b8', marginBottom: '0.5rem' }}>
-              Select New CV File
+              {cvId ? 'Select New CV File (optional)' : 'Select CV File'}
             </label>
             <input
               ref={fileInputRef}
               type="file"
               accept=".pdf,.doc,.docx"
               onChange={handleFileSelect}
-              required
+              required={!cvId}
               style={{
                 width: '100%',
                 padding: '0.5rem',
@@ -93,7 +104,7 @@ export const EditCVModal = ({ onClose, onSuccess }: EditCVModalProps) => {
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button
               type="submit"
-              disabled={!selectedFile || loading}
+              disabled={(!selectedFile && !cvId) || loading}
               style={{
                 flex: 1,
                 padding: '0.5rem 1rem',
