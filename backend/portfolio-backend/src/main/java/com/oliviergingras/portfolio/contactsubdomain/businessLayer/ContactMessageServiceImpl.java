@@ -1,88 +1,77 @@
 package com.oliviergingras.portfolio.contactsubdomain.businessLayer;
 
-import com.oliviergingras.portfolio.common.RateLimitExceededException;
-import com.oliviergingras.portfolio.common.RateLimitService;
+import com.oliviergingras.portfolio.common.EmailService;
+import com.oliviergingras.portfolio.common.DailyContactLimitService;
 import com.oliviergingras.portfolio.contactsubdomain.dataAccessLayer.ContactMessage;
-import com.oliviergingras.portfolio.contactsubdomain.dataAccessLayer.ContactMessageRepository;
-import com.oliviergingras.portfolio.contactsubdomain.mappingLayer.ContactMessageRequestMapper;
-import com.oliviergingras.portfolio.contactsubdomain.mappingLayer.ContactMessageResponseMapper;
 import com.oliviergingras.portfolio.contactsubdomain.presentationLayer.ContactMessageRequestModel;
 import com.oliviergingras.portfolio.contactsubdomain.presentationLayer.ContactMessageResponseModel;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ContactMessageServiceImpl implements ContactMessageService {
     
-    private final ContactMessageRepository contactMessageRepository;
-    private final ContactMessageRequestMapper requestMapper;
-    private final ContactMessageResponseMapper responseMapper;
-    private final RateLimitService rateLimitService;
+    private final EmailService emailService;
+    private final DailyContactLimitService dailyLimitService;
     
-    public ContactMessageServiceImpl(
-        ContactMessageRepository contactMessageRepository,
-        ContactMessageRequestMapper requestMapper,
-        ContactMessageResponseMapper responseMapper,
-        RateLimitService rateLimitService
-    ) {
-        this.contactMessageRepository = contactMessageRepository;
-        this.requestMapper = requestMapper;
-        this.responseMapper = responseMapper;
-        this.rateLimitService = rateLimitService;
+    public ContactMessageServiceImpl(EmailService emailService, DailyContactLimitService dailyLimitService) {
+        this.emailService = emailService;
+        this.dailyLimitService = dailyLimitService;
     }
     
     @Override
     public ContactMessageResponseModel sendMessage(ContactMessageRequestModel requestModel, String clientIp) {
-        // IP-based rate limiting check (BEFORE recording to prevent checking already-recorded request)
-        if (rateLimitService.isRateLimitExceeded(clientIp)) {
-            long retryAfterSeconds = rateLimitService.getRetryAfterSeconds(clientIp);
-            throw new RateLimitExceededException("Too many messages from your IP. Please try again later.", retryAfterSeconds);
+        // Check daily limit (max 20 messages per day)
+        if (dailyLimitService.isDailyLimitExceeded()) {
+            int currentCount = dailyLimitService.getTodayCount();
+            throw new RuntimeException("Daily contact message limit (20) has been reached. Current count: " + currentCount + ". Please try again tomorrow.");
         }
         
-        // Record this request for rate limiting immediately after checking
-        // This records the attempt even if sent to DB fails
-        rateLimitService.recordRequest(clientIp);
-        
         // Sanitize inputs
-        ContactMessage message = requestMapper.toEntity(requestModel);
-        message.setName(sanitizeInput(message.getName()));
-        message.setEmail(sanitizeInput(message.getEmail()));
-        message.setMessage(sanitizeInput(message.getMessage()));
+        String sanitizedName = sanitizeInput(requestModel.getName());
+        String sanitizedEmail = sanitizeInput(requestModel.getEmail());
+        String sanitizedMessage = sanitizeInput(requestModel.getMessage());
         
         // Validate inputs
-        validateMessage(message);
+        validateMessage(sanitizedName, sanitizedEmail, sanitizedMessage);
         
-        ContactMessage savedMessage = contactMessageRepository.save(message);
-        return responseMapper.toResponseModel(savedMessage);
+        // Send email directly to admin's Gmail inbox
+        emailService.sendContactMessage(sanitizedName, sanitizedEmail, sanitizedMessage);
+        
+        // Increment daily counter
+        dailyLimitService.incrementDailyCount();
+        
+        // Return a simple response confirming the message was sent (not stored)
+        ContactMessageResponseModel response = new ContactMessageResponseModel();
+        response.setMessageId("sent");
+        response.setName(sanitizedName);
+        response.setEmail(sanitizedEmail);
+        response.setMessage(sanitizedMessage);
+        response.setCreatedAt(java.time.LocalDateTime.now());
+        response.setIsRead(false);
+        
+        return response;
     }
     
     @Override
     public List<ContactMessageResponseModel> getAllMessages() {
-        return contactMessageRepository.findAllByOrderByCreatedAtDesc()
-            .stream()
-            .map(responseMapper::toResponseModel)
-            .collect(Collectors.toList());
+        // Messages are no longer stored in the database; they are sent directly to Gmail
+        return java.util.Collections.emptyList();
     }
     
     @Override
     public ContactMessageResponseModel getMessageById(String messageId) {
-        ContactMessage message = contactMessageRepository.findById(messageId)
-            .orElseThrow(() -> new RuntimeException("Message not found"));
-        return responseMapper.toResponseModel(message);
+        throw new RuntimeException("Messages are sent directly to Gmail and are no longer stored in the database");
     }
     
     @Override
     public void deleteMessage(String messageId) {
-        contactMessageRepository.deleteById(messageId);
+        throw new RuntimeException("Messages are no longer stored in the database");
     }
     
     @Override
     public void markAsRead(String messageId) {
-        ContactMessage message = contactMessageRepository.findById(messageId)
-            .orElseThrow(() -> new RuntimeException("Message not found"));
-        message.setIsRead(true);
-        contactMessageRepository.save(message);
+        throw new RuntimeException("Messages are no longer stored in the database");
     }
     
     private String sanitizeInput(String input) {
@@ -101,29 +90,29 @@ public class ContactMessageServiceImpl implements ContactMessageService {
         return cleaned;
     }
     
-    private void validateMessage(ContactMessage message) {
-        if (message.getName() == null || message.getName().trim().isEmpty()) {
+    private void validateMessage(String name, String email, String message) {
+        if (name == null || name.trim().isEmpty()) {
             throw new RuntimeException("Name is required");
         }
         
-        if (message.getEmail() == null || !message.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+        if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             throw new RuntimeException("Valid email is required");
         }
         
-        if (message.getMessage() == null || message.getMessage().trim().isEmpty()) {
+        if (message == null || message.trim().isEmpty()) {
             throw new RuntimeException("Message is required");
         }
         
-        if (message.getName().length() > ContactMessageRequestModel.MAX_NAME_LENGTH) {
+        if (name.length() > ContactMessageRequestModel.MAX_NAME_LENGTH) {
             throw new RuntimeException("Name must not exceed " + ContactMessageRequestModel.MAX_NAME_LENGTH + " characters");
         }
         
-        if (message.getEmail().length() > ContactMessageRequestModel.MAX_EMAIL_LENGTH) {
+        if (email.length() > ContactMessageRequestModel.MAX_EMAIL_LENGTH) {
             throw new RuntimeException("Email must not exceed " + ContactMessageRequestModel.MAX_EMAIL_LENGTH + " characters");
         }
         
-        if (message.getMessage().length() > ContactMessageRequestModel.MAX_MESSAGE_CHARACTERS) {
-            throw new RuntimeException("Message must not exceed " + ContactMessageRequestModel.MAX_MESSAGE_CHARACTERS + " characters (currently " + message.getMessage().length() + " characters)");
+        if (message.length() > ContactMessageRequestModel.MAX_MESSAGE_CHARACTERS) {
+            throw new RuntimeException("Message must not exceed " + ContactMessageRequestModel.MAX_MESSAGE_CHARACTERS + " characters (currently " + message.length() + " characters)");
         }
     }
 }

@@ -13,19 +13,6 @@ export const ContactSection = () => {
   const MAX_NAME_LENGTH = 100;
   const MAX_EMAIL_LENGTH = 255;
   const MAX_MESSAGE_CHARACTERS = 1000;
-  const STORAGE_KEY = 'contact_rate_limit_expiry';
-  
-  // Initialize retryAfterSeconds from localStorage
-  const initializeRetryTime = () => {
-    const expiry = localStorage.getItem(STORAGE_KEY);
-    if (expiry) {
-      const expiryTime = parseInt(expiry);
-      const now = Date.now();
-      const remaining = Math.ceil((expiryTime - now) / 1000);
-      return remaining > 0 ? remaining : 0;
-    }
-    return 0;
-  };
   
   const [formData, setFormData] = useState({
     name: '',
@@ -41,14 +28,11 @@ export const ContactSection = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorType, setErrorType] = useState<string | null>(null);
-  const [retryAfterSeconds, setRetryAfterSeconds] = useState<number>(initializeRetryTime);
 
   // Compute the displayed error message based on error type and current language
-  const displayError = errorType ? (
-    errorType === 'rate_limit_error' 
-      ? t('contactsubdomain.rateLimitError')
-      : errorType
-  ) : null;
+  const displayError = errorType ? 
+    errorType 
+    : null;
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -61,31 +45,6 @@ export const ContactSection = () => {
     };
     fetchProfile();
   }, []);
-
-  // Countdown timer for rate limit
-  useEffect(() => {
-    if (retryAfterSeconds <= 0) {
-      localStorage.removeItem(STORAGE_KEY);
-      return;
-    }
-
-    const timer = setInterval(() => {
-      setRetryAfterSeconds((prev) => {
-        const newValue = prev - 1;
-        if (newValue <= 0) {
-          clearInterval(timer);
-          localStorage.removeItem(STORAGE_KEY);
-          return 0;
-        }
-        // Update localStorage with new expiry time
-        const newExpiry = Date.now() + newValue * 1000;
-        localStorage.setItem(STORAGE_KEY, newExpiry.toString());
-        return newValue;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [retryAfterSeconds, STORAGE_KEY]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -144,19 +103,9 @@ export const ContactSection = () => {
     } catch (err: unknown) {
       console.error('Failed to send message:', err);
       let errorKey = 'Failed to send message. Please try again.';
-      let retryAfter = 0;
       
       if (err instanceof APIError) {
-        if (err.message === 'rate_limit_error') {
-          errorKey = 'rate_limit_error';
-          retryAfter = err.retryAfterSeconds || 0;
-          setRetryAfterSeconds(retryAfter);
-          // Save expiry time to localStorage
-          const expiryTime = Date.now() + retryAfter * 1000;
-          localStorage.setItem(STORAGE_KEY, expiryTime.toString());
-        } else {
-          errorKey = err.message;
-        }
+        errorKey = err.message;
       } else if (err instanceof Error) {
         errorKey = err.message;
       }
@@ -273,13 +222,6 @@ export const ContactSection = () => {
                 {displayError && (
                   <div className="form-error">
                     <div>{displayError}</div>
-                    {errorType === 'rate_limit_error' && (
-                      <div style={{ marginTop: '0.5rem', fontSize: '0.85rem', opacity: 0.9 }}>
-                        {i18n.language === 'fr' 
-                          ? `Réessayez dans ${retryAfterSeconds || 1200}s` 
-                          : `Try again in ${retryAfterSeconds || 1200}s`}
-                      </div>
-                    )}
                   </div>
                 )}
                 
@@ -361,17 +303,13 @@ export const ContactSection = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  disabled={isLoading || retryAfterSeconds > 0}
+                  disabled={isLoading}
                   className="contact-submit"
                 >
                   {isLoading ? (
                     <>
                       <span className="spinner"></span>
                       {t('contactsubdomain.sending')}
-                    </>
-                  ) : retryAfterSeconds > 0 ? (
-                    <>
-                      {i18n.language === 'fr' ? 'Réessayez dans' : 'Try again in'} {retryAfterSeconds}s
                     </>
                   ) : (
                     <>

@@ -45,6 +45,19 @@ spring:
     validateOnMigrate: false
     outOfOrder: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_USERNAME}
+    password: ${GMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
 ---
 # ===== PROD profile (Docker / Render / Neon) =====
 spring:
@@ -66,6 +79,19 @@ spring:
     outOfOrder: false
     open-in-view: false
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_USERNAME}
+    password: ${GMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
 app:
   jwt:
     secret: ${APP_JWT_SECRET}
@@ -74,3 +100,6 @@ app:
   admin:
     email: ${APP_ADMIN_EMAIL}
     password: ${APP_ADMIN_PASSWORD}
+  email:
+    from: ${GMAIL_USERNAME}
+    to: ${GMAIL_RECIPIENT_EMAIL}

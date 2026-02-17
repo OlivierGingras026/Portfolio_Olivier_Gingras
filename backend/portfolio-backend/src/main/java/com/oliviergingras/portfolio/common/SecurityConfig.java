@@ -33,34 +33,26 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class)
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable())  // Disable CSRF for all endpoints
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
                         // Public endpoints - MUST BE FIRST
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/api/v1/contact/send").permitAll()
-                        .requestMatchers("/api/v1/reachme").permitAll()
+                        // Contact form - public endpoint
+                        .requestMatchers(HttpMethod.POST, "/api/v1/contact/send").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/contact").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/reachme").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/cv").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/cv/download/**").permitAll()
-                        .requestMatchers("/api/v1/testimonials/submit").permitAll()
-                        .requestMatchers("/api/v1/testimonials/approved").permitAll()
+                        // Testimonials - public submission
+                        .requestMatchers(HttpMethod.POST, "/api/v1/testimonials/submit").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/testimonials/approved").permitAll()
+                        // Auth endpoints
                         .requestMatchers("/api/admin/auth/login").permitAll()
                         .requestMatchers("/api/admin/auth/refresh").permitAll()
+                        // CORS preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // All other admin endpoints require authentication
-                        .requestMatchers("/api/admin/**").authenticated()
-                        .requestMatchers("/api/v1/contact").authenticated()
-                        .requestMatchers("/api/v1/contact/**").authenticated()
-                        .requestMatchers("/api/v1/cv/upload").authenticated()
-                        .requestMatchers("/api/v1/cv/all").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/cv/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/cv/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/cv/**").authenticated()
-                        .requestMatchers("/api/v1/testimonials").authenticated()
-                        .requestMatchers("/api/v1/testimonials/pending").authenticated()
-                        .requestMatchers("/api/v1/testimonials/**").authenticated()
 
                         // Everything else requires authentication
                         .anyRequest().authenticated()
