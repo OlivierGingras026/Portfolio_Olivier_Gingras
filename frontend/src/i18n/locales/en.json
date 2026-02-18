@@ -20,7 +20,7 @@
     "characters": "Characters"
   },
   "auth": {
-    "adminAccess": "Admin Access",
+    "adminAccess": "Owner Access",
     "managePortfolio": "Manage your portfolio with secure authentication",
     "username": "Username",
     "emailAddress": "Email Address",

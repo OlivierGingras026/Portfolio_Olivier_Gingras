@@ -192,9 +192,12 @@ export const PortfolioNavbar = () => {
                                     navigate('/');
                                 }}
                                 className="navbar-cta-button logout"
-                                style={{ backgroundColor: '#ef4444' }}
+                                style={{ 
+                                    backgroundColor: '#ef4444',
+                                    padding: '8px 16px'
+                                }}
                             >
-                                <LogOut size={16} />
+                                <LogOut size={14} />
                                 <span className="navbar-cta-text">{t('common.logout')}</span>
                             </button>
                         </>

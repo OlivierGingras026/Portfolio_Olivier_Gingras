@@ -20,7 +20,7 @@
     "characters": "Caractères"
   },
   "auth": {
-    "adminAccess": "Accès Admin",
+    "adminAccess": "Accès Propriétaire",
     "managePortfolio": "Gérez votre portfolio avec une authentification sécurisée",
     "username": "Nom d'utilisateur",
     "emailAddress": "Adresse Email",
